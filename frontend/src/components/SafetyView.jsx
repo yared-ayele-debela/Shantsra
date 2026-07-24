@@ -1,0 +1,58 @@
+import React from 'react';
+import { ShieldCheck, AlertTriangle, Eye, CheckCircle2 } from 'lucide-react';
+
+export default function SafetyView() {
+  return (
+    <main className="max-w-4xl mx-auto px-5 lg:px-8 py-10 space-y-8">
+      <div className="text-center space-y-3">
+        <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-3 py-1 rounded-full border border-amber-200">
+          <ShieldCheck className="w-3.5 h-3.5" /> Safety Guidelines & Protocols
+        </span>
+        <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-[#1C160F]">
+          Peer-to-Peer Transit Safety Rules
+        </h1>
+        <p className="text-slate-500 text-sm max-w-xl mx-auto">
+          Strict safety requirements for every package carried between Addis Ababa and Dubai.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-white border border-amber-100 rounded-2xl p-6 shadow-sm flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+            <Eye className="w-5 h-5" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-display font-bold text-base text-[#1C160F]">1. Mandatory Item Inspection</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Travelers MUST inspect the physical contents of all package requests prior to airport check-in. Never accept sealed boxes or wrapped parcels without seeing inside.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white border border-amber-100 rounded-2xl p-6 shadow-sm flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+            <AlertTriangle className="w-5 h-5 text-amber-600" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-display font-bold text-base text-[#1C160F]">2. Prohibited Goods & Restricted Items</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Strictly no liquids exceeding travel limits, illegal substances, unverified medications, or hazardous materials. All electronics must be unsealed and verifiable.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white border border-amber-100 rounded-2xl p-6 shadow-sm flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-display font-bold text-base text-[#1C160F]">3. Airport Meeting Point Handovers</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Handovers must occur in public airport lobbies or designated meeting zones at Bole International Airport (ADD) or Dubai International Airport (DXB).
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

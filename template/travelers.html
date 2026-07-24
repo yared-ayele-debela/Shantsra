@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Souq &amp; Sheba — Verified Travelers Directory</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.474.0/dist/umd/lucide.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#1C160F',
+          brand: {
+            50:'#FDF8EC',100:'#FAEFD1',200:'#F3DDA0',300:'#E9C766',
+            400:'#DBAE3E',500:'#C6952A',600:'#A87A1E',
+            700:'#8A6118',800:'#6B4A14',900:'#4A330E'
+          },
+          accent: {
+            50:'#EAF7EF',100:'#CDEEDA',200:'#9EDCB8',300:'#6BC896',
+            400:'#3FA66B',500:'#1F8F55',600:'#157043',
+            700:'#0F5934',800:'#0B4527',900:'#07321C'
+          }
+        },
+        fontFamily: {
+          display: ['Manrope','sans-serif'],
+          body: ['Inter','sans-serif']
+        },
+        boxShadow: {
+          card: '0 1px 3px rgba(28,22,15,0.04), 0 10px 30px -15px rgba(28,22,15,0.08)',
+          cardHover: '0 10px 20px -8px rgba(28,22,15,0.08), 0 24px 48px -12px rgba(198,149,42,0.22)'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; padding-bottom: 64px; }
+  @media (min-width: 640px){ body { padding-bottom: 0; } }
+  h1,h2,h3,h4,.font-display { font-family: 'Manrope', sans-serif; }
+  .scrollbar-none::-webkit-scrollbar{ display:none; }
+  .scrollbar-none{ -ms-overflow-style:none; scrollbar-width:none; }
+</style>
+</head>
+<body class="bg-[#FAF8F5] text-ink antialiased">
+
+<!-- ============ HEADER ============ -->
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-brand-100/50">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8 h-[72px] flex items-center justify-between gap-6">
+    <a href="index.html" class="flex items-center gap-2 shrink-0">
+      <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-800 flex items-center justify-center shadow-md">
+        <i data-lucide="plane-takeoff" class="w-5 h-5 text-white"></i>
+      </span>
+      <div class="flex flex-col">
+        <span class="font-display text-xl font-800 tracking-tight leading-none">Souq<span class="text-brand-600">&amp;</span>Sheba</span>
+        <span class="text-[9px] font-semibold uppercase tracking-wider text-slate-500 mt-0.5">P2P Delivery</span>
+      </div>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-8 text-[15px] font-medium text-slate-600">
+      <a href="index.html" class="hover:text-brand-600 transition-colors">Home</a>
+      <a href="packages.html" class="hover:text-brand-600 transition-colors">Search Packages</a>
+      <a href="travelers.html" class="font-semibold text-brand-600 transition-colors">Find Travelers</a>
+      <a href="index.html?view=dashboard" class="hover:text-brand-600 transition-colors">My Dashboard</a>
+      <a href="index.html#safety" class="hover:text-brand-600 transition-colors">Safety Rules</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="hidden sm:flex items-center gap-1 text-xs font-bold text-slate-600 bg-brand-50 border border-brand-200/55 rounded-xl px-4 py-2.5 hover:bg-brand-100 transition-colors">
+        <i data-lucide="layout" class="w-4 h-4"></i>
+        <span>Go to Workspace</span>
+      </a>
+      <a href="index.html?post=true" class="flex items-center gap-1.5 text-sm font-semibold text-white bg-ink px-4 py-2.5 rounded-xl hover:bg-brand-600 hover:text-ink transition-all duration-200 shadow-sm">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Request Delivery</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MAIN SEARCH PANEL ============ -->
+<main class="max-w-7xl mx-auto px-5 lg:px-8 py-8">
+  <div class="mb-8">
+    <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1 mb-1">
+      <i data-lucide="users" class="w-3.5 h-3.5"></i> Flyers Directory
+    </span>
+    <h1 class="font-display text-3xl font-800 text-ink">Verified Travelers Directory</h1>
+    <p class="text-slate-500 text-sm mt-1">Connect with verified transit passengers traveling between Addis Ababa &amp; Dubai who can carry your cargo.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-12 gap-8 items-start">
+    <!-- LEFT SIDEBAR: DIRECTORY CATALOG (5 cols) -->
+    <aside class="lg:col-span-5 bg-white rounded-2xl border border-brand-100 p-6 shadow-card space-y-6">
+      <div class="flex items-center justify-between border-b border-brand-50 pb-3">
+        <h3 class="font-display font-bold text-base text-ink flex items-center gap-2">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-brand-600"></i> Filters
+        </h3>
+        <button onclick="resetFilters()" class="text-xs font-semibold text-slate-400 hover:text-brand-600 flex items-center gap-1">
+          <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Clear all
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="space-y-1.5">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Search Traveler</label>
+        <div class="relative">
+          <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search by traveler name..." class="w-full text-xs border border-brand-200/80 rounded-xl pl-9 pr-4 py-3 outline-none focus:border-brand-500 bg-brand-50/10 placeholder:text-slate-400" />
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
+        </div>
+      </div>
+
+      <!-- Flight Route Selection -->
+      <div class="space-y-2">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Flight Corridor</label>
+        <div class="flex flex-col gap-2">
+          <label onclick="setRouteFilter('ALL')" class="border border-brand-100 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-brand-50/20 transition-colors">
+            <span class="text-xs font-semibold text-slate-700">All Routes</span>
+            <input type="radio" name="route" value="ALL" checked class="accent-brand-600 pointer-events-none" id="radio-route-all" />
+          </label>
+          <label onclick="setRouteFilter('ADD_TO_DXB')" class="border border-brand-100 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-brand-50/20 transition-colors">
+            <span class="text-xs font-semibold text-slate-700 flex items-center gap-2">
+              <span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-100 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#DBAE3E] flex-1"></span><span class="bg-[#C6952A] flex-1"></span></span>
+              Addis Ababa (ADD) ➔ Dubai (DXB)
+            </span>
+            <input type="radio" name="route" value="ADD_TO_DXB" class="accent-brand-600 pointer-events-none" id="radio-route-addis" />
+          </label>
+          <label onclick="setRouteFilter('DXB_TO_ADD')" class="border border-brand-100 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-brand-50/20 transition-colors">
+            <span class="text-xs font-semibold text-slate-700 flex items-center gap-2">
+              <span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-100 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#C6952A] flex-1"></span><span class="bg-[#211B14] flex-1"></span></span>
+              Dubai (DXB) ➔ Addis Ababa (Bole)
+            </span>
+            <input type="radio" name="route" value="DXB_TO_ADD" class="accent-brand-600 pointer-events-none" id="radio-route-dubai" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Flyers List -->
+      <div class="space-y-3 pt-2">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Travelers Feed</label>
+        <div id="travelers-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+          <!-- Dynamically filled with traveler list cards -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT COMPONENT: PROFILE DETAILED VIEW (7 cols) -->
+    <section id="profile-inspector-pane" class="lg:col-span-7 bg-white rounded-2xl border border-brand-100 p-8 shadow-card min-h-[600px] flex flex-col justify-between">
+      <!-- Dynamically filled on selection -->
+    </section>
+  </div>
+</main>
+
+<!-- MOBILE NAVIGATION BAR -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-brand-100/60 lg:hidden shadow-lg">
+  <div class="grid grid-cols-4 h-16 text-slate-500">
+    <a href="index.html" class="flex flex-col items-center justify-center gap-1 hover:text-brand-600 transition-colors">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span class="text-[9px] font-bold">Home</span>
+    </a>
+    <a href="packages.html" class="flex flex-col items-center justify-center gap-1 hover:text-brand-600 transition-colors">
+      <i data-lucide="package" class="w-5 h-5"></i>
+      <span class="text-[9px] font-bold">Packages</span>
+    </a>
+    <a href="travelers.html" class="flex flex-col items-center justify-center gap-1 text-brand-600 transition-colors">
+      <i data-lucide="plane-takeoff" class="w-5 h-5"></i>
+      <span class="text-[9px] font-bold">Travelers</span>
+    </a>
+    <a href="index.html?view=dashboard" class="flex flex-col items-center justify-center gap-1 hover:text-brand-600 transition-colors">
+      <i data-lucide="layout" class="w-5 h-5"></i>
+      <span class="text-[9px] font-bold">Dashboard</span>
+    </a>
+  </div>
+</div>
+
+<script>
+  // Default values mapping mock database
+  const defaultTravelers = [
+    {
+      name: 'Kaleb T.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+      rating: '4.8',
+      route: 'ADD_TO_DXB',
+      flightDate: 'July 28, 2026',
+      airline: 'Emirates EK724',
+      maxWeight: '8.0',
+      allowedCategories: ['Documents', 'Coffee & Spices', 'Clothing & Textiles'],
+      phone: '251911223344'
+    },
+    {
+      name: 'Sarah Al-M.',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      rating: '5.0',
+      route: 'DXB_TO_ADD',
+      flightDate: 'August 2, 2026',
+      airline: 'FlyDubai FZ803',
+      maxWeight: '12.0',
+      allowedCategories: ['Electronics', 'Cosmetics & Beauty', 'Documents'],
+      phone: '971501234567'
+    },
+    {
+      name: 'Marta W.',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
+      rating: '4.7',
+      route: 'ADD_TO_DXB',
+      flightDate: 'August 5, 2026',
+      airline: 'Ethiopian ET602',
+      maxWeight: '5.0',
+      allowedCategories: ['Clothing & Textiles', 'Personal Gifts'],
+      phone: '251911555444'
+    },
+    {
+      name: 'Fatima H.',
+      avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80',
+      rating: '4.9',
+      route: 'DXB_TO_ADD',
+      flightDate: 'August 10, 2026',
+      airline: 'Emirates EK723',
+      maxWeight: '15.0',
+      allowedCategories: ['Cosmetics & Beauty', 'Personal Gifts', 'Coffee & Spices'],
+      phone: '971505556667'
+    }
+  ];
+
+  const defaultProfiles = {
+    'Kaleb T.': {
+      name: 'Kaleb T.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+      rating: '4.8',
+      deliveriesCount: 8,
+      bio: 'Regular exporter and business consultant traveling between Addis and UAE twice a month. Focused on agricultural trade.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: { route: 'ADD ➔ DXB', date: 'July 28, 2026', flight: 'Emirates EK724' },
+      reviews: [
+        { reviewer: 'Dawit G.', rating: 5, comment: 'Carried my business coffee samples securely. Great communication.', date: 'July 10, 2026' },
+        { reviewer: 'Betty W.', rating: 4, comment: 'Decent transaction, coordinated pickup easily.', date: 'June 29, 2026' }
+      ]
+    },
+    'Sarah Al-M.': {
+      name: 'Sarah Al-M.',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      rating: '5.0',
+      deliveriesCount: 14,
+      bio: 'E-commerce logistics manager. I fly frequently to inspect supply lines and visit family.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: { route: 'DXB ➔ ADD', date: 'August 2, 2026', flight: 'FlyDubai FZ803' },
+      reviews: [
+        { reviewer: 'Solomon K.', rating: 5, comment: 'Sarah carried a sealed laptop safely. Perfect receipt verification.', date: 'July 05, 2026' }
+      ]
+    },
+    'Marta W.': {
+      name: 'Marta W.',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
+      rating: '4.7',
+      deliveriesCount: 3,
+      bio: 'Textile artisan and designer in Addis Ababa. I send sample garments to boutiques in UAE.',
+      verifications: { id: true, flight: true, phone: false },
+      upcomingTrip: { route: 'ADD ➔ DXB', date: 'August 5, 2026', flight: 'Ethiopian ET602' },
+      reviews: [
+        { reviewer: 'Lydia M.', rating: 5, comment: 'Marta carried custom wedding fabrics. Very neat and reliable.', date: 'July 12, 2026' }
+      ]
+    },
+    'Fatima H.': {
+      name: 'Fatima H.',
+      avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80',
+      rating: '4.9',
+      deliveriesCount: 11,
+      bio: 'Boutique owner based in Deira Souq, Dubai. Transporting incense and cosmetics.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: { route: 'DXB ➔ ADD', date: 'August 10, 2026', flight: 'Emirates EK723' },
+      reviews: [
+        { reviewer: 'Helina D.', rating: 5, comment: 'Super safe courier. Handed perfume over in perfect condition!', date: 'July 01, 2026' }
+      ]
+    }
+  };
+
+  // State Management
+  let travelers = JSON.parse(localStorage.getItem('ss_travelers')) || defaultTravelers;
+  let profiles = JSON.parse(localStorage.getItem('ss_profiles')) || defaultProfiles;
+
+  let activeSearch = '';
+  let activeRoute = 'ALL';
+  let selectedTravelerName = '';
+
+  // Initialize
+  function init() {
+    if (travelers.length > 0) {
+      selectedTravelerName = travelers[0].name;
+    }
+    renderTravelersList();
+    renderProfileInspector();
+  }
+
+  // Search filter callback
+  window.handleSearch = function(val) {
+    activeSearch = val.toLowerCase().trim();
+    renderTravelersList();
+  };
+
+  // Route filter callback
+  window.setRouteFilter = function(route) {
+    activeRoute = route;
+    
+    // Manage radio inputs state representation
+    document.getElementById('radio-route-all').checked = (route === 'ALL');
+    document.getElementById('radio-route-addis').checked = (route === 'ADD_TO_DXB');
+    document.getElementById('radio-route-dubai').checked = (route === 'DXB_TO_ADD');
+    
+    renderTravelersList();
+  };
+
+  // Select traveler logic
+  window.selectTraveler = function(name) {
+    selectedTravelerName = name;
+    renderTravelersList();
+    renderProfileInspector();
+  };
+
+  // Reset all filters
+  window.resetFilters = function() {
+    activeSearch = '';
+    activeRoute = 'ALL';
+    document.getElementById('search-input').value = '';
+    setRouteFilter('ALL');
+  };
+
+  // Render list of available travelers in sidebar
+  function renderTravelersList() {
+    const listContainer = document.getElementById('travelers-list');
+    
+    const filtered = travelers.filter(t => {
+      const matchRoute = activeRoute === 'ALL' || t.route === activeRoute;
+      const matchSearch = t.name.toLowerCase().includes(activeSearch);
+      return matchRoute && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      listContainer.innerHTML = `<div class="text-center py-10 text-slate-400 text-xs">No travelers found.</div>`;
+      return;
+    }
+
+    listContainer.innerHTML = filtered.map(t => {
+      const isSelected = t.name === selectedTravelerName;
+      const selectClass = isSelected 
+        ? 'border-brand-500 bg-brand-50/20 ring-1 ring-brand-500' 
+        : 'border-brand-100 hover:border-brand-300';
+      
+      const routeLabel = t.route === 'ADD_TO_DXB' ? 'ADD ➔ DXB' : 'DXB ➔ ADD';
+      
+      return `
+        <div onclick="selectTraveler('${t.name}')" class="p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-4 bg-white ${selectClass}">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${t.avatar}" class="w-10 h-10 rounded-full object-cover border border-brand-100 shrink-0" />
+            <div class="min-w-0">
+              <h4 class="font-bold text-xs text-ink truncate">${t.name}</h4>
+              <p class="text-[10px] text-slate-500 font-semibold mt-0.5">${routeLabel}</p>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="inline-flex items-center text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full"><i data-lucide="star" class="w-2.5 h-2.5 fill-brand-500 text-brand-500 mr-0.5"></i> ${t.rating}</span>
+            <p class="text-[9px] text-slate-400 font-semibold mt-1">Cap: ${t.maxWeight} kg</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
+  // Render right profile inspector detail view
+  function renderProfileInspector() {
+    const pane = document.getElementById('profile-inspector-pane');
+    if (!pane) return;
+
+    if (!selectedTravelerName) {
+      pane.innerHTML = `
+        <div class="flex-1 flex flex-col items-center justify-center text-center text-slate-400 py-16">
+          <i data-lucide="user-search" class="w-12 h-12 text-slate-300 mb-4 animate-pulse"></i>
+          <h3 class="font-display font-bold text-base text-ink">No traveler selected</h3>
+          <p class="text-xs text-slate-500 mt-1 max-w-xs">Select a verified flyer from the left pane directory to view detailed history and ratings.</p>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+      return;
+    }
+
+    const cleanName = selectedTravelerName.replace(' (You)', '').trim();
+    let profileKey = cleanName;
+    if (cleanName === 'Alex M.') {
+      profileKey = 'You (Sender)';
+    }
+
+    const prof = profiles[profileKey] || {
+      name: selectedTravelerName,
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80',
+      rating: '5.0',
+      deliveriesCount: 0,
+      bio: 'Verified Souq & Sheba flight passenger ready to carry packages.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: null,
+      reviews: []
+    };
+
+    const targetTraveler = travelers.find(t => t.name === selectedTravelerName) || {};
+
+    // Generate verifications HTML
+    const verifItems = [
+      { key: 'phone', label: 'Phone Connected', icon: 'phone' },
+      { key: 'id', label: 'Passport Verified', icon: 'file-check-2' },
+      { key: 'flight', label: 'Ticket Confirmed', icon: 'plane' }
+    ];
+
+    const verifHtml = verifItems.map(item => {
+      const status = prof.verifications[item.key];
+      const iconColor = status ? 'text-accent-600 bg-accent-50 border-accent-100' : 'text-slate-300 bg-slate-50 border-slate-100 opacity-60';
+      return `
+        <div class="flex items-center gap-1.5 border rounded-lg px-2.5 py-1 text-[10px] font-semibold ${iconColor}">
+          <i data-lucide="${item.icon}" class="w-3.5 h-3.5"></i>
+          <span>${item.label}</span>
+        </div>
+      `;
+    }).join('');
+
+    // Generate reviews comments HTML
+    const reviewsHtml = prof.reviews && prof.reviews.length > 0
+      ? prof.reviews.map(r => `
+          <div class="bg-[#FAF8F5] border border-brand-100/50 rounded-xl p-3.5">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-bold text-xs text-ink">${r.reviewer}</span>
+              <span class="text-[10px] text-slate-400 font-medium">${r.date}</span>
+            </div>
+            <div class="flex items-center text-brand-600 mb-1.5">
+              ${Array.from({ length: 5 }).map((_, i) => `
+                <i data-lucide="star" class="w-3 h-3 ${i < r.rating ? 'fill-brand-500 text-brand-500' : 'text-slate-200'}"></i>
+              `).join('')}
+            </div>
+            <p class="text-[11px] text-slate-600 leading-relaxed italic">"${r.comment}"</p>
+          </div>
+        `).join('')
+      : `<div class="text-center py-6 border border-dashed border-brand-100 bg-slate-50/50 rounded-xl text-slate-400 text-xs">No reviews from senders yet.</div>`;
+
+    // Allowed cargo list
+    const allowedTags = targetTraveler.allowedCategories
+      ? targetTraveler.allowedCategories.map(c => `
+          <span class="text-[10px] font-bold bg-accent-50 text-accent-700 border border-accent-100/80 rounded-full px-3 py-1">${c}</span>
+        `).join('')
+      : '<span class="text-xs text-slate-400">All standard P2P categories</span>';
+
+    // Mock flight info
+    const routeText = targetTraveler.route === 'ADD_TO_DXB' ? 'Addis Ababa (ADD) ➔ Dubai (DXB)' : 'Dubai (DXB) ➔ Addis Ababa (ADD)';
+
+    // Mock historical trips ledger
+    const historyData = [
+      { date: 'June 2026', route: 'ADD ➔ DXB', cargo: 'Handmade Spices', status: 'Delivered', reward: 'AED 150' },
+      { date: 'May 2026', route: 'DXB ➔ ADD', cargo: 'Personal Laptop', status: 'Delivered', reward: 'ETB 4,500' }
+    ];
+    const historyHtml = historyData.map(h => `
+      <div class="flex items-center justify-between border-b border-brand-50/50 py-2.5 text-xs text-slate-700">
+        <div class="flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5 text-accent-600"></i>
+          <div>
+            <p class="font-semibold text-slate-800">${h.cargo}</p>
+            <p class="text-[9px] text-slate-400">${h.date} • ${h.route}</p>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-slate-500">${h.reward}</span>
+      </div>
+    `).join('');
+
+    pane.innerHTML = `
+      <div class="space-y-6">
+        <!-- Top Profile Info Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-100 pb-5">
+          <div class="flex gap-4">
+            <img src="${prof.avatar}" class="w-16 h-16 rounded-2xl object-cover border-2 border-brand-200 shadow-sm shrink-0" />
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="font-display font-800 text-xl text-ink">${prof.name}</h2>
+                <span class="flex items-center gap-0.5 text-brand-600 text-xs font-extrabold"><i data-lucide="star" class="w-3 h-3 fill-brand-500 text-brand-500"></i> ${prof.rating}</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1 font-semibold">${prof.deliveriesCount} successful deliveries • Verified Flyer</p>
+              <div class="flex flex-wrap gap-1.5 mt-2.5">
+                ${verifHtml}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biography -->
+        <div>
+          <h4 class="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-2">Biography</h4>
+          <p class="text-xs text-slate-600 leading-relaxed bg-[#FAF8F5] border border-brand-100/50 rounded-xl p-4">${prof.bio}</p>
+        </div>
+
+        <!-- Upcoming Travel & Flight details -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="border border-brand-100 rounded-xl p-4 shadow-sm bg-white">
+            <span class="text-[9px] font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1 mb-2">
+              <i data-lucide="plane-takeoff" class="w-3 h-3"></i> Upcoming Flight
+            </span>
+            <div class="space-y-2">
+              <div>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Flight Corridor</p>
+                <p class="text-xs font-semibold text-slate-800 mt-0.5">${routeText}</p>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-[11px]">
+                <div>
+                  <p class="text-[8px] font-bold text-slate-400 uppercase">Airline Flight</p>
+                  <p class="font-semibold text-slate-700">${targetTraveler.airline || 'Scheduled Flight'}</p>
+                </div>
+                <div>
+                  <p class="text-[8px] font-bold text-slate-400 uppercase">Departure Date</p>
+                  <p class="font-semibold text-slate-700">${targetTraveler.flightDate || 'Pending Verify'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-brand-100 rounded-xl p-4 shadow-sm bg-white">
+            <span class="text-[9px] font-bold uppercase tracking-wider text-accent-700 flex items-center gap-1 mb-2">
+              <i data-lucide="weight" class="w-3 h-3"></i> Cargo Specs
+            </span>
+            <div class="space-y-2 text-[11px]">
+              <div>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Max Weight Capacity</p>
+                <p class="font-semibold text-slate-800">Up to ${targetTraveler.maxWeight || '10.0'} kg limit</p>
+              </div>
+              <div>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Disallowed Cargo Types</p>
+                <p class="font-semibold text-red-600 flex items-center gap-1 mt-0.5">
+                  <i data-lucide="shield-alert" class="w-3 h-3"></i> Liquids, unlabeled items, jewelry
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferred Categories list -->
+        <div>
+          <h4 class="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-2.5">Preferred Cargo Categories</h4>
+          <div class="flex flex-wrap gap-2">
+            ${allowedTags}
+          </div>
+        </div>
+
+        <!-- split pane traveler history & reviews -->
+        <div class="grid md:grid-cols-2 gap-6 pt-2">
+          <!-- Transit History -->
+          <div>
+            <h4 class="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-1">
+              <i data-lucide="history" class="w-3.5 h-3.5"></i> Transit History Logs
+            </h4>
+            <div class="space-y-1">
+              ${historyHtml}
+            </div>
+          </div>
+
+          <!-- Comments Ledger -->
+          <div>
+            <h4 class="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-1">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Sender Reviews
+            </h4>
+            <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1">
+              ${reviewsHtml}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="border-t border-brand-100 pt-5 mt-8 flex items-center gap-3">
+        <a href="https://wa.me/${targetTraveler.phone || '251911223344'}?text=${encodeURIComponent(`Hi ${prof.name}, I am looking for a traveler to carry a package from Addis/Dubai.`)}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 text-xs font-bold text-accent-700 bg-accent-50 border border-accent-100/80 rounded-xl px-4 py-3 hover:bg-accent-100 transition-colors" title="WhatsApp Contact">
+          <i data-lucide="phone" class="w-4 h-4"></i> WhatsApp
+        </a>
+        <a href="index.html?chat_flyer=${encodeURIComponent(prof.name)}" class="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-ink rounded-xl py-3 hover:bg-brand-500 hover:text-ink transition-all shadow-sm">
+          <i data-lucide="message-circle" class="w-4 h-4"></i> Chat Flyer &amp; Propose Package
+        </a>
+      </div>
+    `;
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
+  // Start executing rendering routines on page load
+  window.onload = function() {
+    init();
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Souq &amp; Sheba — Package Request Directory</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.474.0/dist/umd/lucide.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#1C160F',
+          brand: {
+            50:'#FDF8EC',100:'#FAEFD1',200:'#F3DDA0',300:'#E9C766',
+            400:'#DBAE3E',500:'#C6952A',600:'#A87A1E',
+            700:'#8A6118',800:'#6B4A14',900:'#4A330E'
+          },
+          accent: {
+            50:'#EAF7EF',100:'#CDEEDA',200:'#9EDCB8',300:'#6BC896',
+            400:'#3FA66B',500:'#1F8F55',600:'#157043',
+            700:'#0F5934',800:'#0B4527',900:'#07321C'
+          }
+        },
+        fontFamily: {
+          display: ['Manrope','sans-serif'],
+          body: ['Inter','sans-serif']
+        },
+        boxShadow: {
+          card: '0 1px 3px rgba(28,22,15,0.04), 0 10px 30px -15px rgba(28,22,15,0.08)',
+          cardHover: '0 10px 20px -8px rgba(28,22,15,0.08), 0 24px 48px -12px rgba(198,149,42,0.22)'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; padding-bottom: 64px; }
+  @media (min-width: 640px){ body { padding-bottom: 0; } }
+  h1,h2,h3,h4,.font-display { font-family: 'Manrope', sans-serif; }
+  .scrollbar-none::-webkit-scrollbar{ display:none; }
+  .scrollbar-none{ -ms-overflow-style:none; scrollbar-width:none; }
+</style>
+</head>
+<body class="bg-[#FAF8F5] text-ink antialiased">
+
+<!-- ============ HEADER ============ -->
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-brand-100/50">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8 h-[72px] flex items-center justify-between gap-6">
+    <a href="index.html" class="flex items-center gap-2 shrink-0">
+      <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-800 flex items-center justify-center shadow-md">
+        <i data-lucide="plane-takeoff" class="w-5 h-5 text-white"></i>
+      </span>
+      <div class="flex flex-col">
+        <span class="font-display text-xl font-800 tracking-tight leading-none">Souq<span class="text-brand-600">&amp;</span>Sheba</span>
+        <span class="text-[9px] font-semibold uppercase tracking-wider text-slate-500 mt-0.5">P2P Delivery</span>
+      </div>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-8 text-[15px] font-medium text-slate-600">
+      <a href="index.html" class="hover:text-brand-600 transition-colors">Home</a>
+      <a href="packages.html" class="font-semibold text-brand-600 transition-colors">Search Packages</a>
+      <a href="travelers.html" class="hover:text-brand-600 transition-colors">Find Travelers</a>
+      <a href="index.html?view=dashboard" class="hover:text-brand-600 transition-colors">My Dashboard</a>
+      <a href="index.html#safety" class="hover:text-brand-600 transition-colors">Safety Rules</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="hidden sm:flex items-center gap-1 text-xs font-bold text-slate-600 bg-brand-50 border border-brand-200/55 rounded-xl px-4 py-2.5 hover:bg-brand-100 transition-colors">
+        <i data-lucide="layout" class="w-4 h-4"></i>
+        <span>Go to Workspace</span>
+      </a>
+      <a href="index.html?post=true" class="flex items-center gap-1.5 text-sm font-semibold text-white bg-ink px-4 py-2.5 rounded-xl hover:bg-brand-600 hover:text-ink transition-all duration-200 shadow-sm">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Request Delivery</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MAIN SEARCH PANEL ============ -->
+<main class="max-w-7xl mx-auto px-5 lg:px-8 py-8">
+  <div class="mb-8">
+    <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1 mb-1">
+      <i data-lucide="search" class="w-3.5 h-3.5"></i> Directory Search
+    </span>
+    <h1 class="font-display text-3xl font-800 text-ink">Package Request Directory</h1>
+    <p class="text-slate-500 text-sm mt-1">Refine filters to match lightweight shipment tasks aligning with your travel schedule.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-12 gap-8 items-start">
+    <!-- FILTER SIDEBAR (4 cols) -->
+    <aside class="lg:col-span-4 bg-white rounded-2xl border border-brand-100 p-6 shadow-card space-y-6">
+      <div class="flex items-center justify-between border-b border-brand-50 pb-3">
+        <h3 class="font-display font-bold text-base text-ink flex items-center gap-2">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-brand-600"></i> Refine Search
+        </h3>
+        <button onclick="resetAllFilters()" class="text-xs font-semibold text-slate-400 hover:text-brand-600 flex items-center gap-1">
+          <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Clear all
+        </button>
+      </div>
+
+      <!-- Route Toggle Filters -->
+      <div class="space-y-2">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Flight Route Corridor</label>
+        <div class="grid grid-cols-1 gap-2">
+          <label class="border border-brand-100 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-brand-50/20 transition-colors">
+            <span class="text-xs font-semibold text-slate-700">All Routes</span>
+            <input type="radio" name="route-filter" value="ALL" checked onchange="handleRouteSelect(this.value)" class="accent-brand-600 h-4 w-4" />
+          </label>
+          <label class="border border-brand-100 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-brand-50/20 transition-colors">
+            <span class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">Addis (ADD) ➔ Dubai (DXB)</span>
+            <input type="radio" name="route-filter" value="ADD_TO_DXB" onchange="handleRouteSelect(this.value)" class="accent-brand-600 h-4 w-4" />
+          </label>
+          <label class="border border-brand-100 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-brand-50/20 transition-colors">
+            <span class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">Dubai (DXB) ➔ Addis (ADD)</span>
+            <input type="radio" name="route-filter" value="DXB_TO_ADD" onchange="handleRouteSelect(this.value)" class="accent-brand-600 h-4 w-4" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Categories Checklists -->
+      <div class="space-y-2">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Categories</label>
+        <div class="grid grid-cols-1 gap-2 max-h-[220px] overflow-y-auto pr-1" id="categories-checklist">
+          <!-- Render dynamically -->
+        </div>
+      </div>
+
+      <!-- Weight Slider bounds -->
+      <div class="space-y-2.5">
+        <div class="flex justify-between items-center text-xs">
+          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Max Package Weight</label>
+          <span id="weight-slider-val" class="font-bold text-brand-600 bg-brand-50 border border-brand-100 px-2 py-0.5 rounded">10.0 kg</span>
+        </div>
+        <input type="range" id="weight-slider" min="0.2" max="10" step="0.2" value="10" oninput="handleWeightSlider(this.value)" class="w-full accent-brand-500 h-1 bg-slate-100 rounded-lg cursor-pointer" />
+        <div class="flex justify-between text-[9px] text-slate-400 font-semibold">
+          <span>0.2 kg</span>
+          <span>5.0 kg</span>
+          <span>10.0 kg</span>
+        </div>
+      </div>
+
+      <!-- Reward Minimum Threshold input -->
+      <div class="space-y-2">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Minimum Reward (AED or ETB equivalent)</label>
+        <div class="relative flex items-center">
+          <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-slate-400 absolute left-3"></i>
+          <input type="number" id="reward-min" placeholder="e.g. 100" oninput="handleMinReward(this.value)" class="w-full border border-brand-200/80 rounded-xl pl-9 pr-3 py-2 text-xs outline-none focus:border-brand-500" />
+        </div>
+        <p class="text-[9px] text-slate-400">Filters out requests with cash rewards below this numeric threshold.</p>
+      </div>
+    </aside>
+
+    <!-- CARD GRID FEED (8 cols) -->
+    <section class="lg:col-span-8 space-y-6">
+      <!-- Search & Sort Top Toolbar -->
+      <div class="bg-white border border-brand-100 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <!-- Text Search -->
+        <div class="relative flex items-center bg-[#FAF9F6] border border-brand-200/40 rounded-xl px-3.5 py-2.5 max-w-sm w-full">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 mr-2 shrink-0"></i>
+          <input id="search-input" type="text" oninput="handleSearchText(this.value)" placeholder="Search packages (e.g., coffee, docs)" class="text-xs outline-none text-slate-700 bg-transparent w-full" />
+        </div>
+
+        <!-- Sort dropdown -->
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+          <span class="text-xs text-slate-400 font-semibold">Sort by:</span>
+          <select id="sort-select" onchange="handleSortSelect(this.value)" class="border border-brand-200/80 bg-white rounded-xl px-3 py-2 text-xs text-slate-700 outline-none focus:border-brand-500">
+            <option value="latest">Latest Posted</option>
+            <option value="reward_desc">Reward: High to Low</option>
+            <option value="weight_asc">Weight: Lightest first</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results meta -->
+      <div class="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider pb-1">
+        <span id="results-count-label">0 packages match criteria</span>
+      </div>
+
+      <!-- Grid feed -->
+      <div id="packages-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Empty state -->
+      <div id="directory-empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-brand-100/60 p-8 shadow-sm">
+        <div class="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i data-lucide="package-search" class="w-8 h-8 text-brand-500"></i>
+        </div>
+        <h3 class="font-display text-lg font-bold text-ink mb-1">No requests match these filters</h3>
+        <p class="text-slate-500 text-sm max-w-sm mx-auto">Try loosening your weight boundaries, clearing selected categories, or lowering your reward limits.</p>
+        <button onclick="resetAllFilters()" class="mt-4 bg-brand-50 hover:bg-brand-100 text-brand-800 text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+          Reset Filters
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ============ PUBLIC USER PROFILE MODAL ============ -->
+<div id="profile-modal" class="hidden fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl border border-brand-100 max-w-lg w-full max-h-[85vh] overflow-y-auto flex flex-col">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-brand-100 shrink-0">
+      <h3 class="font-display text-base font-bold text-ink">Member Profile</h3>
+      <button onclick="closeProfileModal()" class="w-8 h-8 rounded-full hover:bg-brand-50 flex items-center justify-center text-slate-500 hover:text-ink transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-6" id="profile-modal-body"></div>
+  </div>
+</div>
+
+<!-- ============ PACKAGE DETAIL MODAL ============ -->
+<div id="package-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+  <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-brand-100 flex flex-col max-h-[90vh]">
+    <div class="relative h-48 bg-slate-100 shrink-0">
+      <img id="pkg-modal-img" src="" class="w-full h-full object-cover" />
+      <button onclick="closePackageModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-ink/80 hover:bg-ink text-white flex items-center justify-center transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <span id="pkg-modal-badge" class="absolute bottom-4 left-4 text-xs font-bold bg-brand-500 text-ink px-2.5 py-1 rounded-full shadow-sm">Category</span>
+    </div>
+    
+    <div class="p-6 overflow-y-auto space-y-4 flex-1">
+      <div class="flex items-center justify-between">
+        <span id="pkg-modal-route" class="text-xs font-extrabold uppercase tracking-wide text-brand-600">ADD ➔ DXB</span>
+        <span id="pkg-modal-weight" class="text-xs font-semibold text-slate-500">2.5 kg</span>
+      </div>
+      <h2 id="pkg-modal-title" class="font-display font-800 text-xl text-ink">Package Title</h2>
+      <p id="pkg-modal-desc" class="text-xs text-slate-600 leading-relaxed bg-[#FAF8F5] border border-brand-100/50 rounded-xl p-4">Description...</p>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="border border-brand-50 rounded-xl p-3.5 bg-slate-50/50">
+          <p class="text-[8px] font-bold text-slate-400 uppercase">Payout Reward</p>
+          <p id="pkg-modal-reward" class="font-display font-800 text-brand-600 text-lg mt-0.5">AED 150</p>
+        </div>
+        <div class="border border-brand-50 rounded-xl p-3.5 bg-slate-50/50">
+          <p class="text-[8px] font-bold text-slate-400 uppercase">Delivery Deadline</p>
+          <p id="pkg-modal-deadline" class="font-semibold text-slate-700 text-xs mt-1">Needed by July 28</p>
+        </div>
+      </div>
+
+      <div class="border-t border-brand-50 pt-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img id="pkg-modal-avatar" src="" class="w-10 h-10 rounded-full object-cover border border-brand-100" />
+          <div>
+            <p id="pkg-modal-sender" class="font-bold text-xs text-ink">Sender Name</p>
+            <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Package Poster</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span id="pkg-modal-rating" class="inline-flex items-center text-xs font-bold text-brand-600"></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-4 border-t border-brand-50 bg-slate-50 flex items-center gap-3 shrink-0">
+      <a id="pkg-modal-wa" href="" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 text-xs font-bold text-accent-700 bg-white border border-brand-100 rounded-xl px-4 py-3 hover:bg-accent-50 transition-colors" title="WhatsApp Contact">
+        <i data-lucide="phone" class="w-4 h-4"></i> WhatsApp
+      </a>
+      <button id="pkg-modal-action-btn" class="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-ink rounded-xl py-3 hover:bg-brand-500 hover:text-ink transition-all shadow-sm">
+        Offer to Carry
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function safeCreateIcons() {
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      lucide.createIcons();
+    }
+  }
+
+  const categories = [
+    { name: 'Documents', icon: 'file-text' },
+    { name: 'Coffee & Spices', icon: 'coffee' },
+    { name: 'Electronics', icon: 'smartphone' },
+    { name: 'Clothing & Textiles', icon: 'shirt' },
+    { name: 'Cosmetics & Beauty', icon: 'sparkles' },
+    { name: 'Medicine & Healthcare', icon: 'pill' },
+    { name: 'Personal Gifts', icon: 'gift' },
+    { name: 'Other Items', icon: 'package' }
+  ];
+
+  const defaultRequests = [
+    {
+      id: 'r1',
+      title: 'Sealed Yirgacheffe Coffee Bags (5kg)',
+      desc: 'Freshly roasted, organic whole bean coffee. Sealed bags. Delivery needed to Deira or Dubai Marina. High priority.',
+      sender: 'Kaleb T.',
+      route: 'ADD_TO_DXB',
+      weight: '5.0',
+      reward: 'AED 150',
+      category: 'Coffee & Spices',
+      deadline: 'Needed by July 28, 2026',
+      img: 'photo-1447933601403-0c6688de566e',
+      status: 'pending',
+      phone: '251911223344',
+      isCustom: false
+    },
+    {
+      id: 'r2',
+      title: 'iPhone 15 Pro Max (Sealed Box)',
+      desc: 'Bought from Apple Store Dubai. Needs delivery to Addis Ababa. I will pay cash reward upon meeting at Bole airport lobby.',
+      sender: 'Sarah Al-M.',
+      route: 'DXB_TO_ADD',
+      weight: '0.4',
+      reward: 'ETB 4,000',
+      category: 'Electronics',
+      deadline: 'Needed by August 2, 2026',
+      img: 'photo-1592286927505-1def25115558',
+      status: 'pending',
+      phone: '971501234567',
+      isCustom: false
+    },
+    {
+      id: 'r3',
+      title: 'Legal Contract Documents',
+      desc: 'Urgent company document folder. Requires traveler flight today/tomorrow. Weight is less than 200g, very light envelope.',
+      sender: 'Abdi K.',
+      route: 'ADD_TO_DXB',
+      weight: '0.2',
+      reward: 'AED 200',
+      category: 'Documents',
+      deadline: 'Urgent - by July 22, 2026',
+      img: 'photo-1450133064473-71024230f91b',
+      status: 'pending',
+      phone: '251911987654',
+      isCustom: false
+    },
+    {
+      id: 'r4',
+      title: 'Traditional Habesha Dresses (Wedding)',
+      desc: '2 sets of handmade traditional clothes for a wedding ceremony in Dubai. Cleanly folded in garment bags, ready for handover.',
+      sender: 'Marta W.',
+      route: 'ADD_TO_DXB',
+      weight: '2.5',
+      reward: 'AED 120',
+      category: 'Clothing & Textiles',
+      deadline: 'Needed by August 5, 2026',
+      img: 'photo-1595777457583-95e059d581b8',
+      status: 'pending',
+      phone: '251911555444',
+      isCustom: false
+    },
+    {
+      id: 'r5',
+      title: 'Oud Perfume Bottles & Bakhoor',
+      desc: 'Sealed luxury Arabian scents purchased in Deira Souq, Dubai. Ship to Bole Medhanialem family.',
+      sender: 'Fatima H.',
+      route: 'DXB_TO_ADD',
+      weight: '1.2',
+      reward: 'ETB 3,000',
+      category: 'Cosmetics & Beauty',
+      deadline: 'Needed by August 10, 2026',
+      img: 'photo-1541643600914-78b084683601',
+      status: 'pending',
+      phone: '971505556667',
+      isCustom: false
+    }
+  ];
+
+  const defaultProfiles = {
+    'Kaleb T.': {
+      name: 'Kaleb T.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+      rating: '4.8',
+      deliveriesCount: 8,
+      bio: 'Regular exporter and business consultant traveling between Addis and UAE twice a month. Focused on agricultural trade.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: { route: 'ADD ➔ DXB', date: 'July 28, 2026', flight: 'Emirates EK724' },
+      reviews: [
+        { reviewer: 'Dawit G.', rating: 5, comment: 'Abdi carried my coffee samples securely. Great communication.', date: 'July 10, 2026' }
+      ]
+    },
+    'Sarah Al-M.': {
+      name: 'Sarah Al-M.',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      rating: '5.0',
+      deliveriesCount: 14,
+      bio: 'E-commerce logistics manager. I fly frequently to inspect supply lines and visit family.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: { route: 'DXB ➔ ADD', date: 'August 2, 2026', flight: 'FlyDubai FZ803' },
+      reviews: [
+        { reviewer: 'Solomon K.', rating: 5, comment: 'Sarah carried a sealed laptop safely.', date: 'July 05, 2026' }
+      ]
+    },
+    'Abdi K.': {
+      name: 'Abdi K.',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80',
+      rating: '4.9',
+      deliveriesCount: 5,
+      bio: 'Frequent flyer, travel primarily for private import lines.',
+      verifications: { id: true, flight: false, phone: true },
+      upcomingTrip: null,
+      reviews: []
+    },
+    'Marta W.': {
+      name: 'Marta W.',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
+      rating: '4.7',
+      deliveriesCount: 3,
+      bio: 'Textile artisan and designer in Addis Ababa. I send sample garments to boutique malls.',
+      verifications: { id: true, flight: true, phone: false },
+      upcomingTrip: null,
+      reviews: []
+    },
+    'Fatima H.': {
+      name: 'Fatima H.',
+      avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80',
+      rating: '4.9',
+      deliveriesCount: 11,
+      bio: 'Boutique owner based in Deira Souq, Dubai. Transporting incense and cosmetics.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: null,
+      reviews: []
+    }
+  };
+
+  // State Management
+  let requests = JSON.parse(localStorage.getItem('ss_requests')) || defaultRequests;
+  let profiles = JSON.parse(localStorage.getItem('ss_profiles')) || defaultProfiles;
+
+  let filterRoute = 'ALL';
+  let filterCategories = [];
+  let filterMaxWeight = 10;
+  let filterMinReward = 0;
+  let filterSearchText = '';
+  let activeSort = 'latest';
+
+  // Initialize
+  function init() {
+    renderCategoriesChecklist();
+    renderDirectory();
+    safeCreateIcons();
+  }
+
+  // Render Sidebar Checkboxes
+  function renderCategoriesChecklist() {
+    const container = document.getElementById('categories-checklist');
+    container.innerHTML = categories.map(cat => `
+      <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer hover:text-brand-600 transition-colors py-1">
+        <input type="checkbox" value="${cat.name}" onchange="handleCategoryToggle(this)" class="accent-brand-600 rounded h-4 w-4" />
+        <span>${cat.name}</span>
+      </label>
+    `).join('');
+  }
+
+  // Filter actions
+  window.handleRouteSelect = function(route) {
+    filterRoute = route;
+    renderDirectory();
+  };
+
+  window.handleCategoryToggle = function(input) {
+    if (input.checked) {
+      filterCategories.push(input.value);
+    } else {
+      filterCategories = filterCategories.filter(c => c !== input.value);
+    }
+    renderDirectory();
+  };
+
+  window.handleWeightSlider = function(val) {
+    filterMaxWeight = parseFloat(val);
+    document.getElementById('weight-slider-val').textContent = `${filterMaxWeight.toFixed(1)} kg`;
+    renderDirectory();
+  };
+
+  window.handleMinReward = function(val) {
+    filterMinReward = val ? parseFloat(val) : 0;
+    renderDirectory();
+  };
+
+  window.handleSearchText = function(val) {
+    filterSearchText = val.toLowerCase().trim();
+    renderDirectory();
+  };
+
+  window.handleSortSelect = function(val) {
+    activeSort = val;
+    renderDirectory();
+  };
+
+  window.resetAllFilters = function() {
+    filterRoute = 'ALL';
+    filterCategories = [];
+    filterMaxWeight = 10;
+    filterMinReward = 0;
+    filterSearchText = '';
+    activeSort = 'latest';
+
+    // Reset DOM inputs
+    document.querySelectorAll('input[name="route-filter"]').forEach(r => r.checked = r.value === 'ALL');
+    document.querySelectorAll('#categories-checklist input[type="checkbox"]').forEach(c => c.checked = false);
+    
+    document.getElementById('weight-slider').value = 10;
+    document.getElementById('weight-slider-val').textContent = '10.0 kg';
+    
+    document.getElementById('reward-min').value = '';
+    document.getElementById('search-input').value = '';
+    document.getElementById('sort-select').value = 'latest';
+
+    renderDirectory();
+  };
+
+  // Convert reward string (e.g. AED 120 or ETB 4,000) to raw number for sorting
+  function parseRewardVal(rewardStr) {
+    const match = rewardStr.replace(/[^0-9]/g, '');
+    return match ? parseFloat(match) : 0;
+  }
+
+  // Render matching cards
+  function renderDirectory() {
+    const grid = document.getElementById('packages-grid');
+    const emptyState = document.getElementById('directory-empty-state');
+
+    // Filtering logic
+    let filtered = requests.filter(r => {
+      const routeMatch = filterRoute === 'ALL' || r.route === filterRoute;
+      const catMatch = filterCategories.length === 0 || filterCategories.includes(r.category);
+      const weightMatch = parseFloat(r.weight) <= filterMaxWeight;
+      
+      const numReward = parseRewardVal(r.reward);
+      const rewardMatch = numReward >= filterMinReward;
+
+      const searchMatch = !filterSearchText || 
+                          r.title.toLowerCase().includes(filterSearchText) || 
+                          r.desc.toLowerCase().includes(filterSearchText) ||
+                          r.category.toLowerCase().includes(filterSearchText);
+
+      return routeMatch && catMatch && weightMatch && rewardMatch && searchMatch;
+    });
+
+    // Sorting logic
+    if (activeSort === 'reward_desc') {
+      filtered.sort((a, b) => parseRewardVal(b.reward) - parseRewardVal(a.reward));
+    } else if (activeSort === 'weight_asc') {
+      filtered.sort((a, b) => parseFloat(a.weight) - parseFloat(b.weight));
+    } else {
+      // Default 'latest' (cust first, then initial)
+      filtered.sort((a, b) => {
+        const idA = a.id.startsWith('cust_') ? parseFloat(a.id.split('_')[1]) : 0;
+        const idB = b.id.startsWith('cust_') ? parseFloat(b.id.split('_')[1]) : 0;
+        return idB - idA;
+      });
+    }
+
+    document.getElementById('results-count-label').textContent = `${filtered.length} package${filtered.length === 1 ? '' : 's'} match criteria`;
+
+    if (filtered.length === 0) {
+      grid.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      return;
+    }
+
+    grid.classList.remove('hidden');
+    emptyState.classList.add('hidden');
+
+    grid.innerHTML = filtered.map(item => {
+      const isAccepted = item.status !== 'pending';
+      const statusText = item.status === 'accepted' ? 'Matched Traveler' 
+                       : item.status === 'in-transit' ? 'In Transit'
+                       : item.status === 'delivered' ? 'Delivered' 
+                       : 'Waiting for Traveler';
+                       
+      let statusBadgeClass = 'bg-brand-100 text-brand-900';
+      if (item.status === 'accepted') statusBadgeClass = 'bg-accent-100 text-accent-800';
+      if (item.status === 'in-transit') statusBadgeClass = 'bg-amber-100 text-amber-800';
+      if (item.status === 'delivered') statusBadgeClass = 'bg-slate-200 text-slate-700';
+
+      const routeText = item.route === 'ADD_TO_DXB' 
+        ? '<span class="text-xs font-bold flex items-center gap-1">ADD ➔ DXB</span>'
+        : '<span class="text-xs font-bold flex items-center gap-1">DXB ➔ ADD</span>';
+
+      const profileObj = profiles[item.sender] || profiles['Kaleb T.'];
+
+      return `
+        <div class="group bg-white rounded-2xl border border-brand-100 shadow-card hover:shadow-cardHover transition-all flex flex-col">
+          <!-- Clickable Area -->
+          <div onclick="openPackageModal('${item.id}')" class="cursor-pointer flex flex-col flex-1">
+            <div class="relative h-36 overflow-hidden shrink-0">
+              <img src="https://images.unsplash.com/${item.img}?auto=format&fit=crop&w=480&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+              <span class="absolute top-2.5 left-2.5 text-[9px] font-bold uppercase tracking-wider ${statusBadgeClass} px-2 py-0.5 rounded-full shadow-xs">
+                ${statusText}
+              </span>
+              <span class="absolute bottom-2.5 right-2.5 text-[10px] font-bold bg-white/90 backdrop-blur text-ink px-2 py-0.5 rounded flex items-center gap-1">
+                <i data-lucide="weight" class="w-3 h-3 text-slate-500"></i> ${item.weight} kg
+              </span>
+            </div>
+
+            <div class="p-4 pb-0 flex flex-col flex-1">
+              <div class="flex items-center justify-between mb-2">
+                ${routeText}
+                <span class="text-[9px] font-bold bg-slate-50 text-slate-500 border border-slate-100 rounded px-1.5 py-0.5">${item.category}</span>
+              </div>
+
+              <h3 class="text-sm font-bold text-ink leading-snug truncate" title="${item.title}">${item.title}</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed flex-1">${item.desc}</p>
+
+              <div class="border-t border-brand-50 pt-3 mt-3 flex flex-col justify-between">
+                <p class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Reward</p>
+                <p class="font-display font-800 text-brand-600 text-base leading-tight">${item.reward}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Non-clickable actions -->
+          <div class="p-4 pt-0">
+            <div class="pt-2 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-1.5 shrink-0 w-full">
+                <a href="https://wa.me/${item.phone}?text=${encodeURIComponent(`Hi ${item.sender}, I am interested in carrying your package request "${item.title}" on Souq & Sheba.`)}" target="_blank" rel="noopener" class="w-8 h-8 rounded-xl bg-accent-50 hover:bg-accent-100 flex items-center justify-center transition-colors border border-accent-100" title="WhatsApp">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-accent-700"></i>
+                </a>
+                <a href="index.html?offer=${item.id}" class="flex-1 text-center bg-ink hover:bg-brand-500 hover:text-ink text-white rounded-xl py-2 text-xs font-bold transition-all flex items-center justify-center gap-1">
+                  Offer to Carry
+                </a>
+              </div>
+            </div>
+
+            <!-- Profile Info Clickable -->
+            <div onclick="openPublicProfile('${item.sender}')" class="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-brand-50/50 cursor-pointer">
+              <img src="${profileObj.avatar}" class="w-5 h-5 rounded-full object-cover shrink-0" />
+              <div class="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
+                <span>By ${profileObj.name}</span>
+                <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+                <span class="flex items-center text-brand-600 font-bold"><i data-lucide="star" class="w-2.5 h-2.5 fill-brand-500 text-brand-500 mr-0.5"></i> ${profileObj.rating}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    safeCreateIcons();
+  }
+
+  // ============ PUBLIC USER PROFILE VIEWER MODAL ============
+
+  window.openPublicProfile = function(userName) {
+    const prof = profiles[userName];
+    if (!prof) return;
+
+    const modal = document.getElementById('profile-modal');
+    const body = document.getElementById('profile-modal-body');
+
+    const badgesHtml = [
+      { key: 'phone', label: 'Mobile Number Verified', icon: 'phone' },
+      { key: 'id', label: 'Passport ID Document Confirmed', icon: 'file-check-2' },
+      { key: 'flight', label: 'Boarding Pass/Itinerary Checked', icon: 'plane' }
+    ].map(b => {
+      const hasBadge = prof.verifications[b.key];
+      return `
+        <div class="flex items-center justify-between border rounded-xl p-2 text-[11px] font-semibold ${hasBadge ? 'text-accent-600 bg-accent-50 border-accent-100' : 'text-slate-300 border-slate-100 opacity-50'}">
+          <span class="flex items-center gap-1.5"><i data-lucide="${b.icon}" class="w-3.5 h-3.5"></i> ${b.label}</span>
+          <i data-lucide="${hasBadge ? 'check-circle-2' : 'x-circle'}" class="w-3.5 h-3.5 shrink-0 ${hasBadge ? 'text-accent-700' : 'text-slate-300'}"></i>
+        </div>
+      `;
+    }).join('');
+
+    const itineraryHtml = prof.upcomingTrip 
+      ? `
+        <div class="bg-brand-50 border border-brand-200 rounded-2xl p-4">
+          <p class="text-[9px] font-bold text-brand-800 uppercase tracking-wider mb-2">Upcoming travel itinerary</p>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold text-ink">${prof.upcomingTrip.route}</p>
+              <p class="text-[10px] text-slate-500">${prof.upcomingTrip.flight}</p>
+            </div>
+            <span class="text-xs font-semibold text-brand-600 bg-white border border-brand-200 px-2.5 py-1 rounded-lg">${prof.upcomingTrip.date}</span>
+          </div>
+        </div>
+      `
+      : `<p class="text-xs text-slate-400 italic bg-slate-50/50 rounded-xl p-3 border border-slate-100 text-center">No upcoming verified flight trips scheduled.</p>`;
+
+    const reviewsHtml = prof.reviews && prof.reviews.length > 0 
+      ? prof.reviews.map(r => `
+        <div class="border border-brand-50 bg-brand-50/20 rounded-xl p-3 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-ink">${r.reviewer}</span>
+            <span class="text-[10px] text-slate-400 font-semibold">${r.date}</span>
+          </div>
+          <div class="flex items-center text-brand-500 mb-1">
+            ${Array.from({ length: r.rating }).map(() => `<i data-lucide="star" class="w-2.5 h-2.5 fill-brand-500 text-brand-500"></i>`).join('')}
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed italic">"${r.comment}"</p>
+        </div>
+      `).join('')
+      : `<p class="text-xs text-slate-400 italic text-center py-4">No community reviews received yet.</p>`;
+
+    body.innerHTML = `
+      <div class="flex items-center gap-4">
+        <img src="${prof.avatar}" class="w-14 h-14 rounded-full object-cover border-2 border-brand-200 shadow-sm" />
+        <div>
+          <h4 class="font-display text-base font-bold text-ink">${prof.name}</h4>
+          <div class="flex items-center gap-1.5 text-xs font-semibold mt-1">
+            <span class="flex items-center text-brand-600 font-bold"><i data-lucide="star" class="w-3.5 h-3.5 fill-brand-500 text-brand-500 mr-0.5"></i> ${prof.rating}</span>
+            <span class="text-slate-300">·</span>
+            <span class="text-slate-500">${prof.deliveriesCount} successful deliveries</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">About</h5>
+        <p class="text-xs text-slate-500 leading-relaxed">${prof.bio || 'No bio provided.'}</p>
+      </div>
+
+      <div class="space-y-1.5">
+        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Travel Schedule</h5>
+        ${itineraryHtml}
+      </div>
+
+      <div class="space-y-2">
+        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Security Verifications</h5>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          ${badgesHtml}
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Community Feedback</h5>
+        <div class="space-y-2">
+          ${reviewsHtml}
+        </div>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    safeCreateIcons();
+  };
+
+  window.closeProfileModal = function() {
+    document.getElementById('profile-modal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  };
+
+  window.openPackageModal = function(id) {
+    const item = requests.find(r => r.id === id);
+    if (!item) return;
+
+    const profileObj = profiles[item.sender] || profiles['Kaleb T.'];
+    const isAccepted = item.status !== 'pending';
+
+    document.getElementById('pkg-modal-img').src = `https://images.unsplash.com/${item.img}?auto=format&fit=crop&w=600&q=80`;
+    document.getElementById('pkg-modal-badge').textContent = item.category;
+    document.getElementById('pkg-modal-route').textContent = item.route === 'ADD_TO_DXB' ? 'Addis Ababa ➔ Dubai' : 'Dubai ➔ Addis Ababa';
+    document.getElementById('pkg-modal-weight').textContent = `${item.weight} kg`;
+    document.getElementById('pkg-modal-title').textContent = item.title;
+    document.getElementById('pkg-modal-desc').textContent = item.desc;
+    document.getElementById('pkg-modal-reward').textContent = item.reward;
+    document.getElementById('pkg-modal-deadline').textContent = item.deadline;
+    
+    document.getElementById('pkg-modal-avatar').src = profileObj.avatar;
+    document.getElementById('pkg-modal-sender').textContent = profileObj.name;
+    document.getElementById('pkg-modal-rating').innerHTML = `<i data-lucide="star" class="w-3 h-3 fill-brand-500 text-brand-500 mr-0.5"></i> ${profileObj.rating}`;
+
+    document.getElementById('pkg-modal-wa').href = `https://wa.me/${item.phone}?text=${encodeURIComponent(`Hi ${item.sender}, I am interested in carrying your package request "${item.title}" on Souq & Sheba.`)}`;
+
+    const actionBtn = document.getElementById('pkg-modal-action-btn');
+    if (isAccepted) {
+      actionBtn.innerHTML = `<i data-lucide="message-square" class="w-4 h-4"></i> Open Chat in Workspace`;
+      actionBtn.onclick = function() {
+        window.location.href = `index.html?chat_flyer=${encodeURIComponent(item.sender)}`;
+      };
+    } else {
+      actionBtn.innerHTML = `<i data-lucide="handshake" class="w-4 h-4"></i> Offer to Carry`;
+      actionBtn.onclick = function() {
+        window.location.href = `index.html?offer=${item.id}`;
+      };
+    }
+
+    document.getElementById('package-detail-modal').classList.remove('hidden');
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  };
+
+  window.closePackageModal = function() {
+    document.getElementById('package-detail-modal').classList.add('hidden');
+  };
+
+  init();
+</script>
+</body>
+</html>

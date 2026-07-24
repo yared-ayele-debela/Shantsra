@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1C160F;
+
+  --color-brand-50: #FDF8EC;
+  --color-brand-100: #FAEFD1;
+  --color-brand-200: #F3DDA0;
+  --color-brand-300: #E9C766;
+  --color-brand-400: #DBAE3E;
+  --color-brand-500: #C6952A;
+  --color-brand-600: #A87A1E;
+  --color-brand-700: #8A6118;
+  --color-brand-800: #6B4A14;
+  --color-brand-900: #4A330E;
+
+  --color-accent-50: #EAF7EF;
+  --color-accent-100: #CDEEDA;
+  --color-accent-200: #9EDCB8;
+  --color-accent-300: #6BC896;
+  --color-accent-400: #3FA66B;
+  --color-accent-500: #1F8F55;
+  --color-accent-600: #157043;
+  --color-accent-700: #0F5934;
+  --color-accent-800: #0B4527;
+  --color-accent-900: #07321C;
+
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --shadow-card: 0 1px 3px rgba(28,22,15,0.04), 0 10px 30px -15px rgba(28,22,15,0.08);
+  --shadow-cardHover: 0 10px 20px -8px rgba(28,22,15,0.08), 0 24px 48px -12px rgba(198,149,42,0.22);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #FAF8F5;
+  color: #1C160F;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Custom scrollbar hiding helper */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

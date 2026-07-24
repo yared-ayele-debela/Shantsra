@@ -1,7 +1,69 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\EmailCampaignController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\PackageCategoryController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
+use App\Http\Controllers\MarketingSubscriptionController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\ShipmentController;
+use App\Http\Controllers\Admin\TravelController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WebsiteSettingController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/unsubscribe/{token}', [MarketingSubscriptionController::class, 'unsubscribe'])->name('marketing.unsubscribe');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'create'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'store'])->name('login.store');
+    });
+
+    Route::middleware('admin.auth')->group(function () {
+        Route::post('/logout', [AdminAuthController::class, 'destroy'])->name('logout');
+
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
+
+        Route::get('/settings/website', [WebsiteSettingController::class, 'edit'])->name('settings.website.edit');
+        Route::put('/settings/website', [WebsiteSettingController::class, 'update'])->name('settings.website.update');
+
+        Route::get('/campaigns', [EmailCampaignController::class, 'index'])->name('campaigns.index');
+        Route::get('/campaigns/create', [EmailCampaignController::class, 'create'])->name('campaigns.create');
+        Route::post('/campaigns', [EmailCampaignController::class, 'store'])->name('campaigns.store');
+        Route::get('/campaigns/{campaign}', [EmailCampaignController::class, 'show'])->name('campaigns.show');
+        Route::post('/campaigns/{campaign}/send', [EmailCampaignController::class, 'send'])->name('campaigns.send');
+        Route::patch('/campaigns/{campaign}/cancel', [EmailCampaignController::class, 'cancel'])->name('campaigns.cancel');
+
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+        Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+        Route::patch('/users/{user}/id-document-status', [UserController::class, 'updateIdDocumentStatus'])->name('users.id-document-status');
+
+        Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
+        Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
+        Route::patch('/shipments/{shipment}/status', [ShipmentController::class, 'updateStatus'])->name('shipments.update-status');
+        Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])->name('shipments.destroy');
+
+        Route::resource('package-categories', PackageCategoryController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        Route::resource('subscription-plans', SubscriptionPlanController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        Route::get('/travels', [TravelController::class, 'index'])->name('travels.index');
+        Route::get('/travels/{travel}', [TravelController::class, 'show'])->name('travels.show');
+        Route::patch('/travels/{travel}/status', [TravelController::class, 'updateStatus'])->name('travels.update-status');
+
+        Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+        Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.update-status');
+
+        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+        Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    });
 });

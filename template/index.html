@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Souq &amp; Sheba — Peer-to-Peer Cross-Border Delivery (Ethiopia ⇄ UAE)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.474.0/dist/umd/lucide.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#1C160F',
+          brand: {
+            50:'#FDF8EC',100:'#FAEFD1',200:'#F3DDA0',300:'#E9C766',
+            400:'#DBAE3E',500:'#C6952A',600:'#A87A1E',
+            700:'#8A6118',800:'#6B4A14',900:'#4A330E'
+          },
+          accent: {
+            50:'#EAF7EF',100:'#CDEEDA',200:'#9EDCB8',300:'#6BC896',
+            400:'#3FA66B',500:'#1F8F55',600:'#157043',
+            700:'#0F5934',800:'#0B4527',900:'#07321C'
+          }
+        },
+        fontFamily: {
+          display: ['Manrope','sans-serif'],
+          body: ['Inter','sans-serif']
+        },
+        boxShadow: {
+          card: '0 1px 3px rgba(28,22,15,0.04), 0 10px 30px -15px rgba(28,22,15,0.08)',
+          cardHover: '0 10px 20px -8px rgba(28,22,15,0.08), 0 24px 48px -12px rgba(198,149,42,0.22)',
+          drawer: '-10px 0 30px -5px rgba(28,22,15,0.15)'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; padding-bottom: 64px; }
+  @media (min-width: 640px){ body { padding-bottom: 0; } }
+  h1,h2,h3,h4,.font-display { font-family: 'Manrope', sans-serif; }
+  .scrollbar-none::-webkit-scrollbar{ display:none; }
+  .scrollbar-none{ -ms-overflow-style:none; scrollbar-width:none; }
+  .route-pulse{ animation:route-pulse 2s infinite; }
+  @keyframes route-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.4); opacity: 0.3; }
+    100% { transform: scale(1); opacity: 0.8; }
+  }
+  .plane-flight {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: flight 6s linear infinite;
+  }
+  @keyframes flight {
+    to { stroke-dashoffset: 0; }
+  }
+  .chip.active{ background:#C6952A; color:#1C160F; border-color:#C6952A; }
+  .chat-bubble-user {
+    background: #C6952A;
+    color: #1C160F;
+    border-radius: 16px 16px 4px 16px;
+  }
+  .chat-bubble-them {
+    background: #F3ECE0;
+    color: #1C160F;
+    border-radius: 16px 16px 16px 4px;
+  }
+  #toast {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+  }
+  .dashboard-tab.active {
+    border-color: #C6952A;
+    color: #C6952A;
+  }
+</style>
+</head>
+<body class="bg-[#FAF8F5] text-ink antialiased">
+
+<!-- ============ HEADER ============ -->
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-brand-100/50">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8 h-[72px] flex items-center justify-between gap-6">
+    <a href="#" onclick="setView('explore')" class="flex items-center gap-2 shrink-0">
+      <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-800 flex items-center justify-center shadow-md">
+        <i data-lucide="plane-takeoff" class="w-5 h-5 text-white"></i>
+      </span>
+      <div class="flex flex-col">
+        <span class="font-display text-xl font-800 tracking-tight leading-none">Souq<span class="text-brand-600">&amp;</span>Sheba</span>
+        <span class="text-[9px] font-semibold uppercase tracking-wider text-slate-500 mt-0.5">P2P Delivery</span>
+      </div>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-8 text-[15px] font-medium text-slate-600">
+      <button onclick="setView('explore')" id="nav-btn-explore" class="font-semibold text-brand-600 transition-colors">Find Requests</button>
+      <a href="packages.html" class="hover:text-brand-600 transition-colors">Search Packages</a>
+      <a href="travelers.html" class="hover:text-brand-600 transition-colors font-medium">Find Travelers</a>
+      <button onclick="setView('dashboard')" id="nav-btn-dashboard" class="font-semibold text-slate-600 hover:text-brand-600 transition-colors">My Dashboard</button>
+     
+      <a href="#safety" class="hover:text-brand-600 transition-colors">Safety Rules</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <button onclick="toggleChatDrawer(true)" class="relative flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-brand-600 px-3 py-2 rounded-lg hover:bg-brand-50/50 transition-colors">
+        <i data-lucide="message-square" class="w-4 h-4"></i> Chat
+        <span id="unread-chat-count" class="hidden min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand-500 text-ink text-[10px] font-bold flex items-center justify-center">0</span>
+      </button>
+      
+      <button onclick="openPostModal()" class="flex items-center gap-1.5 text-sm font-semibold text-white bg-ink px-4 py-2.5 rounded-xl hover:bg-brand-600 hover:text-ink transition-all duration-200 shadow-sm">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Request Delivery</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ EXPLORE VIEW ============ -->
+<div id="view-explore" class="block">
+  <!-- ============ HERO ============ -->
+  <section class="relative overflow-hidden bg-ink py-16 sm:py-24 text-white">
+    <div class="absolute inset-0 bg-gradient-to-br from-accent-950 via-ink to-ink opacity-95"></div>
+    <div class="absolute -top-24 -right-24 w-[450px] h-[450px] bg-brand-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-32 -left-24 w-[420px] h-[420px] bg-accent-500/10 rounded-full blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-7 text-center lg:text-left">
+        <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase text-brand-300 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-300"></i> Peer-to-Peer Shipping (Addis Ababa ⇄ Dubai)
+        </span>
+        <h1 class="font-display mt-6 text-4xl sm:text-5xl lg:text-6xl font-800 tracking-tight leading-[1.1] text-white">
+          Send packages via travelers,<br/>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-accent-300">fly and earn rewards.</span>
+        </h1>
+        <p class="mt-6 text-slate-300 text-base sm:text-lg max-w-xl mx-auto lg:mx-0">
+          Got flight tickets? Deliver local packages between Ethiopia and UAE to subsidize your trip. Need something shipped quickly? Find a verified traveler heading your way.
+        </p>
+
+        <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+          <button onclick="openPostModal()" class="bg-brand-500 hover:bg-brand-400 text-ink font-semibold px-6 py-3.5 rounded-xl transition-all shadow-lg flex items-center gap-2">
+            <i data-lucide="package-plus" class="w-5 h-5"></i> Send a Package
+          </button>
+          <a href="#requests-section" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-xl transition-all flex items-center gap-2">
+            <i data-lucide="search" class="w-5 h-5"></i> Browse Requests
+          </a>
+        </div>
+      </div>
+
+      <!-- Active Route Map Visual Component -->
+      <div class="lg:col-span-5 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="compass" class="w-5 h-5 text-brand-400"></i>
+            <span class="text-sm font-semibold tracking-wide uppercase text-slate-200">Active Air Corridor</span>
+          </div>
+          <span class="text-xs bg-accent-500/20 text-accent-300 px-2 py-0.5 rounded-full font-medium">Live flight status</span>
+        </div>
+
+        <div class="relative w-full h-[180px] bg-slate-900/40 rounded-xl overflow-hidden border border-white/5 flex items-center justify-center">
+          <svg class="absolute inset-0 w-full h-full opacity-25" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="dot-pattern" width="16" height="16" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="1.5" fill="#ffffff" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#dot-pattern)" />
+          </svg>
+
+          <svg class="w-full h-[120px] px-6 z-10" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Patterns for circular map background images -->
+              <pattern id="pat-addis" x="0" y="0" width="1" height="1" patternContentUnits="objectBoundingBox">
+                <image href="images/ET_map.png" x="0" y="0" width="1" height="1" preserveAspectRatio="xMidYMid slice" />
+              </pattern>
+              <pattern id="pat-dubai" x="0" y="0" width="1" height="1" patternContentUnits="objectBoundingBox">
+                <image href="images/UAE_map.png" x="0" y="0" width="1" height="1" preserveAspectRatio="xMidYMid slice" />
+              </pattern>
+              <linearGradient id="flight-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#1F8F55" stop-opacity="0.1" />
+                <stop offset="50%" stop-color="#DBAE3E" stop-opacity="1" />
+                <stop offset="100%" stop-color="#C6952A" stop-opacity="0.2" />
+              </linearGradient>
+            </defs>
+
+            <!-- Addis Ababa Node with Map pattern fill -->
+            <circle cx="50" cy="85" r="20" fill="url(#pat-addis)" stroke="#1F8F55" stroke-width="1.5" />
+            <circle cx="50" cy="85" r="3.5" fill="#1F8F55" />
+            <circle cx="50" cy="85" r="8" stroke="#1F8F55" stroke-width="1.5" class="route-pulse origin-center" />
+            <text x="50" y="115" font-family="'Manrope', sans-serif" font-weight="bold" font-size="9" fill="#ffffff" text-anchor="middle">ADD (Addis)</text>
+
+            <!-- Dubai Node with Map pattern fill -->
+            <circle cx="270" cy="35" r="20" fill="url(#pat-dubai)" stroke="#C6952A" stroke-width="1.5" />
+            <circle cx="270" cy="35" r="3.5" fill="#C6952A" />
+            <circle cx="270" cy="35" r="8" stroke="#C6952A" stroke-width="1.5" class="route-pulse origin-center" />
+            <text x="270" y="10" font-family="'Manrope', sans-serif" font-weight="bold" font-size="9" fill="#ffffff" text-anchor="middle">DXB (Dubai)</text>
+
+            <!-- Flight Path Curve -->
+            <path id="flight-path" d="M 50 85 Q 160 25 270 35" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-linecap="round" />
+            <path d="M 50 85 Q 160 25 270 35" fill="none" stroke="url(#flight-gradient)" stroke-width="2" stroke-linecap="round" class="plane-flight" />
+
+            <!-- Flight travel indicator -->
+            <g>
+              <circle cx="160" cy="42.5" r="4" fill="#DBAE3E" class="animate-ping" />
+              <circle cx="160" cy="42.5" r="3" fill="#ffffff" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-4 text-center text-xs">
+          <div class="bg-white/5 rounded-lg p-2 border border-white/5">
+            <p class="text-slate-400">Total Active Requests</p>
+            <p id="stat-active-requests" class="text-lg font-bold font-display text-brand-300">0</p>
+          </div>
+          <div class="bg-white/5 rounded-lg p-2 border border-white/5">
+            <p class="text-slate-400">P2P Reward Pool</p>
+            <p class="text-lg font-bold font-display text-accent-300">AED 14,800+</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ROW 1: FEATURED PACKAGES ============ -->
+  <section class="max-w-7xl mx-auto px-5 lg:px-8 mt-12">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-accent-700 flex items-center gap-1.5 mb-1">
+          <i data-lucide="award" class="w-4 h-4 text-accent-700"></i> Featured Opportunities
+        </span>
+        <h2 class="font-display text-2xl font-800 text-ink">Urgent &amp; High-Reward Packages</h2>
+        <p class="text-slate-500 text-xs mt-1">Directly carry these packages on your flight to earn premium payout rewards.</p>
+      </div>
+      <span class="text-xs text-slate-400 font-semibold hidden sm:inline flex items-center gap-1">
+        <i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i> Scroll to browse
+      </span>
+    </div>
+    <div class="flex gap-6 overflow-x-auto scrollbar-none pb-4 -mx-5 px-5 lg:mx-0 lg:px-0" id="featured-requests-slider">
+      <!-- Dynamic featured requests rendered here -->
+    </div>
+  </section>
+
+  <!-- ============ MAIN SEARCH & FEED ============ -->
+  <section id="requests-section" class="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1 mb-1">
+          <i data-lucide="package" class="w-3.5 h-3.5"></i> Live Cargo List
+        </span>
+        <h2 class="font-display text-3xl font-800 text-ink">Package delivery requests</h2>
+        <p class="text-slate-500 text-sm mt-1">Browse requests from senders. Click user avatars to inspect profiles and verification histories.</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="inline-flex bg-white border border-brand-200/60 rounded-xl p-1 shadow-sm shrink-0">
+          <button onclick="setFilterRoute('ALL')" id="btn-route-all" class="route-filter-btn text-xs font-semibold px-4 py-2 rounded-lg transition-all bg-ink text-white">
+            All Routes
+          </button>
+          <button onclick="setFilterRoute('ADD_TO_DXB')" id="btn-route-add-dxb" class="route-filter-btn text-xs font-semibold px-4 py-2 rounded-lg transition-all text-slate-600 hover:bg-brand-50">
+            ADD ➔ DXB
+          </button>
+          <button onclick="setFilterRoute('DXB_TO_ADD')" id="btn-route-dxb-add" class="route-filter-btn text-xs font-semibold px-4 py-2 rounded-lg transition-all text-slate-600 hover:bg-brand-50">
+            DXB ➔ ADD
+          </button>
+        </div>
+
+        <div class="relative flex items-center bg-white border border-brand-200/60 rounded-xl px-3 py-1.5 shadow-sm max-w-xs flex-1">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 mr-2 shrink-0"></i>
+          <input oninput="handleSearch(this.value)" type="text" placeholder="Search (e.g. coffee, phone)" class="text-sm outline-none text-slate-700 bg-transparent w-full" />
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-2 overflow-x-auto scrollbar-none pb-4 mb-6" id="category-chips"></div>
+
+    <div class="flex items-center justify-between border-b border-brand-100/50 pb-3 mb-6">
+      <p id="results-meta-count" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">0 packages waiting</p>
+      <div class="flex items-center gap-1.5 text-xs text-brand-600 font-semibold cursor-pointer hover:underline" onclick="resetFilters()">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset Filters
+      </div>
+    </div>
+
+    <div id="requests-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-brand-100/60 p-8 shadow-sm">
+      <div class="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="package-search" class="w-8 h-8 text-brand-500"></i>
+      </div>
+      <h3 class="font-display text-lg font-bold text-ink mb-1">No delivery requests found</h3>
+      <p class="text-slate-500 text-sm max-w-sm mx-auto">Try resetting your search, checking another route, or post a new request if you are a sender.</p>
+      <button onclick="resetFilters()" class="mt-4 bg-brand-50 hover:bg-brand-100 text-brand-800 text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+        Clear Filters
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ ROW 3: AVAILABLE TRAVELERS ============ -->
+  <section class="max-w-7xl mx-auto px-5 lg:px-8 mt-16 mb-12">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5 mb-1">
+          <i data-lucide="plane-takeoff" class="w-3.5 h-3.5"></i> Verified Flyers Directory
+        </span>
+        <h2 class="font-display text-2xl font-800 text-ink">Available Travelers &amp; Transit Agents</h2>
+        <p class="text-slate-500 text-xs mt-1">Directly chat with flyers scheduled on upcoming flights between Addis and Dubai.</p>
+      </div>
+      <span class="text-xs text-slate-400 font-semibold hidden sm:inline">Active travelers</span>
+    </div>
+
+    <div id="travelers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Dynamic travelers rendered here -->
+    </div>
+  </section>
+</div>
+
+<!-- ============ USER DASHBOARD VIEW ============ -->
+<div id="view-dashboard" class="hidden max-w-7xl mx-auto px-5 lg:px-8 py-10">
+  <div class="flex items-center gap-2 mb-6">
+    <span class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center text-brand-700 shadow-sm border border-brand-200">
+      <i data-lucide="layout" class="w-5 h-5"></i>
+    </span>
+    <div>
+      <h1 class="font-display text-2xl font-800 text-ink">My Delivery Dashboard</h1>
+      <p class="text-xs text-slate-500">Manage your packages, verify flight travel, and configure your profile details.</p>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-12 gap-8 items-start">
+    <!-- Left Column: Profile Card & Verifications (4 cols) -->
+    <div class="lg:col-span-4 space-y-6">
+      <!-- Profile Card -->
+      <div class="bg-white rounded-2xl border border-brand-100 p-6 shadow-card">
+        <div class="flex flex-col items-center text-center">
+          <div class="relative">
+            <img id="dash-my-avatar" src="" class="w-20 h-20 rounded-full object-cover border-2 border-brand-200 shadow-md" />
+            <span class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-accent-500 text-white flex items-center justify-center ring-2 ring-white" title="Active verification status">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            </span>
+          </div>
+          <h3 id="dash-my-name" class="font-display text-lg font-bold text-ink mt-3"></h3>
+          <p id="dash-my-bio" class="text-xs text-slate-500 mt-1 max-w-xs leading-relaxed"></p>
+          
+          <div class="flex items-center gap-1.5 mt-3 text-sm">
+            <span class="flex items-center text-brand-600 font-bold">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-brand-500 text-brand-500 mr-0.5"></i>
+              <span id="dash-my-rating"></span>
+            </span>
+            <span class="text-slate-300">·</span>
+            <span class="text-slate-500 text-xs font-semibold" id="dash-my-deliveries"></span>
+          </div>
+        </div>
+
+        <div class="border-t border-brand-50 mt-5 pt-4">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Verification Badges</h4>
+          <div class="space-y-2" id="dash-my-badges">
+            <!-- Render verifications list -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Verification Center Action Panel -->
+      <div class="bg-gradient-to-br from-brand-50 to-white rounded-2xl border border-brand-200 p-6 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-brand-700"></i>
+          <h4 class="font-display font-bold text-sm text-brand-900">Increase Handover Trust</h4>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed mb-4">Users prefer matched travelers with verified flight tickets and passport IDs. Complete these steps to stand out.</p>
+        <div class="space-y-2.5">
+          <button onclick="triggerFlightVerification()" class="w-full bg-white hover:bg-brand-100/50 text-slate-700 border border-brand-200 rounded-xl py-2.5 px-4 text-xs font-bold flex items-center justify-between transition-all">
+            <span class="flex items-center gap-2"><i data-lucide="plane" class="w-4 h-4 text-brand-600"></i> Verify Flight Booking</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+          <button onclick="triggerIdVerification()" class="w-full bg-white hover:bg-brand-100/50 text-slate-700 border border-brand-200 rounded-xl py-2.5 px-4 text-xs font-bold flex items-center justify-between transition-all">
+            <span class="flex items-center gap-2"><i data-lucide="file-check-2" class="w-4 h-4 text-accent-700"></i> Upload Gov. Photo ID</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Shipment Tracker Console & Tabs (8 cols) -->
+    <div class="lg:col-span-8 bg-white rounded-2xl border border-brand-100 p-6 shadow-card space-y-6">
+      <div class="flex border-b border-brand-100">
+        <button onclick="setDashboardTab('active')" id="tab-btn-active" class="dashboard-tab active border-b-2 border-transparent pb-3 px-4 text-sm font-semibold text-slate-500 hover:text-brand-600 transition-colors">
+          Active Packages &amp; Trips
+        </button>
+        <button onclick="setDashboardTab('history')" id="tab-btn-history" class="dashboard-tab border-b-2 border-transparent pb-3 px-4 text-sm font-semibold text-slate-500 hover:text-brand-600 transition-colors">
+          Successful History
+        </button>
+      </div>
+
+      <!-- Dashboard Active list -->
+      <div id="dashboard-active-content" class="space-y-6">
+        <!-- Dyn Active list with timeline progress bars -->
+      </div>
+
+      <!-- Dashboard History list -->
+      <div id="dashboard-history-content" class="hidden space-y-4">
+        <!-- Dyn Completed list -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PUBLIC USER PROFILE MODAL ============ -->
+<div id="profile-modal" class="hidden fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl border border-brand-100 max-w-lg w-full max-h-[85vh] overflow-y-auto flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-brand-100 shrink-0">
+      <h3 class="font-display text-base font-bold text-ink">Member Profile</h3>
+      <button onclick="closeProfileModal()" class="w-8 h-8 rounded-full hover:bg-brand-50 flex items-center justify-center text-slate-500 hover:text-ink transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 space-y-6" id="profile-modal-body">
+      <!-- Dyn public profile content -->
+    </div>
+  </div>
+</div>
+
+<!-- ============ FLIGHT VERIFICATION DIALOG MODAL ============ -->
+<div id="flight-modal" class="hidden fixed inset-0 z-50 bg-ink/50 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl border border-brand-100 max-w-sm w-full p-6">
+    <h3 class="font-display text-lg font-bold text-ink mb-2">Verify Flight Booking</h3>
+    <p class="text-xs text-slate-500 mb-4">Input flight ticket information to add a verified itinerary badge.</p>
+    
+    <form onsubmit="handleFlightVerificationSubmit(event)" class="space-y-3">
+      <div>
+        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Airline Carrier</label>
+        <input id="flight-carrier" type="text" placeholder="e.g. Emirates" required class="w-full border border-brand-200/80 rounded-xl px-3 py-2 text-xs outline-none focus:border-brand-500" />
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Flight Number</label>
+          <input id="flight-number" type="text" placeholder="e.g. EK724" required class="w-full border border-brand-200/80 rounded-xl px-3 py-2 text-xs outline-none focus:border-brand-500" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Departure Date</label>
+          <input id="flight-date" type="text" placeholder="e.g. July 28, 2026" required class="w-full border border-brand-200/80 rounded-xl px-3 py-2 text-xs outline-none focus:border-brand-500" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-brand-50">
+        <button type="button" onclick="closeFlightModal()" class="px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-500 hover:bg-slate-50">Cancel</button>
+        <button type="submit" class="bg-ink hover:bg-brand-500 hover:text-ink text-white px-4 py-2 rounded-lg text-xs font-semibold">Verify Ticket</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ POST REQUEST MODAL ============ -->
+<div id="post-modal" class="hidden fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl border border-brand-100 max-w-lg w-full max-h-[90vh] overflow-y-auto flex flex-col">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-brand-100">
+      <div>
+        <h3 class="font-display text-lg font-800 text-ink">Request a Delivery</h3>
+        <p class="text-xs text-slate-500">Post details of your package so travelers can contact you.</p>
+      </div>
+      <button onclick="closePostModal()" class="w-8 h-8 rounded-full hover:bg-brand-50 flex items-center justify-center text-slate-500 hover:text-ink transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <form id="post-request-form" onsubmit="handlePostSubmit(event)" class="p-6 space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Package Title *</label>
+        <input id="form-title" type="text" placeholder="e.g. 5kg Coffee Beans, Sealed Clothes..." required class="w-full border border-brand-200/80 rounded-xl px-3.5 py-2 text-sm text-ink outline-none focus:border-brand-500" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Route Corridor *</label>
+          <select id="form-route" required class="w-full border border-brand-200/80 bg-white rounded-xl px-3.5 py-2 text-sm text-ink outline-none focus:border-brand-500">
+            <option value="ADD_TO_DXB">Addis (ADD) ➔ Dubai (DXB)</option>
+            <option value="DXB_TO_ADD">Dubai (DXB) ➔ Addis (ADD)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Category *</label>
+          <select id="form-category" required class="w-full border border-brand-200/80 bg-white rounded-xl px-3.5 py-2 text-sm text-ink outline-none focus:border-brand-500"></select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Weight (kg) *</label>
+          <div class="relative flex items-center">
+            <input id="form-weight" type="number" step="0.1" placeholder="e.g. 2.5" required class="w-full border border-brand-200/80 rounded-xl pl-3.5 pr-10 py-2 text-sm text-ink outline-none focus:border-brand-500" />
+            <span class="absolute right-3.5 text-xs text-slate-400 font-semibold">kg</span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Traveler Reward *</label>
+          <div class="relative flex items-center">
+            <input id="form-reward" type="text" placeholder="e.g. AED 120 or ETB 2,500" required class="w-full border border-brand-200/80 rounded-xl px-3.5 py-2 text-sm text-ink outline-none focus:border-brand-500" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Delivery Deadline *</label>
+        <input id="form-deadline" type="text" placeholder="e.g. Needed by July 28, 2026" required class="w-full border border-brand-200/80 rounded-xl px-3.5 py-2 text-sm text-ink outline-none focus:border-brand-500" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Package Description &amp; Instructions *</label>
+        <textarea id="form-desc" placeholder="Describe the item. Is it sealed? Are purchase receipts available? Where should it be picked up/dropped off?" rows="3" required class="w-full border border-brand-200/80 rounded-xl px-3.5 py-2 text-sm text-ink outline-none focus:border-brand-500 resize-none"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">WhatsApp or Phone number *</label>
+        <div class="relative flex items-center">
+          <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5"></i>
+          <input id="form-phone" type="text" placeholder="e.g. 251911223344" required class="w-full border border-brand-200/80 rounded-xl pl-10 pr-3.5 py-2 text-sm text-ink outline-none focus:border-brand-500" />
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Include country code without + (e.g., 2519... or 9715...). Used for quick WhatsApp chat connection.</p>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-brand-100">
+        <button type="button" onclick="closePostModal()" class="px-4 py-2.5 rounded-xl border border-brand-200 text-slate-600 hover:bg-brand-50 text-sm font-semibold transition-colors">Cancel</button>
+        <button type="submit" class="bg-ink text-white hover:bg-brand-600 hover:text-ink px-5 py-2.5 rounded-xl text-sm font-semibold transition-all">Post Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ INTERACTIVE CHAT DRAWER ============ -->
+<div id="chat-overlay" class="hidden fixed inset-0 z-50 bg-ink/40 backdrop-blur-xs flex justify-end">
+  <div class="absolute inset-0 -z-10" onclick="toggleChatDrawer(false)"></div>
+  <div class="h-full w-full sm:w-[480px] bg-white shadow-drawer flex flex-col transition-all">
+    <div class="flex items-center justify-between px-5 h-16 border-b border-brand-100 shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-brand-700"><i data-lucide="message-square" class="w-4 h-4"></i></span>
+        <h3 class="font-display font-800 text-lg text-ink">Active Negotiations</h3>
+      </div>
+      <button onclick="toggleChatDrawer(false)" class="w-8 h-8 rounded-full hover:bg-brand-50 flex items-center justify-center text-slate-400 hover:text-ink"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+
+    <div id="chat-rooms-list" class="flex gap-2 p-3 bg-brand-50/50 border-b border-brand-100 overflow-x-auto scrollbar-none shrink-0"></div>
+
+    <div class="flex-1 flex flex-col min-h-0 bg-[#FAF9F6]">
+      <div id="active-chat-header" class="px-5 py-3 border-b border-brand-100 bg-white flex items-center gap-3 shrink-0"></div>
+      <div id="chat-history-messages" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
+      
+      <div id="typing-indicator" class="hidden px-5 py-2 flex items-center gap-2 shrink-0">
+        <span class="text-xs text-slate-400 font-semibold" id="typing-username"></span>
+        <div class="flex gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.2s]"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.4s]"></span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-white border-t border-brand-100 shrink-0">
+        <form onsubmit="handleSendChat(event)" class="flex gap-2">
+          <input id="chat-input-field" type="text" placeholder="Type your message..." autocomplete="off" class="flex-1 border border-brand-200/80 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brand-500 bg-brand-50/20" />
+          <button type="submit" class="w-11 h-11 bg-ink text-white hover:bg-brand-500 hover:text-ink rounded-xl flex items-center justify-center transition-all shrink-0">
+            <i data-lucide="send-horizontal" class="w-4 h-4"></i>
+          </button>
+        </form>
+        <div id="whatsapp-shortcut-area" class="mt-2 text-center"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PACKAGE DETAIL MODAL ============ -->
+<div id="package-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+  <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-brand-100 flex flex-col max-h-[90vh]">
+    <div class="relative h-48 bg-slate-100 shrink-0">
+      <img id="pkg-modal-img" src="" class="w-full h-full object-cover" />
+      <button onclick="closePackageModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-ink/80 hover:bg-ink text-white flex items-center justify-center transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <span id="pkg-modal-badge" class="absolute bottom-4 left-4 text-xs font-bold bg-brand-500 text-ink px-2.5 py-1 rounded-full shadow-sm">Category</span>
+    </div>
+    
+    <div class="p-6 overflow-y-auto space-y-4 flex-1">
+      <div class="flex items-center justify-between">
+        <span id="pkg-modal-route" class="text-xs font-extrabold uppercase tracking-wide text-brand-600">ADD ➔ DXB</span>
+        <span id="pkg-modal-weight" class="text-xs font-semibold text-slate-500">2.5 kg</span>
+      </div>
+      <h2 id="pkg-modal-title" class="font-display font-800 text-xl text-ink">Package Title</h2>
+      <p id="pkg-modal-desc" class="text-xs text-slate-600 leading-relaxed bg-[#FAF8F5] border border-brand-100/50 rounded-xl p-4">Description...</p>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="border border-brand-50 rounded-xl p-3.5 bg-slate-50/50">
+          <p class="text-[8px] font-bold text-slate-400 uppercase">Payout Reward</p>
+          <p id="pkg-modal-reward" class="font-display font-800 text-brand-600 text-lg mt-0.5">AED 150</p>
+        </div>
+        <div class="border border-brand-50 rounded-xl p-3.5 bg-slate-50/50">
+          <p class="text-[8px] font-bold text-slate-400 uppercase">Delivery Deadline</p>
+          <p id="pkg-modal-deadline" class="font-semibold text-slate-700 text-xs mt-1">Needed by July 28</p>
+        </div>
+      </div>
+
+      <div class="border-t border-brand-50 pt-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img id="pkg-modal-avatar" src="" class="w-10 h-10 rounded-full object-cover border border-brand-100" />
+          <div>
+            <p id="pkg-modal-sender" class="font-bold text-xs text-ink">Sender Name</p>
+            <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Package Poster</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span id="pkg-modal-rating" class="inline-flex items-center text-xs font-bold text-brand-600"></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-4 border-t border-brand-50 bg-slate-50 flex items-center gap-3 shrink-0">
+      <a id="pkg-modal-wa" href="" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 text-xs font-bold text-accent-700 bg-white border border-brand-100 rounded-xl px-4 py-3 hover:bg-accent-50 transition-colors" title="WhatsApp Contact">
+        <i data-lucide="phone" class="w-4 h-4"></i> WhatsApp
+      </a>
+      <button id="pkg-modal-action-btn" class="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-ink rounded-xl py-3 hover:bg-brand-500 hover:text-ink transition-all shadow-sm">
+        Offer to Carry
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST NOTIFICATION ============ -->
+<div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-ink text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-brand-400/20 translate-y-[-100px] opacity-0 pointer-events-none">
+  <span class="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center text-ink shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 font-bold"></i></span>
+  <p id="toast-message" class="text-sm font-semibold text-brand-100"></p>
+</div>
+
+<!-- ============ HOW IT WORKS SECTION ============ -->
+<section id="how-it-works" class="max-w-7xl mx-auto px-5 lg:px-8 mt-12 mb-16">
+  <div class="bg-gradient-to-br from-brand-50 to-white rounded-3xl border border-brand-100/60 p-8 sm:p-12 shadow-sm">
+    <div class="text-center max-w-xl mx-auto mb-12">
+      <h2 class="font-display text-3xl font-800 text-ink">Simple &amp; Trust-Based P2P Shipping</h2>
+      <p class="text-slate-500 text-sm mt-2">Connecting travelers and package senders directly to avoid high courier fees and long transit delays.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="relative flex flex-col items-center text-center">
+        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-md mb-4 border border-brand-100"><span class="text-lg font-bold text-brand-600">1</span></div>
+        <h3 class="font-display font-bold text-base text-ink mb-2">Sender Posts Package</h3>
+        <p class="text-slate-500 text-sm">Post what you need shipped, which route direction, its weight, and the cash reward offered for the delivery.</p>
+      </div>
+      <div class="relative flex flex-col items-center text-center">
+        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-md mb-4 border border-brand-100"><span class="text-lg font-bold text-accent-700">2</span></div>
+        <h3 class="font-display font-bold text-base text-ink mb-2">Traveler Offers to Carry</h3>
+        <p class="text-slate-500 text-sm">An airline traveler on that route accepts the request, prompting a direct secure P2P chat room connection.</p>
+      </div>
+      <div class="relative flex flex-col items-center text-center">
+        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-md mb-4 border border-brand-100"><span class="text-lg font-bold text-brand-600">3</span></div>
+        <h3 class="font-display font-bold text-base text-ink mb-2">Chat, Handover &amp; Deliver</h3>
+        <p class="text-slate-500 text-sm">Coordinate pickup at airports, inspect contents together, hand over the package, and deliver to release rewards.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SAFETY & COMPLIANCE RULES ============ -->
+<section id="safety" class="max-w-7xl mx-auto px-5 lg:px-8 mb-24">
+  <div class="bg-white rounded-3xl border border-brand-100 p-8 sm:p-10 shadow-card">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-600 border border-red-100 shadow-sm"><i data-lucide="shield-alert" class="w-5 h-5"></i></span>
+      <h2 class="font-display text-2xl font-800 text-ink">Important Safety Guidelines</h2>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-8 text-sm text-slate-600">
+      <div class="space-y-4">
+        <div class="flex gap-3">
+          <i data-lucide="check-circle-2" class="w-5 h-5 text-accent-600 shrink-0 mt-0.5"></i>
+          <div>
+            <h4 class="font-bold text-ink mb-1">Inspect All Content</h4>
+            <p>Travelers must physically inspect all packages before checking them into their luggage. Never accept closed, gift-wrapped, or mystery items.</p>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <i data-lucide="check-circle-2" class="w-5 h-5 text-accent-600 shrink-0 mt-0.5"></i>
+          <div>
+            <h4 class="font-bold text-ink mb-1">Verify Government ID</h4>
+            <p>Use the chat interface to request a verification of the passenger's boarding pass / passport and the sender's local government ID.</p>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div class="flex gap-3">
+          <i data-lucide="check-circle-2" class="w-5 h-5 text-accent-600 shrink-0 mt-0.5"></i>
+          <div>
+            <h4 class="font-bold text-ink mb-1">Check Airport Restrictions</h4>
+            <p>Ensure that the goods do not violate customs regulations of Dubai (UAE) or Addis Ababa (Ethiopia). Strictly observe weight limitations.</p>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <i data-lucide="check-circle-2" class="w-5 h-5 text-accent-600 shrink-0 mt-0.5"></i>
+          <div>
+            <h4 class="font-bold text-ink mb-1">Coordinate Safe Handover</h4>
+            <p>For high-value items, perform handovers in public places (e.g. airport lobbies, registered hotels) and use digital payment escrow systems.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MOBILE BOTTOM NAV ============ -->
+<nav class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-brand-100 flex items-stretch h-16 shadow-lg">
+  <button onclick="setView('explore')" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-brand-600">
+    <i data-lucide="search" class="w-5 h-5"></i><span class="text-[10px] font-medium">Find</span>
+  </button>
+  <button onclick="setView('dashboard')" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-brand-600">
+    <i data-lucide="layout" class="w-5 h-5"></i><span class="text-[10px] font-medium">Dashboard</span>
+  </button>
+  <button onclick="openPostModal()" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-white bg-ink -my-0 mx-1 my-2 rounded-xl hover:bg-brand-600 hover:text-ink transition-colors">
+    <i data-lucide="plus-circle" class="w-5 h-5"></i><span class="text-[10px] font-medium">Request</span>
+  </button>
+  <button onclick="toggleChatDrawer(true)" class="relative flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-brand-600">
+    <i data-lucide="message-square" class="w-5 h-5"></i><span class="text-[10px] font-medium">Chat</span>
+    <span id="unread-chat-count-mobile" class="hidden absolute top-1 right-6 min-w-[16px] h-[16px] px-1 rounded-full bg-brand-500 text-ink text-[9px] font-bold flex items-center justify-center">0</span>
+  </button>
+</nav>
+
+<!-- ============ FOOTER ============ -->
+<footer class="bg-ink text-slate-400">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-800 flex items-center justify-center"><i data-lucide="plane-takeoff" class="w-4 h-4 text-white"></i></span>
+        <span class="font-display text-lg font-800 text-white">Souq&amp;Sheba</span>
+      </div>
+      <p class="text-sm leading-relaxed">Direct peer-to-peer package delivery platform linking flight passengers and package senders in Ethiopia and UAE.</p>
+    </div>
+    <div>
+      <h4 class="text-white font-semibold text-sm mb-3">Shipments</h4>
+      <ul class="space-y-2 text-sm">
+        <li><a href="#" onclick="setView('explore')" class="hover:text-white transition-colors">Find Requests</a></li>
+        <li><button onclick="openPostModal()" class="hover:text-white transition-colors text-left">Post a Delivery Request</button></li>
+        <li><button onclick="setView('dashboard')" class="hover:text-white transition-colors text-left">My Delivery Dashboard</button></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white font-semibold text-sm mb-3">Legal &amp; Safety</h4>
+      <ul class="space-y-2 text-sm">
+        <li><a href="#safety" class="hover:text-white transition-colors">Customs Guidelines</a></li>
+        <li><a href="#safety" class="hover:text-white transition-colors">Safety Terms</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white font-semibold text-sm mb-3">Newsletter</h4>
+      <div class="flex gap-2">
+        <input type="email" placeholder="Your email address" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:border-brand-400" />
+        <button class="bg-brand-500 hover:bg-brand-600 transition-colors rounded-lg px-3.5"><i data-lucide="arrow-right" class="w-4 h-4 text-ink"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-white/10 py-5 text-center text-xs text-slate-500">© 2026 Souq&amp;Sheba P2P. Connecting Addis &amp; Dubai.</div>
+</footer>
+
+<script>
+  function safeCreateIcons() {
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      lucide.createIcons();
+    }
+  }
+
+  const categories = [
+    { name: 'Documents', icon: 'file-text' },
+    { name: 'Coffee & Spices', icon: 'coffee' },
+    { name: 'Electronics', icon: 'smartphone' },
+    { name: 'Clothing & Textiles', icon: 'shirt' },
+    { name: 'Cosmetics & Beauty', icon: 'sparkles' },
+    { name: 'Medicine & Healthcare', icon: 'pill' },
+    { name: 'Personal Gifts', icon: 'gift' },
+    { name: 'Other Items', icon: 'package' }
+  ];
+
+  const defaultRequests = [
+    {
+      id: 'r1',
+      title: 'Sealed Yirgacheffe Coffee Bags (5kg)',
+      desc: 'Freshly roasted, organic whole bean coffee. Sealed bags. Delivery needed to Deira or Dubai Marina. High priority.',
+      sender: 'Kaleb T.',
+      route: 'ADD_TO_DXB',
+      weight: '5.0',
+      reward: 'AED 150',
+      category: 'Coffee & Spices',
+      deadline: 'Needed by July 28, 2026',
+      img: 'photo-1447933601403-0c6688de566e',
+      status: 'pending', // pending, accepted, in-transit, delivered
+      phone: '251911223344',
+      isCustom: false
+    },
+    {
+      id: 'r2',
+      title: 'iPhone 15 Pro Max (Sealed Box)',
+      desc: 'Bought from Apple Store Dubai. Needs delivery to Addis Ababa. I will pay cash reward upon meeting at Bole airport lobby.',
+      sender: 'Sarah Al-M.',
+      route: 'DXB_TO_ADD',
+      weight: '0.4',
+      reward: 'ETB 4,000',
+      category: 'Electronics',
+      deadline: 'Needed by August 2, 2026',
+      img: 'photo-1592286927505-1def25115558',
+      status: 'pending',
+      phone: '971501234567',
+      isCustom: false
+    },
+    {
+      id: 'r3',
+      title: 'Legal Contract Documents',
+      desc: 'Urgent company document folder. Requires traveler flight today/tomorrow. Weight is less than 200g, very light envelope.',
+      sender: 'Abdi K.',
+      route: 'ADD_TO_DXB',
+      weight: '0.2',
+      reward: 'AED 200',
+      category: 'Documents',
+      deadline: 'Urgent - by July 22, 2026',
+      img: 'photo-1450133064473-71024230f91b',
+      status: 'pending',
+      phone: '251911987654',
+      isCustom: false
+    },
+    {
+      id: 'r4',
+      title: 'Traditional Habesha Dresses (Wedding)',
+      desc: '2 sets of handmade traditional clothes for a wedding ceremony in Dubai. Cleanly folded in garment bags, ready for handover.',
+      sender: 'Marta W.',
+      route: 'ADD_TO_DXB',
+      weight: '2.5',
+      reward: 'AED 120',
+      category: 'Clothing & Textiles',
+      deadline: 'Needed by August 5, 2026',
+      img: 'photo-1595777457583-95e059d581b8',
+      status: 'pending',
+      phone: '251911555444',
+      isCustom: false
+    },
+    {
+      id: 'r5',
+      title: 'Oud Perfume Bottles & Bakhoor',
+      desc: 'Sealed luxury Arabian scents purchased in Deira Souq, Dubai. Ship to Bole Medhanialem family.',
+      sender: 'Fatima H.',
+      route: 'DXB_TO_ADD',
+      weight: '1.2',
+      reward: 'ETB 3,000',
+      category: 'Cosmetics & Beauty',
+      deadline: 'Needed by August 10, 2026',
+      img: 'photo-1541643600914-78b084683601',
+      status: 'pending',
+      phone: '971505556667',
+      isCustom: false
+    }
+  ];
+
+  const defaultChats = [
+    {
+      id: 'chat_r1',
+      requestId: 'r1',
+      participantName: 'Kaleb T. (Sender)',
+      participantAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+      messages: [
+        { sender: 'them', text: "Hello! Thank you for offering to carry the coffee. When is your flight leaving Addis?", time: "3:40 PM" }
+      ],
+      replies: [
+        "Awesome! Bole Airport T2 works perfectly for handover. I can meet you there.",
+        "Sure, the bag is clean and tightly sealed. No issues with inspection! Looking forward to it."
+      ],
+      replyIndex: 0
+    },
+    {
+      id: 'chat_r2',
+      requestId: 'r2',
+      participantName: 'Sarah Al-M. (Sender)',
+      participantAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      messages: [
+        { sender: 'them', text: "Hi! The iPhone is fully paid and invoice is in the bag. Are you able to pick it up from Al Barsha?", time: "1:20 PM" }
+      ],
+      replies: [
+        "That is perfect! I will coordinate the handover address. Let me know when you are nearby.",
+        "Thanks so much! My family in Addis will meet you immediately upon your flight arrival."
+      ],
+      replyIndex: 0
+    }
+  ];
+
+  const defaultProfiles = {
+    'Kaleb T.': {
+      name: 'Kaleb T.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+      rating: '4.8',
+      deliveriesCount: 8,
+      bio: 'Regular exporter and business consultant traveling between Addis and UAE twice a month. Focused on agricultural trade.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: { route: 'ADD ➔ DXB', date: 'July 28, 2026', flight: 'Emirates EK724' },
+      reviews: [
+        { reviewer: 'Dawit G.', rating: 5, comment: 'Abdi carried my coffee samples securely. Great communication.', date: 'July 10, 2026' },
+        { reviewer: 'Betty W.', rating: 4, comment: 'Decent transaction, coordinated pickup easily.', date: 'June 29, 2026' }
+      ]
+    },
+    'Sarah Al-M.': {
+      name: 'Sarah Al-M.',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      rating: '5.0',
+      deliveriesCount: 14,
+      bio: 'E-commerce logistics manager. I fly frequently to inspect supply lines and visit family.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: { route: 'DXB ➔ ADD', date: 'August 2, 2026', flight: 'FlyDubai FZ803' },
+      reviews: [
+        { reviewer: 'Solomon K.', rating: 5, comment: 'Sarah carried a sealed laptop safely. Perfect receipt verification.', date: 'July 05, 2026' }
+      ]
+    },
+    'Abdi K.': {
+      name: 'Abdi K.',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80',
+      rating: '4.9',
+      deliveriesCount: 5,
+      bio: 'Frequent flyer, travel primarily for private import lines.',
+      verifications: { id: true, flight: false, phone: true },
+      upcomingTrip: null,
+      reviews: []
+    },
+    'Marta W.': {
+      name: 'Marta W.',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
+      rating: '4.7',
+      deliveriesCount: 3,
+      bio: 'Textile artisan and designer in Addis Ababa. I send sample garments to boutiques in UAE.',
+      verifications: { id: true, flight: true, phone: false },
+      upcomingTrip: null,
+      reviews: []
+    },
+    'Fatima H.': {
+      name: 'Fatima H.',
+      avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80',
+      rating: '4.9',
+      deliveriesCount: 11,
+      bio: 'Boutique owner based in Deira Souq, Dubai. Transporting incense and cosmetics.',
+      verifications: { id: true, flight: true, phone: true },
+      upcomingTrip: null,
+      reviews: [
+        { reviewer: 'Helina D.', rating: 5, comment: 'Super safe courier. Handed perfume over in perfect condition!', date: 'July 01, 2026' }
+      ]
+    },
+    'You (Sender)': {
+      name: 'Alex M. (You)',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80',
+      rating: '5.0',
+      deliveriesCount: 3,
+      bio: 'P2P platform user based in Addis Ababa. Flying to Dubai occasionally. Glad to help transport luggage bags.',
+      verifications: { id: false, flight: false, phone: true },
+      upcomingTrip: null,
+      reviews: []
+    }
+  };
+
+  const defaultTravelers = [
+    {
+      name: 'Kaleb T.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+      rating: '4.8',
+      route: 'ADD_TO_DXB',
+      flightDate: 'July 28, 2026',
+      airline: 'Emirates EK724',
+      maxWeight: '8.0',
+      allowedCategories: ['Documents', 'Coffee & Spices', 'Clothing & Textiles'],
+      phone: '251911223344'
+    },
+    {
+      name: 'Sarah Al-M.',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      rating: '5.0',
+      route: 'DXB_TO_ADD',
+      flightDate: 'August 2, 2026',
+      airline: 'FlyDubai FZ803',
+      maxWeight: '12.0',
+      allowedCategories: ['Electronics', 'Cosmetics & Beauty', 'Documents'],
+      phone: '971501234567'
+    },
+    {
+      name: 'Marta W.',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
+      rating: '4.7',
+      route: 'ADD_TO_DXB',
+      flightDate: 'August 5, 2026',
+      airline: 'Ethiopian ET602',
+      maxWeight: '5.0',
+      allowedCategories: ['Clothing & Textiles', 'Personal Gifts'],
+      phone: '251911555444'
+    },
+    {
+      name: 'Fatima H.',
+      avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80',
+      rating: '4.9',
+      route: 'DXB_TO_ADD',
+      flightDate: 'August 10, 2026',
+      airline: 'Emirates EK723',
+      maxWeight: '15.0',
+      allowedCategories: ['Cosmetics & Beauty', 'Personal Gifts', 'Coffee & Spices'],
+      phone: '971505556667'
+    }
+  ];
+
+  // State Management
+  let requests = JSON.parse(localStorage.getItem('ss_requests')) || defaultRequests;
+  let chats = JSON.parse(localStorage.getItem('ss_chats')) || defaultChats;
+  let profiles = JSON.parse(localStorage.getItem('ss_profiles')) || defaultProfiles;
+  let travelers = JSON.parse(localStorage.getItem('ss_travelers')) || defaultTravelers;
+  
+  let activeView = 'explore';
+  let activeRoute = 'ALL';
+  let activeCategory = 'All';
+  let activeSearch = '';
+  let activeChatId = chats[0]?.id || '';
+  let activeDashboardTab = 'active';
+
+  // Initialize
+  function init() {
+    renderCategoryChips();
+    renderRequests();
+    renderFeaturedRequests();
+    renderTravelersGrid();
+    renderChatRoomsList();
+    renderActiveChatPane();
+    populateFormCategories();
+    updateUnreadChatCount();
+    updateDashboardStats();
+    renderDashboardProfile();
+    renderDashboardLists();
+    setView('explore');
+    safeCreateIcons();
+
+    // Parse deep links
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('offer')) {
+      const reqId = params.get('offer');
+      if (typeof window.acceptRequest === 'function') {
+        window.acceptRequest(reqId);
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.has('chat_flyer')) {
+      const flyerName = params.get('chat_flyer');
+      if (typeof window.chatWithTraveler === 'function') {
+        window.chatWithTraveler(flyerName);
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.has('post')) {
+      if (typeof window.openPostModal === 'function') {
+        window.openPostModal();
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.get('view') === 'dashboard') {
+      if (typeof window.setView === 'function') {
+        window.setView('dashboard');
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+
+  // Local Storage Save Helper
+  function saveState() {
+    localStorage.setItem('ss_requests', JSON.stringify(requests));
+    localStorage.setItem('ss_chats', JSON.stringify(chats));
+    localStorage.setItem('ss_profiles', JSON.stringify(profiles));
+    localStorage.setItem('ss_travelers', JSON.stringify(travelers));
+    updateUnreadChatCount();
+    updateDashboardStats();
+  }
+
+  // Toggle Full Pages views (Explore vs Dashboard)
+  window.setView = function(view) {
+    activeView = view;
+    const exploreEl = document.getElementById('view-explore');
+    const dashEl = document.getElementById('view-dashboard');
+    const navExplore = document.getElementById('nav-btn-explore');
+    const navDash = document.getElementById('nav-btn-dashboard');
+
+    if (view === 'explore') {
+      exploreEl.classList.remove('hidden');
+      exploreEl.classList.add('block');
+      dashEl.classList.add('hidden');
+      
+      navExplore.className = 'font-semibold text-brand-600 transition-colors';
+      navDash.className = 'font-semibold text-slate-600 hover:text-brand-600 transition-colors';
+    } else {
+      exploreEl.classList.add('hidden');
+      dashEl.classList.remove('hidden');
+      dashEl.classList.add('block');
+      
+      navExplore.className = 'font-semibold text-slate-600 hover:text-brand-600 transition-colors';
+      navDash.className = 'font-semibold text-brand-600 transition-colors';
+      
+      renderDashboardProfile();
+      renderDashboardLists();
+    }
+    safeCreateIcons();
+  };
+
+  // Update Main Dashboard Stats
+  function updateDashboardStats() {
+    const activeLen = requests.filter(r => r.status === 'pending').length;
+    document.getElementById('stat-active-requests').textContent = activeLen;
+  }
+
+  // Render category chips
+  function renderCategoryChips() {
+    const container = document.getElementById('category-chips');
+    const allChip = `<button onclick="setFilterCategory('All')" class="chip shrink-0 text-xs font-semibold px-4 py-2 rounded-full border border-brand-200 text-slate-700 hover:border-brand-400 transition-all ${activeCategory === 'All' ? 'active' : ''}">All Categories</button>`;
+    
+    const chipsHtml = categories.map(cat => {
+      const activeClass = activeCategory === cat.name ? 'active' : '';
+      return `<button onclick="setFilterCategory('${cat.name}')" class="chip shrink-0 text-xs font-semibold px-4 py-2 rounded-full border border-brand-200 text-slate-700 hover:border-brand-400 transition-all ${activeClass} flex items-center gap-1.5">
+        <i data-lucide="${cat.icon}" class="w-3.5 h-3.5"></i> ${cat.name}
+      </button>`;
+    }).join('');
+    
+    container.innerHTML = allChip + chipsHtml;
+    safeCreateIcons();
+  }
+
+  function populateFormCategories() {
+    const select = document.getElementById('form-category');
+    select.innerHTML = categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+  }
+
+  // Filter actions
+  window.setFilterRoute = function(route) {
+    activeRoute = route;
+    document.querySelectorAll('.route-filter-btn').forEach(btn => {
+      btn.className = 'route-filter-btn text-xs font-semibold px-4 py-2 rounded-lg transition-all text-slate-600 hover:bg-brand-50';
+    });
+    const idMap = { 'ALL': 'btn-route-all', 'ADD_TO_DXB': 'btn-route-add-dxb', 'DXB_TO_ADD': 'btn-route-dxb-add' };
+    const activeBtn = document.getElementById(idMap[route]);
+    activeBtn.className = 'route-filter-btn text-xs font-semibold px-4 py-2 rounded-lg transition-all bg-ink text-white';
+    
+    renderRequests();
+    renderTravelersGrid();
+  };
+
+  window.setFilterCategory = function(cat) {
+    activeCategory = cat;
+    renderCategoryChips();
+    renderRequests();
+  };
+
+  window.handleSearch = function(val) {
+    activeSearch = val.toLowerCase().trim();
+    renderRequests();
+  };
+
+  window.resetFilters = function() {
+    activeCategory = 'All';
+    activeRoute = 'ALL';
+    activeSearch = '';
+    
+    const searchInputs = document.querySelectorAll('input[type="text"][placeholder*="Search"]');
+    searchInputs.forEach(i => i.value = '');
+
+    setFilterRoute('ALL');
+    renderCategoryChips();
+    renderRequests();
+    renderTravelersGrid();
+  };
+
+  // Render Requests Cards
+  function renderRequests() {
+    const grid = document.getElementById('requests-grid');
+    const emptyState = document.getElementById('empty-state');
+    
+    const filtered = requests.filter(r => {
+      const routeMatch = activeRoute === 'ALL' || r.route === activeRoute;
+      const catMatch = activeCategory === 'All' || r.category === activeCategory;
+      const searchMatch = !activeSearch || 
+                          r.title.toLowerCase().includes(activeSearch) || 
+                          r.desc.toLowerCase().includes(activeSearch) || 
+                          r.category.toLowerCase().includes(activeSearch);
+      return routeMatch && catMatch && searchMatch;
+    });
+
+    document.getElementById('results-meta-count').textContent = `${filtered.length} package request${filtered.length === 1 ? '' : 's'} waiting`;
+
+    if (filtered.length === 0) {
+      grid.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      return;
+    }
+
+    grid.classList.remove('hidden');
+    emptyState.classList.add('hidden');
+
+    grid.innerHTML = filtered.map(item => {
+      const isAccepted = item.status !== 'pending';
+      const statusText = item.status === 'accepted' ? 'Matched Traveler' 
+                       : item.status === 'in-transit' ? 'In Transit'
+                       : item.status === 'delivered' ? 'Delivered' 
+                       : 'Waiting for Traveler';
+                       
+      let statusBadgeClass = 'bg-brand-100 text-brand-900 animate-pulse';
+      if (item.status === 'accepted') statusBadgeClass = 'bg-accent-100 text-accent-800';
+      if (item.status === 'in-transit') statusBadgeClass = 'bg-amber-100 text-amber-800';
+      if (item.status === 'delivered') statusBadgeClass = 'bg-slate-200 text-slate-700';
+
+      const routeText = item.route === 'ADD_TO_DXB' 
+        ? '<div class="flex items-center gap-1.5 font-bold text-xs"><span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-200 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#DBAE3E] flex-1"></span><span class="bg-[#C6952A] flex-1"></span></span> ADD ➔ DXB <span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-200 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#C6952A] flex-1"></span><span class="bg-[#211B14] flex-1"></span></span></div>'
+        : '<div class="flex items-center gap-1.5 font-bold text-xs"><span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-200 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#C6952A] flex-1"></span><span class="bg-[#211B14] flex-1"></span></span> DXB ➔ ADD <span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-200 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#DBAE3E] flex-1"></span><span class="bg-[#C6952A] flex-1"></span></span></div>';
+
+      const actionButton = isAccepted 
+        ? `<button onclick="openChatForRequest('${item.id}')" class="flex-1 text-center bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200 rounded-xl px-4 py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Open Chat
+          </button>`
+        : `<button onclick="acceptRequest('${item.id}')" class="flex-1 text-center bg-ink hover:bg-brand-500 hover:text-ink text-white rounded-xl px-4 py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="handshake" class="w-3.5 h-3.5"></i> Offer to Carry
+          </button>`;
+
+      const profileObj = profiles[item.sender] || profiles['Kaleb T.'];
+
+      return `
+      <div class="group bg-white rounded-2xl border border-brand-100 shadow-card hover:shadow-cardHover hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col">
+        <!-- Clickable Body Area -->
+        <div onclick="openPackageModal('${item.id}')" class="cursor-pointer flex flex-col flex-1">
+          <div class="relative h-40 overflow-hidden shrink-0">
+            <img src="https://images.unsplash.com/${item.img}?auto=format&fit=crop&w=480&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${item.title}" />
+            <span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider ${statusBadgeClass} px-2.5 py-1 rounded-full shadow-sm">
+              ${statusText}
+            </span>
+            <span class="absolute bottom-3 right-3 text-[11px] font-bold bg-white/90 backdrop-blur text-ink px-2.5 py-1 rounded-lg flex items-center gap-1">
+              <i data-lucide="weight" class="w-3 h-3 text-slate-500"></i> ${item.weight} kg
+            </span>
+          </div>
+
+          <div class="p-5 pb-0 flex flex-col flex-1">
+            <div class="flex items-center justify-between mb-2">
+              ${routeText}
+              <span class="text-[10px] font-bold bg-slate-50 text-slate-500 border border-slate-100 rounded px-1.5 py-0.5">${item.category}</span>
+            </div>
+
+            <h3 class="text-base font-bold text-ink leading-snug line-clamp-1 group-hover:text-brand-600 transition-colors" title="${item.title}">${item.title}</h3>
+            <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed flex-1">${item.desc}</p>
+            
+            <div class="flex items-center gap-1 text-[11px] text-slate-400 font-semibold mt-3">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${item.deadline}
+            </div>
+
+            <div class="border-t border-brand-100/50 pt-4 mt-4 flex flex-col justify-between">
+              <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Reward Offered</p>
+              <p class="font-display font-800 text-brand-600 text-lg leading-tight">${item.reward}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Non-clickable footer actions -->
+        <div class="p-5 pt-0">
+          <div class="pt-2 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2 shrink-0 w-full">
+              <a href="https://wa.me/${item.phone}?text=${encodeURIComponent(`Hi ${item.sender}, I am interested in carrying your package request "${item.title}" on Souq & Sheba.`)}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl bg-accent-50 hover:bg-accent-100 flex items-center justify-center transition-colors border border-accent-100" title="Direct WhatsApp">
+                <i data-lucide="phone" class="w-4 h-4 text-accent-700"></i>
+              </a>
+              ${actionButton}
+            </div>
+          </div>
+
+          <!-- Clickable profile link -->
+          <div onclick="openPublicProfile('${item.sender}')" class="flex items-center gap-2 mt-4 pt-3 border-t border-brand-50/50 cursor-pointer group/avatar">
+            <img src="${profileObj.avatar}" class="w-6 h-6 rounded-full object-cover shrink-0 ring-1 ring-brand-100 group-hover/avatar:ring-brand-500 transition-all" />
+            <div class="text-[11px] font-semibold text-slate-600 flex items-center gap-1.5">
+              <span class="group-hover/avatar:text-brand-600 transition-colors">Posted by ${profileObj.name}</span>
+              <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+              <span class="flex items-center text-brand-600 font-bold"><i data-lucide="star" class="w-3 h-3 fill-brand-500 text-brand-500 mr-0.5"></i> ${profileObj.rating}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    
+    safeCreateIcons();
+  }
+
+  // Open Post Modal
+  window.openPostModal = function() {
+    document.getElementById('post-modal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  };
+
+  // Close Post Modal
+  window.closePostModal = function() {
+    document.getElementById('post-modal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    document.getElementById('post-request-form').reset();
+  };
+
+  // Handle Form Post Submit
+  window.handlePostSubmit = function(e) {
+    e.preventDefault();
+    const title = document.getElementById('form-title').value;
+    const route = document.getElementById('form-route').value;
+    const category = document.getElementById('form-category').value;
+    const weight = parseFloat(document.getElementById('form-weight').value).toFixed(1);
+    const reward = document.getElementById('form-reward').value;
+    const deadline = document.getElementById('form-deadline').value;
+    const desc = document.getElementById('form-desc').value;
+    const phone = document.getElementById('form-phone').value.replace(/[^0-9]/g, '');
+
+    const newRequest = {
+      id: 'cust_' + Date.now(),
+      title,
+      desc,
+      sender: 'You (Sender)',
+      route,
+      weight,
+      reward,
+      category,
+      deadline,
+      img: 'photo-1584100936595-c0654b55a2e2',
+      status: 'pending',
+      phone,
+      isCustom: true
+    };
+
+    requests.unshift(newRequest);
+    saveState();
+    
+    closePostModal();
+    renderRequests();
+    renderDashboardLists();
+    
+    showToast('Package delivery request posted successfully!');
+  };
+
+  // Toast notifier
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    document.getElementById('toast-message').textContent = msg;
+    
+    el.classList.remove('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+    el.classList.add('translate-y-0', 'opacity-100');
+    
+    setTimeout(() => {
+      el.classList.add('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+      el.classList.remove('translate-y-0', 'opacity-100');
+    }, 3000);
+  }
+
+  // Accept package request (P2P Carrier Flow)
+  window.acceptRequest = function(requestId) {
+    const req = requests.find(r => r.id === requestId);
+    if (!req) return;
+
+    req.status = 'accepted';
+    req.carrier = 'You (Sender)'; // Traveler is the local user
+    
+    let existingChat = chats.find(c => c.requestId === requestId);
+    if (!existingChat) {
+      const senderProfile = profiles[req.sender] || profiles['Kaleb T.'];
+      existingChat = {
+        id: 'chat_' + requestId,
+        requestId: requestId,
+        participantName: `${senderProfile.name} (Sender)`,
+        participantAvatar: senderProfile.avatar,
+        messages: [
+          { sender: 'them', text: `Hi! Thank you for offering to deliver my "${req.title}" package. Let's align on coordination.`, time: 'Just now' }
+        ],
+        replies: [
+          "Perfect! I will be flying Emirates this week. We can meet in the airport lobby.",
+          "Awesome. Let me know when you inspect the bag. The items are brand new, purchase receipt attached!"
+        ],
+        replyIndex: 0
+      };
+      chats.unshift(existingChat);
+    }
+    
+    activeChatId = existingChat.id;
+    saveState();
+
+    renderRequests();
+    renderDashboardLists();
+    renderChatRoomsList();
+    renderActiveChatPane();
+
+    showToast(`You offered to carry "${req.title}". Opening chat...`);
+    
+    setTimeout(() => {
+      toggleChatDrawer(true);
+    }, 600);
+  };
+
+  // Chat Drawer Actions
+  window.toggleChatDrawer = function(open) {
+    const drawer = document.getElementById('chat-overlay');
+    if (open) {
+      drawer.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      renderChatRoomsList();
+      renderActiveChatPane();
+      
+      const chat = chats.find(c => c.id === activeChatId);
+      if (chat) {
+        chat.unread = false;
+        saveState();
+        updateUnreadChatCount();
+      }
+    } else {
+      drawer.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+  };
+
+  // Open direct chat for a given request shortcut
+  window.openChatForRequest = function(requestId) {
+    let chat = chats.find(c => c.requestId === requestId);
+    if (chat) {
+      activeChatId = chat.id;
+      toggleChatDrawer(true);
+    }
+  };
+
+  // ============ PRIVATE DASHBOARD CODE ============
+
+  // Swapping Dashboard Internal Tabs
+  window.setDashboardTab = function(tab) {
+    activeDashboardTab = tab;
+    document.querySelectorAll('.dashboard-tab').forEach(b => b.classList.remove('active', 'border-brand-500'));
+    
+    const activeBtn = document.getElementById(tab === 'active' ? 'tab-btn-active' : 'tab-btn-history');
+    activeBtn.classList.add('active', 'border-brand-500');
+
+    const activeList = document.getElementById('dashboard-active-content');
+    const historyList = document.getElementById('dashboard-history-content');
+
+    if (tab === 'active') {
+      activeList.classList.remove('hidden');
+      historyList.classList.add('hidden');
+      renderDashboardLists();
+    } else {
+      activeList.classList.add('hidden');
+      historyList.classList.remove('hidden');
+      renderDashboardHistory();
+    }
+  };
+
+  // Render My Private Profile information on Dashboard
+  function renderDashboardProfile() {
+    const myProfile = profiles['You (Sender)'];
+    
+    document.getElementById('dash-my-avatar').src = myProfile.avatar;
+    document.getElementById('dash-my-name').textContent = myProfile.name;
+    document.getElementById('dash-my-bio').textContent = myProfile.bio;
+    document.getElementById('dash-my-rating').textContent = myProfile.rating;
+    document.getElementById('dash-my-deliveries').textContent = `${myProfile.deliveriesCount} successful delivery`;
+
+    // Badging list
+    const badgesContainer = document.getElementById('dash-my-badges');
+    const badgeItems = [
+      { key: 'phone', label: 'Phone verified', icon: 'phone-call', color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
+      { key: 'id', label: 'Passport Identity verified', icon: 'file-check-2', color: 'text-accent-600 bg-accent-50 border-accent-100' },
+      { key: 'flight', label: 'Flight Booking verified', icon: 'plane-landing', color: 'text-brand-600 bg-brand-50 border-brand-100' }
+    ];
+
+    badgesContainer.innerHTML = badgeItems.map(badge => {
+      const isVerified = myProfile.verifications[badge.key];
+      const verifiedIcon = isVerified ? 'check-circle-2' : 'alert-circle';
+      const badgeClass = isVerified ? badge.color : 'text-slate-400 bg-slate-50 border-slate-100 opacity-60';
+      const labelText = isVerified ? badge.label : `Pending ${badge.label.toLowerCase()}`;
+      
+      return `
+        <div class="flex items-center justify-between border rounded-xl p-2.5 text-xs font-semibold ${badgeClass}">
+          <span class="flex items-center gap-2"><i data-lucide="${badge.icon}" class="w-4 h-4"></i> ${labelText}</span>
+          <i data-lucide="${verifiedIcon}" class="w-4 h-4 shrink-0 ${isVerified ? 'text-accent-700' : 'text-slate-300'}"></i>
+        </div>
+      `;
+    }).join('');
+
+    safeCreateIcons();
+  }
+
+  // Triggering flight checking simulated workflow
+  window.triggerFlightVerification = function() {
+    document.getElementById('flight-modal').classList.remove('hidden');
+  };
+
+  window.closeFlightModal = function() {
+    document.getElementById('flight-modal').classList.add('hidden');
+    document.getElementById('flight-carrier').value = '';
+    document.getElementById('flight-number').value = '';
+    document.getElementById('flight-date').value = '';
+  };
+
+  window.handleFlightVerificationSubmit = function(e) {
+    e.preventDefault();
+    const carrier = document.getElementById('flight-carrier').value;
+    const num = document.getElementById('flight-number').value;
+    const date = document.getElementById('flight-date').value;
+
+    profiles['You (Sender)'].verifications.flight = true;
+    profiles['You (Sender)'].upcomingTrip = {
+      route: 'ADD ➔ DXB',
+      date: date,
+      flight: `${carrier} ${num}`
+    };
+
+    // Add to travelers list dynamically
+    const newTraveler = {
+      name: 'Alex M. (You)',
+      avatar: profiles['You (Sender)'].avatar,
+      rating: '5.0',
+      route: 'ADD_TO_DXB',
+      flightDate: date,
+      airline: `${carrier} ${num}`,
+      maxWeight: '10.0',
+      allowedCategories: ['Documents', 'Personal Gifts', 'Coffee & Spices'],
+      phone: '251911999999'
+    };
+
+    travelers = travelers.filter(t => t.name !== 'Alex M. (You)');
+    travelers.unshift(newTraveler);
+
+    saveState();
+    closeFlightModal();
+    renderDashboardProfile();
+    renderTravelersGrid();
+    showToast('Flight itinerary verified successfully! Added "Verified Traveler" status.');
+  };
+
+  // ID verification workflow
+  window.triggerIdVerification = function() {
+    showToast('Simulating ID verification scan...');
+    setTimeout(() => {
+      profiles['You (Sender)'].verifications.id = true;
+      saveState();
+      renderDashboardProfile();
+      showToast('Passport government ID verified successfully!');
+    }, 1500);
+  };
+
+  // Render Dashboard Active Shipments Timeline Tracking
+  function renderDashboardLists() {
+    const activeContainer = document.getElementById('dashboard-active-content');
+    
+    // Find packages that are in active stages (accepted, in-transit)
+    // Senders: items I posted (isCustom = true)
+    // Travelers: items I accepted (carrier = You (Sender))
+    const myCarrying = requests.filter(r => r.carrier === 'You (Sender)' && r.status !== 'delivered');
+    const mySending = requests.filter(r => r.isCustom && r.status !== 'delivered');
+
+    if (myCarrying.length === 0 && mySending.length === 0) {
+      activeContainer.innerHTML = `
+        <div class="text-center py-10 bg-slate-50/50 rounded-2xl border border-brand-100 p-6">
+          <i data-lucide="compass" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+          <p class="text-xs text-slate-500 font-semibold">No active shipments or travel jobs.</p>
+          <p class="text-[10px] text-slate-400 mt-1 max-w-xs mx-auto">Browse package requests on the homepage to start carrying, or post your own package request to send.</p>
+        </div>
+      `;
+      safeCreateIcons();
+      return;
+    }
+
+    let activeHtml = '';
+
+    // Render Carrying Trips
+    if (myCarrying.length > 0) {
+      activeHtml += `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Trips I am Carrying (As Traveler)</h3>`;
+      activeHtml += myCarrying.map(item => {
+        const nextAction = item.status === 'accepted' 
+          ? `<button onclick="updatePackageStatus('${item.id}', 'in-transit')" class="bg-brand-500 hover:bg-brand-600 text-ink text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Set In Transit</button>`
+          : `<button onclick="updatePackageStatus('${item.id}', 'delivered')" class="bg-accent-600 hover:bg-accent-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i> Mark Delivered</button>`;
+
+        return `
+          <div class="border border-brand-100 rounded-2xl p-5 bg-white shadow-sm space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <span class="text-[9px] font-bold uppercase tracking-wide text-brand-600 bg-brand-50 px-2 py-0.5 rounded border border-brand-100">${item.route.replace('_',' ➔ ')}</span>
+                <h4 class="font-display font-bold text-sm text-ink mt-1.5">${item.title}</h4>
+                <p class="text-[11px] text-slate-400">Sender: ${item.sender} · Reward: ${item.reward}</p>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button onclick="openChatForRequest('${item.id}')" class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100 flex items-center justify-center text-slate-600" title="Chat negotiation"><i data-lucide="message-square" class="w-4 h-4"></i></button>
+                <button onclick="cancelCarryJob('${item.id}')" class="w-8 h-8 rounded-lg bg-red-50 border border-red-100 hover:bg-red-100 flex items-center justify-center text-red-600" title="Cancel carry job"><i data-lucide="x" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+            
+            <!-- Delivery progress timeline tracker bar -->
+            ${renderTimelineBar(item.status)}
+
+            <div class="flex items-center justify-between pt-2 border-t border-brand-50">
+              <span class="text-[10px] text-slate-400 font-semibold">Traveler Action needed:</span>
+              ${nextAction}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Sending requests
+    if (mySending.length > 0) {
+      activeHtml += `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-6 mb-2">Packages I am Sending (As Sender)</h3>`;
+      activeHtml += mySending.map(item => {
+        const hasMatched = item.status !== 'pending';
+        const nextAction = item.status === 'in-transit' 
+          ? `<button onclick="updatePackageStatus('${item.id}', 'delivered')" class="bg-accent-600 hover:bg-accent-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Release Reward</button>`
+          : `<span class="text-xs text-slate-400 font-semibold italic">Waiting for traveler travel</span>`;
+
+        return `
+          <div class="border border-brand-100 rounded-2xl p-5 bg-white shadow-sm space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <span class="text-[9px] font-bold uppercase tracking-wide text-accent-700 bg-accent-50 px-2 py-0.5 rounded border border-accent-100">${item.route.replace('_',' ➔ ')}</span>
+                <h4 class="font-display font-bold text-sm text-ink mt-1.5">${item.title}</h4>
+                <p class="text-[11px] text-slate-400">Carrier: ${hasMatched ? item.carrier : 'No traveler matched yet'} · Weight: ${item.weight} kg</p>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                ${hasMatched ? `<button onclick="openChatForRequest('${item.id}')" class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100 flex items-center justify-center text-slate-600" title="Chat"><i data-lucide="message-square" class="w-4 h-4"></i></button>` : ''}
+                <button onclick="deleteRequest('${item.id}')" class="w-8 h-8 rounded-lg bg-red-50 border border-red-100 hover:bg-red-100 flex items-center justify-center text-red-600" title="Delete request"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+            
+            <!-- Progress timeline bar -->
+            ${renderTimelineBar(item.status)}
+
+            <div class="flex items-center justify-between pt-2 border-t border-brand-50">
+              <span class="text-[10px] text-slate-400 font-semibold">Sender Action:</span>
+              ${nextAction}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    activeContainer.innerHTML = activeHtml;
+    safeCreateIcons();
+  }
+
+  // Dynamic Timeline markup helper
+  function renderTimelineBar(status) {
+    const stages = ['pending', 'accepted', 'in-transit', 'delivered'];
+    const labels = ['Posted', 'Matched', 'In Transit', 'Delivered'];
+    const activeIdx = stages.indexOf(status);
+
+    return `
+      <div class="py-2">
+        <div class="relative flex items-center justify-between">
+          <!-- Timeline line -->
+          <div class="absolute left-2 right-2 h-1 bg-slate-100 -z-10 top-2.5">
+            <div class="h-full bg-accent-500 transition-all duration-500" style="width: ${activeIdx * 33.3}%"></div>
+          </div>
+          
+          <!-- Nodes -->
+          ${labels.map((lbl, idx) => {
+            const isDone = idx <= activeIdx;
+            const nodeClass = isDone ? 'bg-accent-600 text-white' : 'bg-slate-100 text-slate-400';
+            return `
+              <div class="flex flex-col items-center">
+                <span class="w-5.5 h-5.5 rounded-full ${nodeClass} flex items-center justify-center text-[10px] font-bold shadow-sm z-10 transition-colors duration-300">
+                  ${isDone ? '✓' : idx + 1}
+                </span>
+                <span class="text-[10px] font-semibold text-slate-500 mt-1">${lbl}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Update Package delivery status milestones
+  window.updatePackageStatus = function(id, nextStatus) {
+    const item = requests.find(r => r.id === id);
+    if (!item) return;
+
+    item.status = nextStatus;
+    
+    // If marked delivered, update profile successful stats
+    if (nextStatus === 'delivered') {
+      profiles['You (Sender)'].deliveriesCount++;
+    }
+
+    saveState();
+    renderRequests();
+    renderDashboardLists();
+    
+    const toastMsg = nextStatus === 'in-transit' 
+      ? 'Package marked in transit! Traveler carrying items.'
+      : 'Package successfully delivered! P2P Reward released.';
+    showToast(toastMsg);
+  };
+
+  // Render Dashboard history content (items fully delivered)
+  function renderDashboardHistory() {
+    const container = document.getElementById('dashboard-history-content');
+    const myHistory = requests.filter(r => (r.carrier === 'You (Sender)' || r.isCustom) && r.status === 'delivered');
+
+    if (myHistory.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-10 bg-slate-50/50 rounded-2xl border border-brand-100 p-6">
+          <i data-lucide="history" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+          <p class="text-xs text-slate-500 font-semibold">No successful deliveries log.</p>
+        </div>
+      `;
+      safeCreateIcons();
+      return;
+    }
+
+    container.innerHTML = myHistory.map(item => `
+      <div class="border border-brand-100 rounded-xl p-4 bg-white shadow-sm flex items-center justify-between gap-4">
+        <div>
+          <span class="text-[9px] font-bold uppercase tracking-wide text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Completed Delivery</span>
+          <h4 class="font-display font-bold text-xs text-ink mt-1">${item.title}</h4>
+          <p class="text-[10px] text-slate-400">Corridor: ${item.route.replace('_',' ➔ ')} · Reward released: ${item.reward}</p>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-accent-50 flex items-center justify-center text-accent-700">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+        </div>
+      </div>
+    `).join('');
+    
+    safeCreateIcons();
+  }
+
+  // ============ PUBLIC USER PROFILE VIEWER MODAL ============
+
+  window.openPublicProfile = function(userName) {
+    const prof = profiles[userName];
+    if (!prof) return;
+
+    const modal = document.getElementById('profile-modal');
+    const body = document.getElementById('profile-modal-body');
+
+    // Build verifications checklists
+    const badgesHtml = [
+      { key: 'phone', label: 'Mobile Number Verified', icon: 'phone' },
+      { key: 'id', label: 'Passport ID Document Confirmed', icon: 'file-check-2' },
+      { key: 'flight', label: 'Boarding Pass/Itinerary Checked', icon: 'plane' }
+    ].map(b => {
+      const hasBadge = prof.verifications[b.key];
+      return `
+        <div class="flex items-center justify-between border rounded-xl p-2.5 text-xs font-semibold ${hasBadge ? 'text-accent-600 bg-accent-50 border-accent-100' : 'text-slate-300 border-slate-100 opacity-50'}">
+          <span class="flex items-center gap-1.5"><i data-lucide="${b.icon}" class="w-4 h-4"></i> ${b.label}</span>
+          <i data-lucide="${hasBadge ? 'check-circle-2' : 'x-circle'}" class="w-4 h-4 shrink-0 ${hasBadge ? 'text-accent-700' : 'text-slate-300'}"></i>
+        </div>
+      `;
+    }).join('');
+
+    // Itinerary details
+    const itineraryHtml = prof.upcomingTrip 
+      ? `
+        <div class="bg-brand-50 border border-brand-200 rounded-2xl p-4">
+          <p class="text-[10px] font-bold text-brand-800 uppercase tracking-wider mb-2">Upcoming travel itinerary</p>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold text-ink">${prof.upcomingTrip.route}</p>
+              <p class="text-[10px] text-slate-500">${prof.upcomingTrip.flight}</p>
+            </div>
+            <span class="text-xs font-semibold text-brand-600 bg-white border border-brand-200 px-2.5 py-1 rounded-lg">${prof.upcomingTrip.date}</span>
+          </div>
+        </div>
+      `
+      : `<p class="text-xs text-slate-400 italic bg-slate-50/50 rounded-xl p-3 border border-slate-100 text-center">No upcoming verified flight trips scheduled.</p>`;
+
+    // Reviews lists
+    const reviewsHtml = prof.reviews && prof.reviews.length > 0 
+      ? prof.reviews.map(r => `
+        <div class="border border-brand-50 bg-brand-50/20 rounded-xl p-3.5 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-ink">${r.reviewer}</span>
+            <span class="text-[10px] text-slate-400 font-semibold">${r.date}</span>
+          </div>
+          <div class="flex items-center text-brand-500 mb-1">
+            ${Array.from({ length: r.rating }).map(() => `<i data-lucide="star" class="w-3 h-3 fill-brand-500 text-brand-500"></i>`).join('')}
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed italic">"${r.comment}"</p>
+        </div>
+      `).join('')
+      : `<p class="text-xs text-slate-400 italic text-center py-4">No community reviews received yet.</p>`;
+
+    body.innerHTML = `
+      <!-- Profile overview header -->
+      <div class="flex items-center gap-4">
+        <img src="${prof.avatar}" class="w-16 h-16 rounded-full object-cover border-2 border-brand-200 shadow-sm" />
+        <div>
+          <h4 class="font-display text-lg font-bold text-ink">${prof.name}</h4>
+          <div class="flex items-center gap-1.5 text-xs font-semibold mt-1">
+            <span class="flex items-center text-brand-600 font-bold"><i data-lucide="star" class="w-3.5 h-3.5 fill-brand-500 text-brand-500 mr-0.5"></i> ${prof.rating}</span>
+            <span class="text-slate-300">·</span>
+            <span class="text-slate-500">${prof.deliveriesCount} successful deliveries</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="space-y-1.5">
+        <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">About</h5>
+        <p class="text-xs text-slate-500 leading-relaxed">${prof.bio || 'No bio provided.'}</p>
+      </div>
+
+      <!-- Flight status -->
+      <div class="space-y-2">
+        <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Travel Schedule</h5>
+        ${itineraryHtml}
+      </div>
+
+      <!-- Trust verifications checklist -->
+      <div class="space-y-2">
+        <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Security Verifications</h5>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          ${badgesHtml}
+        </div>
+      </div>
+
+      <!-- Feedback reviews feed -->
+      <div class="space-y-2.5">
+        <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Community Feedback</h5>
+        <div class="space-y-2.5">
+          ${reviewsHtml}
+        </div>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    safeCreateIcons();
+  };
+
+  window.closeProfileModal = function() {
+    document.getElementById('profile-modal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  };
+
+  // ============ BASIC CONTROLS & TRASH ============
+
+  window.cancelCarryJob = function(id) {
+    const item = requests.find(r => r.id === id);
+    if (item) {
+      item.status = 'pending';
+      item.carrier = null;
+      chats = chats.filter(c => c.requestId !== id);
+      saveState();
+      
+      renderRequests();
+      renderDashboardLists();
+      renderChatRoomsList();
+      showToast('Trip carry job cancelled.');
+    }
+  };
+
+  window.deleteRequest = function(id) {
+    requests = requests.filter(r => r.id !== id);
+    chats = chats.filter(c => c.requestId !== id);
+    saveState();
+
+    renderRequests();
+    renderDashboardLists();
+    renderChatRoomsList();
+    showToast('Package request deleted.');
+  };
+
+  // Render Chat Rooms Selection
+  function renderChatRoomsList() {
+    const list = document.getElementById('chat-rooms-list');
+    if (chats.length === 0) {
+      list.innerHTML = `<p class="text-xs text-slate-400 py-2 w-full text-center">No active chats. Offer to carry a package to negotiate.</p>`;
+      return;
+    }
+
+    list.innerHTML = chats.map(room => {
+      const activeClass = room.id === activeChatId ? 'bg-ink text-white border-ink' : 'bg-white text-slate-700 hover:bg-brand-50 border-brand-100';
+      const unreadBadge = room.unread ? `<span class="w-2 h-2 rounded-full bg-brand-500 absolute -top-0.5 -right-0.5 animate-ping"></span>` : '';
+      
+      return `
+        <button onclick="selectChatRoom('${room.id}')" class="relative shrink-0 flex items-center gap-2 border px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${activeClass}">
+          <img src="${room.participantAvatar}" class="w-5 h-5 rounded-full object-cover" />
+          <span>${room.participantName.split(' ')[0]}</span>
+          ${unreadBadge}
+        </button>
+      `;
+    }).join('');
+  }
+
+  window.selectChatRoom = function(roomId) {
+    activeChatId = roomId;
+    const room = chats.find(c => c.id === roomId);
+    if (room) {
+      room.unread = false;
+      saveState();
+    }
+    renderChatRoomsList();
+    renderActiveChatPane();
+    updateUnreadChatCount();
+  };
+
+  // Render Messages inside Active Chat
+  function renderActiveChatPane() {
+    const header = document.getElementById('active-chat-header');
+    const history = document.getElementById('chat-history-messages');
+    
+    const activeRoom = chats.find(c => c.id === activeChatId);
+    if (!activeRoom) {
+      header.innerHTML = `<p class="text-xs font-bold text-slate-400">No conversation selected</p>`;
+      history.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-center p-5 text-slate-400 space-y-3">
+          <i data-lucide="message-square" class="w-10 h-10 text-slate-300"></i>
+          <p class="text-sm font-semibold">Ready to start chat negotiation?</p>
+          <p class="text-xs max-w-xs">Click "Offer to Carry" on any available package listed on the feed to start chatting with the sender.</p>
+        </div>
+      `;
+      document.getElementById('whatsapp-shortcut-area').innerHTML = '';
+      safeCreateIcons();
+      return;
+    }
+
+    const requestDetails = requests.find(r => r.id === activeRoom.requestId);
+    const itemTitle = requestDetails ? requestDetails.title : 'Package Inquiry';
+    const itemReward = requestDetails ? requestDetails.reward : '';
+    const phone = requestDetails ? requestDetails.phone : '';
+
+    header.innerHTML = `
+      <img src="${activeRoom.participantAvatar}" class="w-9 h-9 rounded-full object-cover shrink-0 border border-brand-100" />
+      <div class="min-w-0 flex-1">
+        <h4 class="font-display font-bold text-xs text-ink truncate">${activeRoom.participantName}</h4>
+        <p class="text-[10px] text-slate-500 font-semibold truncate">Negotiating: ${itemTitle} (${itemReward})</p>
+      </div>
+    `;
+
+    history.innerHTML = activeRoom.messages.map(msg => {
+      const isUser = msg.sender === 'user';
+      const bubbleClass = isUser ? 'chat-bubble-user ml-auto' : 'chat-bubble-them mr-auto';
+      const wrapperClass = isUser ? 'justify-end' : 'justify-start';
+      
+      return `
+        <div class="flex ${wrapperClass} items-end gap-2">
+          ${!isUser ? `<img src="${activeRoom.participantAvatar}" class="w-6 h-6 rounded-full object-cover shrink-0 mb-1" />` : ''}
+          <div class="max-w-[75%] px-3.5 py-2.5 shadow-sm text-xs font-medium leading-relaxed ${bubbleClass}">
+            <p>${msg.text}</p>
+            <span class="block text-[8px] text-right mt-1 opacity-70">${msg.time}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const waText = encodeURIComponent(`Hi, I am interested in coordinating the package delivery "${itemTitle}" on Souq & Sheba.`);
+    document.getElementById('whatsapp-shortcut-area').innerHTML = phone 
+      ? `<a href="https://wa.me/${phone}?text=${waText}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-accent-700 hover:text-accent-800 hover:underline">
+          <i data-lucide="phone-call" class="w-3.5 h-3.5"></i> Transition to direct WhatsApp call/chat
+        </a>`
+      : '';
+
+    setTimeout(() => {
+      history.scrollTop = history.scrollHeight;
+    }, 50);
+
+    safeCreateIcons();
+  }
+
+  // Handle Send Chat Message
+  window.handleSendChat = function(e) {
+    e.preventDefault();
+    const input = document.getElementById('chat-input-field');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const activeRoom = chats.find(c => c.id === activeChatId);
+    if (!activeRoom) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    activeRoom.messages.push({
+      sender: 'user',
+      text: text,
+      time: timeStr
+    });
+
+    input.value = '';
+    renderActiveChatPane();
+    saveState();
+
+    if (activeRoom.replies && activeRoom.replyIndex < activeRoom.replies.length) {
+      const nextReplyText = activeRoom.replies[activeRoom.replyIndex];
+      activeRoom.replyIndex++;
+
+      const typingEl = document.getElementById('typing-indicator');
+      const typingUser = document.getElementById('typing-username');
+      typingUser.textContent = activeRoom.participantName.split(' ')[0];
+      
+      setTimeout(() => {
+        typingEl.classList.remove('hidden');
+        const hist = document.getElementById('chat-history-messages');
+        hist.scrollTop = hist.scrollHeight;
+      }, 600);
+
+      setTimeout(() => {
+        typingEl.classList.add('hidden');
+        activeRoom.messages.push({
+          sender: 'them',
+          text: nextReplyText,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        activeRoom.unread = true;
+        saveState();
+        renderActiveChatPane();
+        renderChatRoomsList();
+        updateUnreadChatCount();
+      }, 2500);
+    }
+  };
+
+  function parseRewardVal(rewardStr) {
+    const match = rewardStr.replace(/[^0-9]/g, '');
+    return match ? parseFloat(match) : 0;
+  }
+
+  function renderFeaturedRequests() {
+    const slider = document.getElementById('featured-requests-slider');
+    const featured = requests.filter(r => {
+      if (r.status !== 'pending') return false;
+      const numVal = parseRewardVal(r.reward);
+      if (r.reward.includes('AED') && numVal >= 120) return true;
+      if (r.reward.includes('ETB') && numVal >= 3000) return true;
+      return false;
+    });
+
+    if (featured.length === 0) {
+      slider.innerHTML = `<p class="text-xs text-slate-400 py-6 w-full text-center">No featured package requests available right now.</p>`;
+      return;
+    }
+
+    slider.innerHTML = featured.map(item => {
+      const routeText = item.route === 'ADD_TO_DXB' 
+        ? 'ADD ➔ DXB' 
+        : 'DXB ➔ ADD';
+        
+      const profileObj = profiles[item.sender] || profiles['Kaleb T.'];
+
+      return `
+        <div class="group relative shrink-0 w-[280px] bg-white rounded-2xl border border-brand-100 shadow-card hover:shadow-cardHover hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col">
+          <div class="relative h-32 overflow-hidden shrink-0">
+            <img src="https://images.unsplash.com/${item.img}?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <span class="absolute top-2.5 left-2.5 text-[9px] font-bold uppercase tracking-wider bg-brand-500 text-ink px-2 py-0.5 rounded-full shadow-sm">Featured</span>
+            <span class="absolute bottom-2.5 right-2.5 text-[10px] font-bold bg-white/90 backdrop-blur text-ink px-2.5 py-0.5 rounded flex items-center gap-1"><i data-lucide="weight" class="w-3 h-3 text-slate-500"></i> ${item.weight} kg</span>
+          </div>
+          <div class="p-4 flex flex-col flex-1">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] font-extrabold uppercase tracking-wide text-brand-600">${routeText}</span>
+              <span class="text-[9px] font-semibold bg-slate-50 border border-slate-100 rounded px-1.5 py-0.5">${item.category}</span>
+            </div>
+            <h3 class="text-xs font-bold text-ink leading-snug truncate" title="${item.title}">${item.title}</h3>
+            <p class="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-normal flex-1">${item.desc}</p>
+            <div class="border-t border-brand-50 pt-3 mt-3 flex items-center justify-between gap-2">
+              <div>
+                <p class="text-[8px] font-semibold text-slate-400 uppercase tracking-wider">Reward</p>
+                <p class="font-display font-800 text-brand-600 text-sm leading-tight">${item.reward}</p>
+              </div>
+              <button onclick="acceptRequest('${item.id}')" class="bg-ink hover:bg-brand-500 hover:text-ink text-white rounded-xl px-3 py-1.5 text-[10px] font-bold transition-all flex items-center gap-1">
+                Carry
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    safeCreateIcons();
+  }
+
+  function renderTravelersGrid() {
+    const container = document.getElementById('travelers-grid');
+    if (!container) return;
+
+    const filtered = travelers.filter(t => activeRoute === 'ALL' || t.route === activeRoute);
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<p class="text-xs text-slate-400 py-6 w-full text-center lg:col-span-4">No verified travelers on this route at the moment.</p>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(t => {
+      const routeText = t.route === 'ADD_TO_DXB' 
+        ? '<div class="flex items-center gap-1 font-bold text-xs"><span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-100 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#DBAE3E] flex-1"></span><span class="bg-[#C6952A] flex-1"></span></span> ADD ➔ DXB</div>'
+        : '<div class="flex items-center gap-1 font-bold text-xs"><span class="flex h-3 w-4.5 overflow-hidden rounded-sm ring-1 ring-slate-100 shrink-0"><span class="bg-[#0F5934] flex-1"></span><span class="bg-[#C6952A] flex-1"></span><span class="bg-[#211B14] flex-1"></span></span> DXB ➔ ADD</div>';
+        
+      const categoriesHtml = t.allowedCategories.map(c => `
+        <span class="text-[9px] font-semibold bg-slate-100 text-slate-600 rounded px-1.5 py-0.5 whitespace-nowrap">${c}</span>
+      `).join('');
+
+      const waText = encodeURIComponent(`Hi ${t.name}, I saw you are traveling from ${t.route === 'ADD_TO_DXB' ? 'Addis to Dubai' : 'Dubai to Addis'} on ${t.flightDate}. Can you carry a package?`);
+
+      const isMe = t.name.includes('(You)') || t.name === 'Alex M. (You)';
+      const chatButton = isMe 
+        ? `<span class="text-xs font-semibold text-slate-400 italic">Your travel posting</span>`
+        : `<button onclick="chatWithTraveler('${t.name}')" class="flex-1 text-center bg-ink hover:bg-brand-500 hover:text-ink text-white rounded-xl py-2 text-[11px] font-bold transition-all flex items-center justify-center gap-1">
+            <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Chat Flyer
+          </button>`;
+
+      const waButton = isMe
+        ? ''
+        : `<a href="https://wa.me/${t.phone}?text=${waText}" target="_blank" rel="noopener" class="w-8 h-8 rounded-xl bg-accent-50 hover:bg-accent-100 flex items-center justify-center border border-accent-100 transition-colors" title="WhatsApp Contact">
+            <i data-lucide="phone" class="w-3.5 h-3.5 text-accent-700"></i>
+          </a>`;
+
+      return `
+        <div class="bg-white rounded-2xl border border-brand-100 shadow-card hover:shadow-cardHover transition-all duration-300 p-5 flex flex-col">
+          <div class="flex items-center gap-3 cursor-pointer mb-3" onclick="openPublicProfile('${t.name}')">
+            <img src="${t.avatar}" class="w-10 h-10 rounded-full object-cover border border-brand-100" />
+            <div class="min-w-0">
+              <h4 class="font-display font-bold text-xs text-ink truncate">${t.name}</h4>
+              <span class="flex items-center text-brand-600 text-[10px] font-bold mt-0.5"><i data-lucide="star" class="w-2.5 h-2.5 fill-brand-500 text-brand-500 mr-0.5"></i> ${t.rating}</span>
+            </div>
+          </div>
+
+          <div class="space-y-2 flex-1">
+            <div class="border-t border-brand-50 pt-2.5">
+              <p class="text-[8px] font-bold text-slate-400 uppercase">Flight Corridor</p>
+              <div class="mt-1">${routeText}</div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 text-[10px] leading-tight">
+              <div>
+                <p class="font-bold text-slate-400 text-[8px] uppercase">Flight Date</p>
+                <p class="font-semibold text-slate-700 mt-0.5">${t.flightDate}</p>
+              </div>
+              <div>
+                <p class="font-bold text-slate-400 text-[8px] uppercase">Capacity</p>
+                <p class="font-semibold text-brand-600 mt-0.5">Up to ${t.maxWeight} kg</p>
+              </div>
+            </div>
+
+            <div class="border-t border-brand-50 pt-2">
+              <p class="text-[8px] font-bold text-slate-400 uppercase mb-1.5">Cargo Categories accepted</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${categoriesHtml}
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-brand-50 pt-3.5 mt-3.5 flex items-center gap-2">
+            ${waButton}
+            ${chatButton}
+          </div>
+        </div>
+      `;
+    }).join('');
+    safeCreateIcons();
+  }
+
+  window.chatWithTraveler = function(travelerName) {
+    const cleanName = travelerName.replace(' (You)', '').trim();
+    const travelerObj = profiles[cleanName] || profiles['Kaleb T.'];
+    const chatId = 'chat_traveler_' + cleanName.replace(/[^a-zA-Z0-9]/g, '');
+
+    let existingChat = chats.find(c => c.id === chatId);
+    if (!existingChat) {
+      existingChat = {
+        id: chatId,
+        requestId: null,
+        participantName: `${cleanName} (Traveler)`,
+        participantAvatar: travelerObj.avatar,
+        messages: [
+          { sender: 'them', text: `Hi there! I saw you noticed my upcoming flight schedule. Do you have a package that needs delivery?`, time: 'Just now' }
+        ],
+        replies: [
+          "Perfect! What is the size and weight of the items? I have up to 8kg luggage space left.",
+          "I will be checking in my luggage 3 hours before flight. We can coordinate the airport handover."
+        ],
+        replyIndex: 0
+      };
+      chats.unshift(existingChat);
+    }
+
+    activeChatId = existingChat.id;
+    saveState();
+
+    renderChatRoomsList();
+    renderActiveChatPane();
+    
+    showToast(`Opening chat with traveler ${cleanName}...`);
+    
+    setTimeout(() => {
+      toggleChatDrawer(true);
+    }, 600);
+  };
+
+  window.openPackageModal = function(id) {
+    const item = requests.find(r => r.id === id);
+    if (!item) return;
+
+    const profileObj = profiles[item.sender] || profiles['Kaleb T.'];
+    const isAccepted = item.status !== 'pending';
+
+    document.getElementById('pkg-modal-img').src = `https://images.unsplash.com/${item.img}?auto=format&fit=crop&w=600&q=80`;
+    document.getElementById('pkg-modal-badge').textContent = item.category;
+    document.getElementById('pkg-modal-route').textContent = item.route === 'ADD_TO_DXB' ? 'Addis Ababa ➔ Dubai' : 'Dubai ➔ Addis Ababa';
+    document.getElementById('pkg-modal-weight').textContent = `${item.weight} kg`;
+    document.getElementById('pkg-modal-title').textContent = item.title;
+    document.getElementById('pkg-modal-desc').textContent = item.desc;
+    document.getElementById('pkg-modal-reward').textContent = item.reward;
+    document.getElementById('pkg-modal-deadline').textContent = item.deadline;
+    
+    document.getElementById('pkg-modal-avatar').src = profileObj.avatar;
+    document.getElementById('pkg-modal-sender').textContent = profileObj.name;
+    document.getElementById('pkg-modal-rating').innerHTML = `<i data-lucide="star" class="w-3 h-3 fill-brand-500 text-brand-500 mr-0.5"></i> ${profileObj.rating}`;
+
+    document.getElementById('pkg-modal-wa').href = `https://wa.me/${item.phone}?text=${encodeURIComponent(`Hi ${item.sender}, I am interested in carrying your package request "${item.title}" on Souq & Sheba.`)}`;
+
+    const actionBtn = document.getElementById('pkg-modal-action-btn');
+    if (isAccepted) {
+      actionBtn.innerHTML = `<i data-lucide="message-square" class="w-4 h-4"></i> Open Chat`;
+      actionBtn.onclick = function() {
+        closePackageModal();
+        window.openChatForRequest(item.id);
+      };
+    } else {
+      actionBtn.innerHTML = `<i data-lucide="handshake" class="w-4 h-4"></i> Offer to Carry`;
+      actionBtn.onclick = function() {
+        closePackageModal();
+        window.acceptRequest(item.id);
+      };
+    }
+
+    document.getElementById('package-detail-modal').classList.remove('hidden');
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  };
+
+  window.closePackageModal = function() {
+    document.getElementById('package-detail-modal').classList.add('hidden');
+  };
+
+  function updateUnreadChatCount() {
+    const unreadCount = chats.filter(c => c.unread).length;
+    [document.getElementById('unread-chat-count'), document.getElementById('unread-chat-count-mobile')].forEach(badge => {
+      if (badge) {
+        badge.textContent = unreadCount;
+        badge.classList.toggle('hidden', unreadCount === 0);
+      }
+    });
+  }
+
+  // Run on start
+  init();
+  window.addEventListener('load', safeCreateIcons);
+</script>
+</body>
+</html>

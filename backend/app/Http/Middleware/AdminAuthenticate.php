@@ -15,6 +15,10 @@ class AdminAuthenticate
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (! auth('admin')->check()) {
+            return redirect()->route('admin.login')->with('error', 'Please log in to access the admin dashboard.');
+        }
+
         return $next($request);
     }
 }
