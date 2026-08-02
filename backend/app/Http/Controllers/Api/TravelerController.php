@@ -19,7 +19,7 @@ class TravelerController extends Controller
         $travels = Travel::query()
             ->with([
                 'traveler' => fn ($query) => $query
-                    ->select(['id', 'name', 'email', 'phone', 'city', 'country', 'status', 'role'])
+                    ->select(['id', 'name', 'email', 'phone', 'city', 'country', 'photo', 'status', 'role'])
                     ->withCount('reviewsReceived')
                     ->withAvg('reviewsReceived', 'rating'),
             ])
@@ -49,6 +49,7 @@ class TravelerController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone ?? '251911223344',
+                    'photo' => $user->photo_url,
                     'city' => $user->city ?? 'Addis Ababa',
                     'country' => $user->country ?? 'Ethiopia',
                     'route' => 'Addis Ababa to Dubai',
@@ -71,7 +72,7 @@ class TravelerController extends Controller
             ]);
         }
 
-        $travelers = $travels->map(function (Travel $travel) {
+        $travelers = $travels->unique('traveler_id')->map(function (Travel $travel) {
             $traveler = $travel->traveler;
             $averageRating = $traveler?->reviews_received_avg_rating;
             $reviewCount = $traveler?->reviews_received_count ?? 0;
@@ -83,6 +84,7 @@ class TravelerController extends Controller
                 'name' => $traveler?->name ?? 'Verified Traveler',
                 'email' => $traveler?->email,
                 'phone' => $traveler?->phone ?? '251911223344',
+                'photo' => $traveler?->photo_url,
                 'city' => $traveler?->city ?? 'Addis Ababa',
                 'country' => $traveler?->country ?? 'Ethiopia',
                 'route' => "{$travel->from_city} to {$travel->to_city}",

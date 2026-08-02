@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'email', 'password', 'phone', 'role', 'status', 'city', 'country', 'id_document_type', 'id_document_number', 'id_document_path', 'id_document_status', 'marketing_opt_in', 'unsubscribe_token'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'role', 'status', 'city', 'country', 'photo', 'id_document_type', 'id_document_number', 'id_document_path', 'id_document_status', 'marketing_opt_in', 'unsubscribe_token'])]
 #[Hidden(['password', 'remember_token', 'id_document_path'])]
 class User extends Authenticatable
 {
@@ -23,6 +23,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $appends = [
+        'photo_url',
         'id_document_url',
     ];
 
@@ -68,6 +69,19 @@ class User extends Authenticatable
     public function emailCampaignRecipients(): HasMany
     {
         return $this->hasMany(EmailCampaignRecipient::class);
+    }
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (!$this->photo) {
+            return null;
+        }
+
+        if (str_starts_with($this->photo, 'http://') || str_starts_with($this->photo, 'https://')) {
+            return $this->photo;
+        }
+
+        return asset('storage/' . $this->photo);
     }
 
     public function getIdDocumentUrlAttribute(): ?string

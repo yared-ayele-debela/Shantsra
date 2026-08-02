@@ -109,24 +109,50 @@ export default function HomeView({
         });
         if (response.ok) {
           const data = await response.json();
-          if (data.travelers && data.travelers.length > 0) {
-            const mapped = data.travelers.map(t => ({
-              id: t.id,
-              name: t.name || 'Verified Traveler',
-              avatar: t.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
-              rating: String(t.rating || '5.0'),
-              route: (t.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
-              flightDate: t.date || 'Upcoming Flight',
-              airline: 'Verified Airline Flight',
-              maxWeight: String(t.available_weight || '10.0'),
-              allowedCategories: ['General Cargo', 'Documents', 'Coffee & Gifts'],
-              phone: t.phone || '251911223344'
-            }));
-            setRealTravelers(mapped);
+          const list = data.travelers || [];
+          if (list.length > 0) {
+            const uniqueMap = new Map();
+
+            list.forEach(t => {
+              const key = t.traveler_id || t.id || t.email || t.name;
+              if (!uniqueMap.has(key)) {
+                const rawPhoto = t.photo || t.photo_url || null;
+                const hasPhoto = Boolean(
+                  rawPhoto && 
+                  typeof rawPhoto === 'string' && 
+                  rawPhoto.trim().length > 0 && 
+                  !rawPhoto.toLowerCase().includes('unsplash.com')
+                );
+                let photoSrc = '';
+                if (hasPhoto) {
+                  photoSrc = rawPhoto.trim();
+                  if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
+                    photoSrc = `/storage/${photoSrc}`;
+                  }
+                }
+
+                uniqueMap.set(key, {
+                  id: t.id,
+                  name: t.name || 'Verified Traveler',
+                  photo: photoSrc,
+                  photo_url: photoSrc,
+                  isRealPhoto: hasPhoto,
+                  rating: String(t.rating || '5.0'),
+                  route: (t.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
+                  flightDate: t.date || 'Upcoming Flight',
+                  airline: 'Verified Airline Flight',
+                  maxWeight: String(t.available_weight || '10.0'),
+                  allowedCategories: ['General Cargo', 'Documents', 'Coffee & Gifts'],
+                  phone: t.phone || '251911223344'
+                });
+              }
+            });
+
+            setRealTravelers(Array.from(uniqueMap.values()));
           }
         }
       } catch (err) {
-        console.log('Using default travelers on landing page.');
+        console.log('Using default travelers on landing page.', err);
       }
     }
     fetchRealTravelers();
@@ -204,7 +230,36 @@ export default function HomeView({
     fetchUrgentShipments();
   }, []);
 
-  const travelersList = realTravelers.length > 0 ? realTravelers : DEFAULT_TRAVELERS;
+  const travelersList = useMemo(() => {
+    const rawList = realTravelers.length > 0 ? realTravelers : (DEFAULT_TRAVELERS || []);
+    const uniqueMap = new Map();
+    rawList.forEach(t => {
+      const key = t.traveler_id || t.id || t.email || t.name;
+      if (!uniqueMap.has(key)) {
+        const rawPhoto = t.photo || t.photo_url || null;
+        const hasPhoto = Boolean(
+          rawPhoto && 
+          typeof rawPhoto === 'string' && 
+          rawPhoto.trim().length > 0 && 
+          !rawPhoto.toLowerCase().includes('unsplash.com')
+        );
+        let photoSrc = '';
+        if (hasPhoto) {
+          photoSrc = rawPhoto.trim();
+          if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
+            photoSrc = `/storage/${photoSrc}`;
+          }
+        }
+
+        uniqueMap.set(key, {
+          ...t,
+          photo: photoSrc,
+          isRealPhoto: hasPhoto
+        });
+      }
+    });
+    return Array.from(uniqueMap.values());
+  }, [realTravelers]);
   const allRequestsList = realShipments.length > 0 ? [...realShipments, ...requests] : requests;
 
   const handleResetFilters = () => {
@@ -250,27 +305,27 @@ export default function HomeView({
               Peer-to-Peer Shipping (Addis Ababa ⇄ Dubai)
             </span>
             
-            <h1 className="font-display mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-white">
-              Send packages via travelers,<br/>
+            <h1 className="font-display mt-5 text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white">
+              Send packages via travelers,<br className="hidden sm:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-emerald-300">
                 fly and earn rewards.
               </span>
             </h1>
 
-            <p className="mt-6 text-slate-300 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="mt-4 sm:mt-6 text-slate-300 text-sm sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
               Got flight tickets? Deliver local packages between Ethiopia and UAE to subsidize your trip. Need something shipped quickly? Find a verified traveler heading your way.
             </p>
 
-            <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4">
               <button 
                 onClick={onOpenPostModal} 
-                className="bg-amber-500 hover:bg-amber-400 text-[#1C160F] font-bold px-6 py-3.5 rounded-xl transition-all shadow-lg flex items-center gap-2"
+                className="bg-amber-500 hover:bg-amber-400 text-[#1C160F] font-bold px-6 py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <PackagePlus className="w-5 h-5" /> Send a Package
               </button>
               <a 
                 href="#requests-section" 
-                className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-xl transition-all flex items-center gap-2"
+                className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto text-center"
               >
                 <Search className="w-5 h-5" /> Browse Requests
               </a>
@@ -341,8 +396,8 @@ export default function HomeView({
       <section className="max-w-7xl mx-auto px-5 lg:px-8 mt-12">
         <div className="flex items-end justify-between mb-6">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-red-600 flex items-center gap-1.5 mb-1">
-              <Zap className="w-4 h-4 text-red-600 fill-red-600 animate-pulse" /> Featured Opportunities
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1.5 mb-1">
+              <Zap className="w-4 h-4 text-amber-600 fill-amber-500" /> Featured Opportunities
             </span>
             <h2 className="font-display text-2xl font-extrabold text-[#1C160F]">
               Urgent &amp; High-Reward Packages
@@ -356,17 +411,17 @@ export default function HomeView({
           </span>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto scrollbar-none pb-4 -mx-5 px-5 lg:mx-0 lg:px-0">
+        {/* Urgent & High-Reward Package Grid (2 columns on mobile) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {featuredRequests.map(item => (
-            <div key={item.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px] shrink-0">
-              <PackageCard 
-                item={item} 
-                profile={profiles[item.sender]}
-                onSelectPackage={onSelectPackage}
-                onSelectProfile={onSelectProfile}
-                onOfferToCarry={onOfferToCarry}
-              />
-            </div>
+            <PackageCard 
+              key={item.id} 
+              item={item} 
+              profile={profiles[item.sender]}
+              onSelectPackage={onSelectPackage}
+              onSelectProfile={onSelectProfile}
+              onOfferToCarry={onOfferToCarry}
+            />
           ))}
         </div>
       </section>
@@ -386,12 +441,12 @@ export default function HomeView({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-full">
             {/* Route Filter Pills */}
-            <div className="inline-flex bg-white border border-amber-200/60 rounded-xl p-1 shadow-sm shrink-0">
+            <div className="flex items-center gap-1 bg-white border border-amber-200/60 rounded-xl p-1 shadow-sm overflow-x-auto scrollbar-none max-w-full shrink-0">
               <button 
                 onClick={() => setFilterRoute('ALL')}
-                className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${
+                className={`text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
                   filterRoute === 'ALL' ? 'bg-[#1C160F] text-white' : 'text-slate-600 hover:bg-amber-50'
                 }`}
               >
@@ -399,7 +454,7 @@ export default function HomeView({
               </button>
               <button 
                 onClick={() => setFilterRoute('ADD_TO_DXB')}
-                className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${
+                className={`text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
                   filterRoute === 'ADD_TO_DXB' ? 'bg-[#1C160F] text-white' : 'text-slate-600 hover:bg-amber-50'
                 }`}
               >
@@ -407,7 +462,7 @@ export default function HomeView({
               </button>
               <button 
                 onClick={() => setFilterRoute('DXB_TO_ADD')}
-                className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${
+                className={`text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
                   filterRoute === 'DXB_TO_ADD' ? 'bg-[#1C160F] text-white' : 'text-slate-600 hover:bg-amber-50'
                 }`}
               >
@@ -415,16 +470,16 @@ export default function HomeView({
               </button>
               <button 
                 onClick={() => setFilterRoute('URGENT')}
-                className={`text-xs font-bold px-4 py-2 rounded-lg transition-all flex items-center gap-1 ${
-                  filterRoute === 'URGENT' ? 'bg-red-600 text-white shadow-sm' : 'text-red-600 hover:bg-red-50'
+                className={`text-xs font-bold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all flex items-center gap-1 ${
+                  filterRoute === 'URGENT' ? 'bg-red-600 text-white shadow-sm font-extrabold ring-2 ring-red-300' : 'bg-red-600 text-white hover:bg-red-700'
                 }`}
               >
-                <Zap className="w-3.5 h-3.5 fill-current" /> Urgent Only
+                <Zap className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" /> Urgent Only
               </button>
             </div>
 
             {/* Search Input Box */}
-            <div className="relative flex items-center bg-white border border-amber-200/60 rounded-xl px-3.5 py-2 shadow-sm max-w-xs flex-1">
+            <div className="relative flex items-center bg-white border border-amber-200/60 rounded-xl px-3.5 py-2 shadow-sm w-full sm:max-w-xs">
               <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
               <input 
                 type="text" 
@@ -477,9 +532,9 @@ export default function HomeView({
           </button>
         </div>
 
-        {/* 4-Column Requests Feed Grid */}
+        {/* 4-Column Requests Feed Grid (2 columns on mobile) */}
         {filteredRequests.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {filteredRequests.map(item => (
               <PackageCard 
                 key={item.id} 
@@ -544,10 +599,20 @@ export default function HomeView({
                 </div>
 
                 <div 
-                  onClick={() => onSelectProfile(t.name)}
+                  onClick={() => onSelectProfile(t)}
                   className="flex items-center gap-3 cursor-pointer group"
                 >
-                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border border-amber-200 group-hover:border-amber-500 transition-colors" />
+                  {t.isRealPhoto ? (
+                    <img 
+                      src={t.photo} 
+                      alt={t.name} 
+                      className="w-12 h-12 rounded-full object-cover border border-amber-200 group-hover:border-amber-500 transition-colors shrink-0" 
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-base flex items-center justify-center border border-amber-200 group-hover:border-amber-500 transition-colors shrink-0 shadow-2xs">
+                      {t.name ? t.name.trim().charAt(0).toUpperCase() : 'T'}
+                    </div>
+                  )}
                   <div>
                     <h4 className="font-bold text-sm text-[#1C160F] group-hover:text-amber-600 transition-colors">{t.name}</h4>
                     <p className="text-[10px] text-slate-400">{t.airline} • {t.flightDate}</p>

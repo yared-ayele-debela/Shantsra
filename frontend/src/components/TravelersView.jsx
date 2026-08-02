@@ -10,6 +10,7 @@ export default function TravelersView({ profiles, onSelectProfile }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRoute, setFilterRoute] = useState('ALL');
   const [filterMinWeight, setFilterMinWeight] = useState(0);
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   // Selected traveler for modal
   const [modalTraveler, setModalTraveler] = useState(null);
@@ -30,25 +31,49 @@ export default function TravelersView({ profiles, onSelectProfile }) {
         if (response.ok) {
           const data = await response.json();
           const list = data.travelers || [];
-          const mapped = list.map(t => ({
-            id: t.id,
-            name: t.name || 'Verified Traveler',
-            avatar: t.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
-            rating: t.rating || 5.0,
-            reviews: t.reviews || 5,
-            route: (t.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
-            from_city: t.from_city || 'Addis Ababa',
-            to_city: t.to_city || 'Dubai',
-            flightDate: t.date || 'Upcoming Flight',
-            airline: 'Verified Flight',
-            available_weight: (float => isNaN(float) ? 10 : float)(parseFloat(t.available_weight || 10)),
-            price: t.price || '$15 / kg',
-            phone: t.phone || '251911223344',
-            city: t.city || 'Addis Ababa',
-            country: t.country || 'Ethiopia',
-            verified: true
-          }));
-          setRealTravelers(mapped);
+          const uniqueMap = new Map();
+
+          list.forEach(t => {
+            const key = t.traveler_id || t.id || t.email || t.name;
+            if (!uniqueMap.has(key)) {
+              const rawPhoto = t.photo || t.photo_url || null;
+              const hasPhoto = Boolean(
+                rawPhoto && 
+                typeof rawPhoto === 'string' && 
+                rawPhoto.trim().length > 0 && 
+                !rawPhoto.toLowerCase().includes('unsplash.com')
+              );
+              let photoSrc = '';
+              if (hasPhoto) {
+                photoSrc = rawPhoto.trim();
+                if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
+                  photoSrc = `/storage/${photoSrc}`;
+                }
+              }
+
+              uniqueMap.set(key, {
+                id: t.id,
+                name: t.name || 'Verified Traveler',
+                photo: photoSrc,
+                isRealPhoto: hasPhoto,
+                rating: t.rating || 5.0,
+                reviews: t.reviews || 5,
+                route: (t.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
+                from_city: t.from_city || 'Addis Ababa',
+                to_city: t.to_city || 'Dubai',
+                flightDate: t.date || 'Upcoming Flight',
+                airline: 'Verified Flight',
+                available_weight: (float => isNaN(float) ? 10 : float)(parseFloat(t.available_weight || 10)),
+                price: t.price || '$15 / kg',
+                phone: t.phone || '251911223344',
+                city: t.city || 'Addis Ababa',
+                country: t.country || 'Ethiopia',
+                verified: true
+              });
+            }
+          });
+
+          setRealTravelers(Array.from(uniqueMap.values()));
         }
       } catch (err) {
         console.error('Error fetching database travelers:', err);
@@ -86,7 +111,7 @@ export default function TravelersView({ profiles, onSelectProfile }) {
 
   const handleOpenUserDetail = (traveler) => {
     if (onSelectProfile) {
-      onSelectProfile(traveler.name);
+      onSelectProfile(traveler);
     } else {
       setModalTraveler(traveler);
     }
@@ -105,135 +130,153 @@ export default function TravelersView({ profiles, onSelectProfile }) {
   } : null;
 
   return (
-    <main className="max-w-7xl mx-auto px-5 lg:px-8 py-8 space-y-8">
+    <main className="max-w-7xl mx-auto px-3.5 sm:px-5 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
       {/* Header Banner */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1">
           <Users className="w-3.5 h-3.5" /> Database Flyers Directory
         </span>
-        <h1 className="font-display text-3xl font-extrabold text-[#1C160F]">
+        <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#1C160F]">
           Verified Travelers Directory
         </h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-slate-500 text-xs sm:text-sm mt-1">
           Real database records of active verified flyers traveling between Addis Ababa &amp; Dubai. Click any card to inspect profile details.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 items-start">
+      <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
+        {/* Mobile Filter Toggle Button */}
+        <div className="lg:hidden col-span-12">
+          <button 
+            onClick={() => setShowMobileFilter(!showMobileFilter)}
+            className="w-full bg-white border border-amber-200 text-[#1C160F] font-bold text-xs py-3 px-4 rounded-2xl flex items-center justify-between shadow-xs mb-2 cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-amber-600" />
+              <span>Filter &amp; Refine Travelers</span>
+            </span>
+            <span className="text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-extrabold border border-amber-200">
+              {showMobileFilter ? 'Hide Filters ▲' : 'Show Filters ▼'}
+            </span>
+          </button>
+        </div>
+
         {/* LEFT SIDE FILTER SIDEBAR (4 cols) */}
-        <aside className="lg:col-span-4 bg-white rounded-2xl border border-amber-100 p-6 shadow-sm space-y-6 lg:sticky lg:top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none">
-          <div className="flex items-center justify-between border-b border-amber-50 pb-3">
-            <h3 className="font-display font-bold text-base text-[#1C160F] flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-amber-600" /> Filter Travelers
-            </h3>
-            <button 
-              onClick={handleResetFilters}
-              className="text-xs font-semibold text-slate-400 hover:text-amber-600 flex items-center gap-1 transition-colors"
-            >
-              <RotateCcw className="w-3 h-3" /> Clear all
-            </button>
-          </div>
+        <div className={`${showMobileFilter ? 'block' : 'hidden'} lg:block lg:col-span-4 col-span-12`}>
+          <aside className="bg-white rounded-2xl border border-amber-100 p-4 sm:p-6 shadow-sm space-y-5 sm:space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none">
+            <div className="flex items-center justify-between border-b border-amber-50 pb-3">
+              <h3 className="font-display font-bold text-sm sm:text-base text-[#1C160F] flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-amber-600" /> Filter Travelers
+              </h3>
+              <button 
+                onClick={handleResetFilters}
+                className="text-xs font-semibold text-slate-400 hover:text-amber-600 flex items-center gap-1 transition-colors"
+              >
+                <RotateCcw className="w-3 h-3" /> Clear all
+              </button>
+            </div>
 
-          {/* Search Input */}
-          <div className="space-y-1.5">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              Search Traveler / City
-            </label>
-            <div className="relative">
+            {/* Search Input */}
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Search Traveler / City
+              </label>
+              <div className="relative">
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by traveler name, city..." 
+                  className="w-full text-xs border border-amber-200/80 rounded-xl pl-9 pr-4 py-2.5 outline-none focus:border-amber-500 bg-amber-50/10 placeholder:text-slate-400 text-[#1C160F]" 
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              </div>
+            </div>
+
+            {/* Flight Route Filter */}
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Flight Corridor
+              </label>
+              <div className="flex flex-col gap-2">
+                <label 
+                  onClick={() => setFilterRoute('ALL')} 
+                  className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${
+                    filterRoute === 'ALL' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
+                  }`}
+                >
+                  <span className="text-xs font-semibold text-slate-700">All Routes</span>
+                  <input type="radio" checked={filterRoute === 'ALL'} readOnly className="accent-amber-600" />
+                </label>
+                
+                <label 
+                  onClick={() => setFilterRoute('ADD_TO_DXB')} 
+                  className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${
+                    filterRoute === 'ADD_TO_DXB' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
+                  }`}
+                >
+                  <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                    Addis Ababa (ADD) ➔ Dubai (DXB)
+                  </span>
+                  <input type="radio" checked={filterRoute === 'ADD_TO_DXB'} readOnly className="accent-amber-600" />
+                </label>
+
+                <label 
+                  onClick={() => setFilterRoute('DXB_TO_ADD')} 
+                  className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${
+                    filterRoute === 'DXB_TO_ADD' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
+                  }`}
+                >
+                  <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                    Dubai (DXB) ➔ Addis Ababa (ADD)
+                  </span>
+                  <input type="radio" checked={filterRoute === 'DXB_TO_ADD'} readOnly className="accent-amber-600" />
+                </label>
+              </div>
+            </div>
+
+            {/* Available Capacity Slider */}
+            <div className="space-y-2.5">
+              <div className="flex justify-between items-center text-xs">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Min Available Capacity
+                </label>
+                <span className="font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded">
+                  {filterMinWeight} kg
+                </span>
+              </div>
               <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by traveler name, city..." 
-                className="w-full text-xs border border-amber-200/80 rounded-xl pl-9 pr-4 py-2.5 outline-none focus:border-amber-500 bg-amber-50/10 placeholder:text-slate-400 text-[#1C160F]" 
+                type="range" 
+                min="0" 
+                max="20" 
+                step="1" 
+                value={filterMinWeight}
+                onChange={(e) => setFilterMinWeight(parseFloat(e.target.value))}
+                className="w-full accent-amber-500 h-1.5 bg-slate-100 rounded-lg cursor-pointer" 
               />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <div className="flex justify-between text-[9px] text-slate-400 font-semibold">
+                <span>0 kg</span>
+                <span>10 kg</span>
+                <span>20 kg</span>
+              </div>
             </div>
-          </div>
+          </aside>
+        </div>
 
-          {/* Flight Route Filter */}
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              Flight Corridor
-            </label>
-            <div className="flex flex-col gap-2">
-              <label 
-                onClick={() => setFilterRoute('ALL')} 
-                className={`border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                  filterRoute === 'ALL' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
-                }`}
-              >
-                <span className="text-xs font-semibold text-slate-700">All Routes</span>
-                <input type="radio" checked={filterRoute === 'ALL'} readOnly className="accent-amber-600" />
-              </label>
-              
-              <label 
-                onClick={() => setFilterRoute('ADD_TO_DXB')} 
-                className={`border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                  filterRoute === 'ADD_TO_DXB' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
-                }`}
-              >
-                <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                  Addis Ababa (ADD) ➔ Dubai (DXB)
-                </span>
-                <input type="radio" checked={filterRoute === 'ADD_TO_DXB'} readOnly className="accent-amber-600" />
-              </label>
-
-              <label 
-                onClick={() => setFilterRoute('DXB_TO_ADD')} 
-                className={`border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                  filterRoute === 'DXB_TO_ADD' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
-                }`}
-              >
-                <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                  Dubai (DXB) ➔ Addis Ababa (ADD)
-                </span>
-                <input type="radio" checked={filterRoute === 'DXB_TO_ADD'} readOnly className="accent-amber-600" />
-              </label>
-            </div>
-          </div>
-
-          {/* Available Capacity Slider */}
-          <div className="space-y-2.5">
-            <div className="flex justify-between items-center text-xs">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Min Available Capacity
-              </label>
-              <span className="font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded">
-                {filterMinWeight} kg
-              </span>
-            </div>
-            <input 
-              type="range" 
-              min="0" 
-              max="20" 
-              step="1" 
-              value={filterMinWeight}
-              onChange={(e) => setFilterMinWeight(parseFloat(e.target.value))}
-              className="w-full accent-amber-500 h-1.5 bg-slate-100 rounded-lg cursor-pointer" 
-            />
-            <div className="flex justify-between text-[9px] text-slate-400 font-semibold">
-              <span>0 kg</span>
-              <span>10 kg</span>
-              <span>20 kg</span>
-            </div>
-          </div>
-        </aside>
-
-        {/* RIGHT SIDE USER CARDS GRID (8 cols, 3 cards in a row on desktop) */}
-        <section className="lg:col-span-8 space-y-6">
+        {/* RIGHT SIDE USER CARDS GRID (8 cols, 2 columns on mobile, 3 columns on desktop) */}
+        <section className="lg:col-span-8 space-y-4 sm:space-y-6 col-span-12">
           <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
             <span>Showing {filteredTravelers.length} real database traveler{filteredTravelers.length === 1 ? '' : 's'}</span>
           </div>
 
           {loading ? (
-            <div className="text-center py-20 bg-white rounded-3xl border border-amber-100 p-8 shadow-sm">
+            <div className="text-center py-16 bg-white rounded-3xl border border-amber-100 p-8 shadow-sm">
               <Loader2 className="w-8 h-8 text-amber-500 animate-spin mx-auto mb-3" />
               <p className="text-xs font-bold text-[#1C160F]">Loading Database Travelers...</p>
             </div>
           ) : filteredTravelers.length > 0 ? (
-            /* 3 Travels in 1 Row on Desktop Layout */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            /* 2 columns on mobile, 3 columns on desktop */
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {filteredTravelers.map((traveler) => {
                 const whatsappMessage = encodeURIComponent(
                   `Hi ${traveler.name}, I found your verified flight (${traveler.flightDate}) on Souq & Sheba and would like to inquire about package delivery.`
@@ -243,75 +286,82 @@ export default function TravelersView({ profiles, onSelectProfile }) {
                   <div 
                     key={traveler.id || traveler.name}
                     onClick={() => handleOpenUserDetail(traveler)}
-                    className="bg-white border border-amber-100 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-4 flex flex-col justify-between group"
+                    className="bg-white border border-amber-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 sm:space-y-4 flex flex-col justify-between group"
                   >
                     {/* Top User Header */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
+                    <div className="space-y-2 sm:space-y-3">
+                      <div className="flex items-start justify-between gap-1">
+                        <div className="flex items-center gap-2">
                           <div className="relative shrink-0">
-                            <img 
-                              src={traveler.avatar} 
-                              alt={traveler.name} 
-                              className="w-12 h-12 rounded-full object-cover border-2 border-amber-200 group-hover:border-amber-500 transition-colors" 
-                            />
-                            <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
-                              <CheckCircle2 className="w-3 h-3" />
+                            {traveler.isRealPhoto ? (
+                              <img 
+                                src={traveler.photo} 
+                                alt={traveler.name} 
+                                className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-amber-200 group-hover:border-amber-500 transition-colors" 
+                              />
+                            ) : (
+                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-xs sm:text-base flex items-center justify-center border-2 border-amber-200 group-hover:border-amber-500 transition-colors shadow-2xs">
+                                {traveler.name ? traveler.name.trim().charAt(0).toUpperCase() : 'T'}
+                              </div>
+                            )}
+                            <span className="absolute bottom-0 right-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
+                              <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3" />
                             </span>
                           </div>
 
                           <div className="min-w-0">
-                            <h3 className="font-display font-bold text-sm text-[#1C160F] group-hover:text-amber-600 transition-colors truncate">
+                            <h3 className="font-display font-bold text-xs sm:text-sm text-[#1C160F] group-hover:text-amber-600 transition-colors truncate">
                               {traveler.name}
                             </h3>
-                            <p className="text-[10px] text-slate-500 truncate">
-                              {traveler.city || 'Addis Ababa'}, {traveler.country || 'Ethiopia'}
+                            <p className="text-[8px] sm:text-[10px] text-slate-500 truncate">
+                              {traveler.city || 'Addis Ababa'}
                             </p>
                           </div>
                         </div>
 
-                        <span className="flex items-center text-amber-600 font-bold text-[11px] bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg shrink-0">
-                          <Star className="w-3 h-3 fill-amber-500 text-amber-500 mr-0.5" />
+                        <span className="flex items-center text-amber-600 font-bold text-[9px] sm:text-[11px] bg-amber-50 border border-amber-100 px-1.5 sm:px-2 py-0.5 rounded-lg shrink-0">
+                          <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-500 text-amber-500 mr-0.5" />
                           <span>{traveler.rating}</span>
                         </span>
                       </div>
 
                       {/* Flight Corridor Pill */}
-                      <div className="bg-amber-50/60 border border-amber-200/60 rounded-xl p-3 space-y-1">
-                        <div className="flex items-center justify-between text-xs font-bold text-[#1C160F]">
-                          <span className="flex items-center gap-1">
-                            <Plane className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                            {traveler.from_city || 'ADD'} ➔ {traveler.to_city || 'DXB'}
+                      <div className="bg-amber-50/60 border border-amber-200/60 rounded-xl p-2 sm:p-3 space-y-0.5 sm:space-y-1">
+                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#1C160F]">
+                          <span className="flex items-center gap-1 truncate">
+                            <Plane className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600 shrink-0" />
+                            <span className="truncate">{traveler.from_city?.slice(0, 5) || 'ADD'} ➔ {traveler.to_city?.slice(0, 5) || 'DXB'}</span>
                           </span>
                         </div>
-                        <p className="text-[10px] text-amber-800 font-semibold">{traveler.flightDate}</p>
+                        <p className="text-[8px] sm:text-[10px] text-amber-800 font-semibold truncate">{traveler.flightDate}</p>
                       </div>
 
                       {/* Luggage Capacity & Pricing */}
-                      <div className="grid grid-cols-2 gap-2 pt-0.5">
-                        <div className="border border-amber-100 rounded-xl p-2 bg-slate-50/50">
-                          <span className="text-[8px] font-bold uppercase text-slate-400 tracking-wider">Weight</span>
-                          <p className="text-xs font-bold text-amber-700 mt-0.5 flex items-center gap-0.5">
-                            <Weight className="w-3 h-3 text-amber-600" /> {traveler.available_weight} kg
+                      <div className="grid grid-cols-2 gap-1.5 sm:gap-2 pt-0.5">
+                        <div className="border border-amber-100 rounded-xl p-1.5 sm:p-2 bg-slate-50/50">
+                          <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Capacity</span>
+                          <p className="text-[10px] sm:text-xs font-bold text-amber-700 mt-0.5 flex items-center gap-0.5 truncate">
+                            <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-600 shrink-0" /> {traveler.available_weight}kg
                           </p>
                         </div>
-                        <div className="border border-amber-100 rounded-xl p-2 bg-slate-50/50">
-                          <span className="text-[8px] font-bold uppercase text-slate-400 tracking-wider">Rate</span>
-                          <p className="text-xs font-bold text-emerald-700 mt-0.5">{traveler.price}</p>
+                        <div className="border border-amber-100 rounded-xl p-1.5 sm:p-2 bg-slate-50/50">
+                          <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Rate</span>
+                          <p className="text-[10px] sm:text-xs font-bold text-emerald-700 mt-0.5 truncate">{traveler.price}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Bottom Action Footer */}
-                    <div className="pt-3 border-t border-amber-50 flex items-center justify-between gap-2">
+                    <div className="pt-2 sm:pt-3 border-t border-amber-50 flex items-center justify-between gap-1 sm:gap-2">
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenUserDetail(traveler);
                         }}
-                        className="text-xs font-bold text-slate-700 hover:text-amber-600 flex items-center gap-1 transition-colors"
+                        className="text-[10px] sm:text-xs font-bold text-slate-700 hover:text-amber-600 flex items-center gap-1 transition-colors"
                       >
-                        <User className="w-3.5 h-3.5 text-amber-600" /> Profile
+                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600" />
+                        <span className="hidden sm:inline">Profile</span>
                       </button>
 
                       <a 
@@ -319,9 +369,9 @@ export default function TravelersView({ profiles, onSelectProfile }) {
                         target="_blank" 
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-xs"
+                        className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl transition-all shadow-xs"
                       >
-                        <Phone className="w-3 h-3" /> Contact
+                        <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Contact
                       </a>
                     </div>
                   </div>

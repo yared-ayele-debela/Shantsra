@@ -44,9 +44,9 @@ export default function FilterSidebar({
   };
 
   return (
-    <aside className="lg:col-span-4 bg-white rounded-2xl border border-amber-100 p-6 shadow-[0_1px_3px_rgba(28,22,15,0.04),0_10px_30px_-15px_rgba(28,22,15,0.08)] space-y-6 lg:sticky lg:top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none">
+    <aside className="lg:col-span-4 bg-white rounded-2xl border border-amber-100 p-4 sm:p-6 shadow-[0_1px_3px_rgba(28,22,15,0.04),0_10px_30px_-15px_rgba(28,22,15,0.08)] space-y-5 sm:space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none">
       <div className="flex items-center justify-between border-b border-amber-50 pb-3">
-        <h3 className="font-display font-bold text-base text-[#1C160F] flex items-center gap-2">
+        <h3 className="font-display font-bold text-sm sm:text-base text-[#1C160F] flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4 text-amber-600" /> Refine Search
         </h3>
         <button 
@@ -63,7 +63,7 @@ export default function FilterSidebar({
           Flight Route Corridor
         </label>
         <div className="grid grid-cols-1 gap-2">
-          <label className={`border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ALL' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
+          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ALL' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
             <span className="text-xs font-semibold text-slate-700">All Routes</span>
             <input 
               type="radio" 
@@ -74,7 +74,7 @@ export default function FilterSidebar({
               className="accent-amber-600 h-4 w-4" 
             />
           </label>
-          <label className={`border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ADD_TO_DXB' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
+          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ADD_TO_DXB' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
             <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
               Addis (ADD) ➔ Dubai (DXB)
             </span>
@@ -87,7 +87,7 @@ export default function FilterSidebar({
               className="accent-amber-600 h-4 w-4" 
             />
           </label>
-          <label className={`border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'DXB_TO_ADD' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
+          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'DXB_TO_ADD' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
             <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
               Dubai (DXB) ➔ Addis (ADD)
             </span>
@@ -108,7 +108,7 @@ export default function FilterSidebar({
         <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
           Categories
         </label>
-        <div className="grid grid-cols-1 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
+        <div className="grid grid-cols-2 sm:grid-cols-1 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
           {categoriesList.map(cat => (
             <label 
               key={cat.id || cat.name} 
@@ -121,7 +121,7 @@ export default function FilterSidebar({
                 onChange={() => handleCategoryToggle(cat.name)}
                 className="accent-amber-600 rounded h-4 w-4" 
               />
-              <span>{cat.name}</span>
+              <span className="truncate">{cat.name}</span>
             </label>
           ))}
         </div>

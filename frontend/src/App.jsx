@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { User } from 'lucide-react';
 import Header from './components/Header';
 import HomeView from './components/HomeView';
@@ -14,6 +14,8 @@ import FlightVerificationModal from './components/FlightVerificationModal';
 import AuthModal from './components/AuthModal';
 import ChatDrawer from './components/ChatDrawer';
 import AppLoadingOverlay from './components/AppLoadingOverlay';
+import MobileBottomNav from './components/MobileBottomNav';
+import Footer from './components/Footer';
 
 import { DEFAULT_REQUESTS, DEFAULT_PROFILES } from './data/initialData';
 
@@ -118,9 +120,81 @@ export default function App() {
 
   // Modal & Drawer States
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [selectedProfileName, setSelectedProfileName] = useState(null);
+  const [selectedProfileModal, setSelectedProfileModal] = useState(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isFlightModalOpen, setIsFlightModalOpen] = useState(false);
+
+  const handleSelectProfile = (target) => {
+    if (!target) {
+      setSelectedProfileModal(null);
+      return;
+    }
+    if (typeof target === 'object') {
+      const rawPhoto = target.photo || target.photo_url || target.avatar || null;
+      let photoSrc = '';
+      if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
+        photoSrc = rawPhoto.trim();
+        if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
+          photoSrc = `/storage/${photoSrc}`;
+        }
+      }
+      setSelectedProfileModal({
+        ...target,
+        photo: photoSrc,
+        photo_url: photoSrc
+      });
+      return;
+    }
+    if (currentUser && (currentUser.name === target || currentUser.email === target)) {
+      const rawPhoto = currentUser.photo_url || currentUser.photo || null;
+      let photoSrc = '';
+      if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
+        photoSrc = rawPhoto.trim();
+        if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
+          photoSrc = `/storage/${photoSrc}`;
+        }
+      }
+      setSelectedProfileModal({
+        ...currentUser,
+        name: currentUser.name || target,
+        photo: photoSrc,
+        photo_url: photoSrc,
+        rating: '5.0',
+        deliveriesCount: 3,
+        bio: 'Verified active user on Souq & Sheba platform.',
+        verifications: { id: Boolean(currentUser.id_document_status === 'approved'), flight: true, phone: Boolean(currentUser.phone) },
+        reviews: []
+      });
+      return;
+    }
+    const foundProf = profiles[target];
+    if (foundProf) {
+      const rawPhoto = foundProf.photo || foundProf.photo_url || foundProf.avatar || null;
+      let photoSrc = '';
+      if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
+        photoSrc = rawPhoto.trim();
+        if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
+          photoSrc = `/storage/${photoSrc}`;
+        }
+      }
+      setSelectedProfileModal({
+        ...foundProf,
+        photo: photoSrc,
+        photo_url: photoSrc
+      });
+      return;
+    }
+    setSelectedProfileModal({
+      name: target,
+      photo: null,
+      photo_url: null,
+      rating: '4.8',
+      deliveriesCount: 5,
+      bio: 'Member of Souq & Sheba delivery community.',
+      verifications: { id: true, flight: true, phone: true },
+      reviews: []
+    });
+  };
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register' | 'forgot'
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
@@ -191,18 +265,10 @@ export default function App() {
     showToast(`Flight ticket ${flightData.carrier} ${flightData.flightNumber} verified! Badge added to profile.`);
   };
 
-  const currentProfileObj = selectedProfileName ? profiles[selectedProfileName] || {
-    name: selectedProfileName,
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
-    rating: '4.8',
-    deliveriesCount: 5,
-    bio: 'Member of Souq & Sheba delivery community.',
-    verifications: { id: true, flight: true, phone: true },
-    reviews: []
-  } : null;
+
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1C160F]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1C160F] pb-16 lg:pb-0">
       {/* App Initialization Loading Overlay */}
       <AppLoadingOverlay isLoading={isAppLoading} />
 
@@ -239,7 +305,7 @@ export default function App() {
             requests={requests}
             profiles={profiles}
             onSelectPackage={setSelectedPackage}
-            onSelectProfile={setSelectedProfileName}
+            onSelectProfile={handleSelectProfile}
             onOfferToCarry={handleOfferToCarry}
             onOpenPostModal={() => {
               if (!currentUser) {
@@ -258,7 +324,7 @@ export default function App() {
             requests={requests}
             profiles={profiles}
             onSelectPackage={setSelectedPackage}
-            onSelectProfile={setSelectedProfileName}
+            onSelectProfile={handleSelectProfile}
             onOfferToCarry={handleOfferToCarry}
           />
         )}
@@ -266,7 +332,7 @@ export default function App() {
         {currentView === 'travelers' && (
           <TravelersView 
             profiles={profiles}
-            onSelectProfile={setSelectedProfileName}
+            onSelectProfile={handleSelectProfile}
           />
         )}
 
@@ -309,57 +375,12 @@ export default function App() {
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="bg-[#1C160F] text-slate-400">
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-emerald-800 flex items-center justify-center">
-                <span className="font-bold text-white text-xs">S&amp;S</span>
-              </span>
-              <span className="font-display text-lg font-extrabold text-white">Souq&amp;Sheba</span>
-            </div>
-            <p className="text-xs leading-relaxed text-slate-400">
-              Direct peer-to-peer package delivery platform linking flight passengers and package senders in Ethiopia and UAE.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold text-xs mb-3 uppercase tracking-wider">Shipments</h4>
-            <ul className="space-y-2 text-xs">
-              <li><button onClick={() => setCurrentView('packages')} className="hover:text-white transition-colors">Find Requests</button></li>
-              <li><button onClick={() => setIsPostModalOpen(true)} className="hover:text-white transition-colors text-left">Post a Delivery Request</button></li>
-              <li><button onClick={() => setCurrentView('dashboard')} className="hover:text-white transition-colors text-left">My Delivery Dashboard</button></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold text-xs mb-3 uppercase tracking-wider">Legal &amp; Safety</h4>
-            <ul className="space-y-2 text-xs">
-              <li><button onClick={() => setCurrentView('safety')} className="hover:text-white transition-colors">Customs Guidelines</button></li>
-              <li><button onClick={() => setCurrentView('safety')} className="hover:text-white transition-colors">Safety Terms</button></li>
-              <li><button onClick={() => setCurrentView('safety')} className="hover:text-white transition-colors">Help Center</button></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold text-xs mb-3 uppercase tracking-wider">Newsletter</h4>
-            <div className="flex gap-2">
-              <input 
-                type="email" 
-                placeholder="Your email address" 
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400" 
-              />
-              <button 
-                onClick={() => showToast("Subscribed to Souq & Sheba newsletter!")}
-                className="bg-amber-500 hover:bg-amber-600 transition-colors rounded-lg px-3.5 font-bold text-[#1C160F] text-xs"
-              >
-                Join
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="border-t border-white/10 py-5 text-center text-xs text-slate-500 font-semibold">
-          © 2026 Souq&amp;Sheba P2P. Connecting Addis Ababa &amp; Dubai.
-        </div>
-      </footer>
+      {/* Dynamic Site Settings Footer */}
+      <Footer 
+        setCurrentView={setCurrentView} 
+        onOpenPostModal={() => setIsPostModalOpen(true)} 
+        showToast={showToast} 
+      />
 
       {/* Package Detail Modal */}
       {selectedPackage && (
@@ -372,10 +393,10 @@ export default function App() {
       )}
 
       {/* User Profile Modal */}
-      {selectedProfileName && (
+      {selectedProfileModal && (
         <UserProfileModal 
-          profile={currentProfileObj}
-          onClose={() => setSelectedProfileName(null)}
+          profile={selectedProfileModal}
+          onClose={() => setSelectedProfileModal(null)}
         />
       )}
 
@@ -410,6 +431,23 @@ export default function App() {
         setChats={setChats}
         activeChatId={activeChatId}
         setActiveChatId={setActiveChatId}
+      />
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav 
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        onOpenRequestModal={() => {
+          if (!currentUser) {
+            handleOpenAuth('login');
+            showToast('Please sign in to request a package delivery.');
+          } else {
+            setIsPostModalOpen(true);
+          }
+        }}
+        onOpenChatDrawer={() => setIsChatDrawerOpen(true)}
+        currentUser={currentUser}
+        onOpenAuthModal={handleOpenAuth}
       />
     </div>
   );

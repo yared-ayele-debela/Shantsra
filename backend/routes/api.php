@@ -27,6 +27,7 @@ Route::get('/site-settings', [SiteSettingController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::patch('/user', [AuthController::class, 'updateProfile']);
+    Route::post('/user', [AuthController::class, 'updateProfile']);
     Route::get('/shipments', [ShipmentController::class, 'index']);
     Route::post('/shipments', [ShipmentController::class, 'store']);
     Route::post('/travels', [TravelListingController::class, 'store']);

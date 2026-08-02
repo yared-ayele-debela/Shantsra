@@ -4,6 +4,22 @@ import { X, Phone, FileCheck2, Plane, CheckCircle2, XCircle, Star } from 'lucide
 export default function UserProfileModal({ profile, onClose }) {
   if (!profile) return null;
 
+  const rawPhoto = profile.photo || profile.photo_url || null;
+  const hasPhoto = Boolean(
+    rawPhoto && 
+    typeof rawPhoto === 'string' && 
+    rawPhoto.trim().length > 0 && 
+    !rawPhoto.toLowerCase().includes('unsplash.com')
+  );
+
+  let photoSrc = '';
+  if (hasPhoto) {
+    photoSrc = rawPhoto.trim();
+    if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
+      photoSrc = `/storage/${photoSrc}`;
+    }
+  }
+
   const verifications = [
     { key: 'phone', label: 'Mobile Number Verified', icon: Phone },
     { key: 'id', label: 'Passport ID Document Confirmed', icon: FileCheck2 },
@@ -28,20 +44,26 @@ export default function UserProfileModal({ profile, onClose }) {
         <div className="p-6 space-y-6">
           {/* Profile Header */}
           <div className="flex items-center gap-4">
-            <img 
-              src={profile.avatar} 
-              alt={profile.name}
-              className="w-14 h-14 rounded-full object-cover border-2 border-amber-200 shadow-sm" 
-            />
+            {hasPhoto ? (
+              <img 
+                src={photoSrc} 
+                alt={profile.name}
+                className="w-14 h-14 rounded-full object-cover border-2 border-amber-200 shadow-sm shrink-0" 
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-xl flex items-center justify-center border-2 border-amber-200 shadow-sm shrink-0">
+                {profile.name ? profile.name.trim().charAt(0).toUpperCase() : 'U'}
+              </div>
+            )}
             <div>
               <h4 className="font-display text-base font-bold text-[#1C160F]">{profile.name}</h4>
               <div className="flex items-center gap-1.5 text-xs font-semibold mt-1">
                 <span className="flex items-center text-amber-600 font-bold">
                   <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-0.5" /> 
-                  {profile.rating}
+                  {profile.rating || '5.0'}
                 </span>
                 <span className="text-slate-300">·</span>
-                <span className="text-slate-500">{profile.deliveriesCount} successful deliveries</span>
+                <span className="text-slate-500">{profile.deliveriesCount || 5} successful deliveries</span>
               </div>
             </div>
           </div>

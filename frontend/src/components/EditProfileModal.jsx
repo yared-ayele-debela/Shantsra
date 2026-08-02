@@ -9,6 +9,9 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
   const [phone, setPhone] = useState(user.phone || '');
   const [city, setCity] = useState(user.city || '');
   const [country, setCountry] = useState(user.country || 'UAE');
+  const [photo, setPhoto] = useState(user.photo_url || user.photo || '');
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(user.photo_url || user.photo || '');
   const [idDocumentType, setIdDocumentType] = useState(user.id_document_type || '');
   const [idDocumentNumber, setIdDocumentNumber] = useState(user.id_document_number || '');
   const [marketingOptIn, setMarketingOptIn] = useState(user.marketing_opt_in ?? true);
@@ -27,6 +30,9 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
       setPhone(user.phone || '');
       setCity(user.city || '');
       setCountry(user.country || 'UAE');
+      setPhoto(user.photo_url || user.photo || '');
+      setPhotoFile(null);
+      setPhotoPreview(user.photo_url || user.photo || '');
       setIdDocumentType(user.id_document_type || '');
       setIdDocumentNumber(user.id_document_number || '');
       setMarketingOptIn(user.marketing_opt_in ?? true);
@@ -35,6 +41,14 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
       setFieldErrors({});
     }
   }, [user, isOpen]);
+
+  const handlePhotoFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhotoFile(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,6 +70,14 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
       if (idDocumentNumber) formData.append('id_document_number', idDocumentNumber);
       formData.append('marketing_opt_in', marketingOptIn ? '1' : '0');
       
+      if (photoFile) {
+        formData.append('photo_file', photoFile);
+      } else if (!photoPreview) {
+        formData.append('remove_photo', '1');
+      } else if (photo) {
+        formData.append('photo', photo);
+      }
+
       if (idDocumentFile) {
         formData.append('id_document_file', idDocumentFile);
       }
@@ -86,6 +108,8 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
         phone,
         city,
         country,
+        photo: photoPreview,
+        photo_url: photoPreview,
         id_document_type: idDocumentType,
         id_document_number: idDocumentNumber,
         marketing_opt_in: marketingOptIn,
@@ -107,6 +131,8 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
         phone,
         city,
         country,
+        photo: photoPreview,
+        photo_url: photoPreview,
         id_document_type: idDocumentType,
         id_document_number: idDocumentNumber,
         marketing_opt_in: marketingOptIn,
@@ -156,6 +182,54 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
               <span>{successMsg}</span>
             </div>
           )}
+
+          {/* Profile Photo Upload */}
+          <div className="flex items-center gap-4 bg-amber-50/50 border border-amber-100 p-3.5 rounded-2xl">
+            <div className="relative shrink-0">
+              {photoPreview ? (
+                <img 
+                  src={photoPreview} 
+                  alt="Profile" 
+                  className="w-16 h-16 rounded-full object-cover border-2 border-amber-300 shadow-sm"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-xl flex items-center justify-center border-2 border-amber-300 shadow-sm">
+                  {name ? name.charAt(0).toUpperCase() : 'U'}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 space-y-1.5 min-w-0">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Profile Photo
+              </label>
+              <div className="flex items-center gap-2 flex-wrap">
+                <label className="bg-white hover:bg-amber-100/60 border border-amber-200 text-[#1C160F] text-xs font-bold px-3 py-1.5 rounded-xl cursor-pointer transition-colors flex items-center gap-1">
+                  <Upload className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Upload Photo</span>
+                  <input 
+                    type="file" 
+                    accept="image/jpeg,image/png,image/webp" 
+                    onChange={handlePhotoFileChange} 
+                    className="hidden" 
+                  />
+                </label>
+                {photoPreview && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhotoFile(null);
+                      setPhoto('');
+                      setPhotoPreview('');
+                    }}
+                    className="text-xs font-semibold text-red-600 hover:text-red-800 transition-colors"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <p className="text-[9px] text-slate-400">JPG, PNG or WEBP up to 5MB.</p>
+            </div>
+          </div>
 
           {/* Full Name */}
           <div>

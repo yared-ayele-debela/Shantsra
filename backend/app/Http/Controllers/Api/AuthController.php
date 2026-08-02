@@ -119,6 +119,9 @@ class AuthController extends Controller
             'phone' => ['nullable', 'string', 'max:50'],
             'city' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:255'],
+            'photo' => ['nullable', 'string', 'max:2048'],
+            'photo_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'remove_photo' => ['nullable', 'boolean'],
             'id_document_type' => [
                 'nullable',
                 'string',
@@ -148,6 +151,17 @@ class AuthController extends Controller
             'marketing_opt_in' => $request->boolean('marketing_opt_in'),
             'unsubscribe_token' => $user->unsubscribe_token ?: Str::random(40),
         ];
+
+        if ($request->hasFile('photo_file')) {
+            $updates['photo'] = $request->file('photo_file')->store(
+                'users/'.$user->id.'/photos',
+                'public'
+            );
+        } elseif ($request->boolean('remove_photo')) {
+            $updates['photo'] = null;
+        } elseif ($request->has('photo')) {
+            $updates['photo'] = $validated['photo'];
+        }
 
         if ($request->hasFile('id_document_file')) {
             $user->deleteStoredIdDocument();
