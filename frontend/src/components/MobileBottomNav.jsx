@@ -44,7 +44,7 @@ export default function MobileBottomNav({
       <button
         onClick={onOpenRequestModal}
         className="flex flex-col items-center justify-center -mt-5"
-        title="Post Delivery Request"
+        title="Post a Delivery Request"
       >
         <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-500 text-[#1C160F] flex items-center justify-center shadow-lg shadow-amber-500/40 border-2 border-[#1C160F] active:scale-95 transition-transform">
           <PlusCircle className="w-6 h-6 stroke-[2.5px]" />
@@ -65,31 +65,18 @@ export default function MobileBottomNav({
         <span className="text-[10px] tracking-tight">Travelers</span>
       </button>
 
-      {/* Dashboard or Auth/Chat Tab */}
-      {currentUser ? (
-        <button
-          onClick={() => setCurrentView('dashboard')}
-          className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
-            currentView === 'dashboard' 
-              ? 'text-amber-400 font-bold scale-105' 
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <LayoutDashboard className={`w-5 h-5 ${currentView === 'dashboard' ? 'stroke-[2.5px]' : 'stroke-2'}`} />
-          <span className="text-[10px] tracking-tight">Dashboard</span>
-        </button>
-      ) : (
-        <button
-          onClick={onOpenChatDrawer}
-          className="relative flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all text-slate-400 hover:text-slate-200"
-        >
-          <MessageSquare className="w-5 h-5 stroke-2" />
-          <span className="text-[10px] tracking-tight">Chat</span>
-          <span className="absolute top-0.5 right-4 w-3.5 h-3.5 rounded-full bg-amber-500 text-[#1C160F] text-[9px] font-extrabold flex items-center justify-center shadow-sm">
-            2
-          </span>
-        </button>
-      )}
+      {/* Dashboard Tab */}
+      <button
+        onClick={() => setCurrentView('dashboard')}
+        className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
+          currentView === 'dashboard' 
+            ? 'text-amber-400 font-bold scale-105' 
+            : 'text-slate-400 hover:text-slate-200'
+        }`}
+      >
+        <LayoutDashboard className={`w-5 h-5 ${currentView === 'dashboard' ? 'stroke-[2.5px]' : 'stroke-2'}`} />
+        <span className="text-[10px] tracking-tight">Dashboard</span>
+      </button>
     </nav>
   );
 }

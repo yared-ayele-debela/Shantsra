@@ -17,11 +17,62 @@ export default function PackagesView({
   const [filterSearchText, setFilterSearchText] = useState('');
   const [activeSort, setActiveSort] = useState('latest');
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [apiRequests, setApiRequests] = useState([]);
 
   // Progressive scroll / Infinite loading batch size
   const BATCH_SIZE = 6;
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const normalizeCategory = (category) => String(category || '')
+    .trim()
+    .toLocaleLowerCase();
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function fetchOpenShipments() {
+      try {
+        const response = await fetch('/api/shipments/open', {
+          headers: { Accept: 'application/json' }
+        });
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (!isCurrent || !Array.isArray(data.shipments)) return;
+
+        setApiRequests(data.shipments.map((shipment) => ({
+          id: shipment.id,
+          category_id: shipment.category_id,
+          category: shipment.category_name || 'Uncategorized',
+          title: shipment.receiver_name
+            ? `Shipment for ${shipment.receiver_name}`
+            : `Delivery request (${shipment.from_city || 'Addis Ababa'} → ${shipment.to_city || 'Dubai'})`,
+          desc: shipment.description || `Delivery request from ${shipment.from_city || 'Addis Ababa'} to ${shipment.to_city || 'Dubai'}.`,
+          sender: shipment.sender_display || 'Member',
+          route: (shipment.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
+          weight: String(shipment.weight || 0),
+          reward: shipment.reward || `AED ${(parseFloat(shipment.weight || 1) * 35).toFixed(0)}`,
+          deadline: shipment.travel_date_label || 'Date to be confirmed',
+          img: shipment.cover_image || '/assets/No-Image-Found-400x264.png',
+          status: 'pending',
+          is_urgent: Boolean(shipment.is_urgent),
+          phone: shipment.receiver_phone || '',
+          createdAt: shipment.posted_at ? Date.parse(shipment.posted_at) : 0
+        })));
+      } catch {
+        // The local request state remains available if the directory API is unavailable.
+      }
+    }
+
+    fetchOpenShipments();
+    return () => { isCurrent = false; };
+  }, []);
+
+  const directoryRequests = useMemo(() => {
+    const merged = [...apiRequests, ...requests];
+    return Array.from(new Map(merged.map((request) => [String(request.id), request])).values());
+  }, [apiRequests, requests]);
 
   // Convert reward string (e.g. AED 120 or ETB 4,000) to numeric for sorting/filtering
   const parseRewardVal = (rewardStr) => {
@@ -47,9 +98,16 @@ export default function PackagesView({
 
   // Filter & Sort Logic
   const filteredPackages = useMemo(() => {
-    let result = requests.filter(r => {
+    let result = directoryRequests.filter(r => {
       const routeMatch = filterRoute === 'ALL' || r.route === filterRoute;
-      const catMatch = filterCategories.length === 0 || filterCategories.includes(r.category);
+      const requestCategoryId = r.category_id == null ? null : String(r.category_id);
+      const requestCategoryName = normalizeCategory(r.category || r.category_name);
+      const catMatch = filterCategories.length === 0 || filterCategories.some((category) => {
+        const normalizedCategory = normalizeCategory(category);
+        const categoryMatchesById = requestCategoryId !== null && category === requestCategoryId;
+        const categoryMatchesByName = normalizedCategory === requestCategoryName;
+        return categoryMatchesById || categoryMatchesByName;
+      });
       const weightMatch = parseFloat(r.weight) <= filterMaxWeight;
       
       const numReward = parseRewardVal(r.reward);
@@ -59,8 +117,8 @@ export default function PackagesView({
       const searchMatch = !query || 
                           r.title.toLowerCase().includes(query) || 
                           r.desc.toLowerCase().includes(query) ||
-                          r.category.toLowerCase().includes(query) ||
-                          r.sender.toLowerCase().includes(query);
+                          String(r.category || r.category_name || '').toLowerCase().includes(query) ||
+                          String(r.sender || '').toLowerCase().includes(query);
 
       return routeMatch && catMatch && weightMatch && rewardMatch && searchMatch;
     });
@@ -76,7 +134,7 @@ export default function PackagesView({
 
     return result;
   }, [
-    requests, 
+    directoryRequests,
     filterRoute, 
     filterCategories, 
     filterMaxWeight, 
@@ -139,7 +197,7 @@ export default function PackagesView({
           >
             <span className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-amber-600" />
-              <span>Filter &amp; Refine Packages</span>
+              <span>Filter Delivery Requests</span>
             </span>
             <span className="text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-extrabold border border-amber-200">
               {showMobileFilter ? 'Hide Filters ▲' : 'Show Filters ▼'}
@@ -173,7 +231,7 @@ export default function PackagesView({
                 type="text" 
                 value={filterSearchText}
                 onChange={(e) => setFilterSearchText(e.target.value)}
-                placeholder="Search packages (e.g., coffee, docs)" 
+                placeholder="Search delivery requests" 
                 className="text-xs outline-none text-slate-700 bg-transparent w-full" 
               />
             </div>
@@ -247,7 +305,7 @@ export default function PackagesView({
                   {isLoadingMore ? (
                     <>
                       <Loader2 className="w-4 h-4 text-amber-600 animate-spin" />
-                      <span>Loading more packages...</span>
+                      <span>Loading more delivery requests...</span>
                     </>
                   ) : (
                     <>

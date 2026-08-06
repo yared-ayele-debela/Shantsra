@@ -336,7 +336,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
               >
                 {loading ? 'Signing in...' : (
                   <>
-                    <span>Sign In to Account</span>
+                    <span>Sign In Securely</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -497,7 +497,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
               >
                 {loading ? 'Creating Account...' : (
                   <>
-                    <span>Register New Account</span>
+                    <span>Create Account</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

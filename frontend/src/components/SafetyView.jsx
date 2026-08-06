@@ -9,10 +9,10 @@ export default function SafetyView() {
           <ShieldCheck className="w-3.5 h-3.5" /> Safety Guidelines & Protocols
         </span>
         <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-[#1C160F]">
-          Peer-to-Peer Transit Safety Rules
+          Delivery Safety Standards
         </h1>
         <p className="text-slate-500 text-sm max-w-xl mx-auto">
-          Strict safety requirements for every package carried between Addis Ababa and Dubai.
+          Essential safety and compliance requirements for every delivery between Addis Ababa and Dubai.
         </p>
       </div>
 
@@ -24,7 +24,7 @@ export default function SafetyView() {
           <div className="space-y-1">
             <h3 className="font-display font-bold text-base text-[#1C160F]">1. Mandatory Item Inspection</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Travelers MUST inspect the physical contents of all package requests prior to airport check-in. Never accept sealed boxes or wrapped parcels without seeing inside.
+              Travelers must inspect the contents of every item before airport check-in. Do not accept packages when the contents cannot be verified.
             </p>
           </div>
         </div>
@@ -36,7 +36,7 @@ export default function SafetyView() {
           <div className="space-y-1">
             <h3 className="font-display font-bold text-base text-[#1C160F]">2. Prohibited Goods & Restricted Items</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Strictly no liquids exceeding travel limits, illegal substances, unverified medications, or hazardous materials. All electronics must be unsealed and verifiable.
+              Do not carry items that exceed airline liquid limits, are illegal, unverified, restricted, or hazardous. Electronics must be available for inspection and comply with airline requirements.
             </p>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function SafetyView() {
           <div className="space-y-1">
             <h3 className="font-display font-bold text-base text-[#1C160F]">3. Airport Meeting Point Handovers</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Handovers must occur in public airport lobbies or designated meeting zones at Bole International Airport (ADD) or Dubai International Airport (DXB).
+              Arrange handovers in public, well-monitored airport lobbies or designated meeting areas at Bole International Airport (ADD) or Dubai International Airport (DXB).
             </p>
           </div>
         </div>

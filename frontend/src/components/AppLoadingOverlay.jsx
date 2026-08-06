@@ -2,7 +2,7 @@ import React from 'react';
 import { PlaneTakeoff, Loader2, Sparkles } from 'lucide-react';
 import { useSiteSettings, SITE_LOGO_STORAGE_KEY, SITE_NAME_STORAGE_KEY } from '../context/SiteSettingsContext.jsx';
 
-export default function AppLoadingOverlay({ isLoading, message = 'Initializing P2P Flight & Package Network...' }) {
+export default function AppLoadingOverlay({ isLoading, message = 'Preparing your delivery network...' }) {
   const { settings } = useSiteSettings();
   const logoUrl = settings?.logo_url || sessionStorage.getItem(SITE_LOGO_STORAGE_KEY);
   const siteName = settings?.site_name || sessionStorage.getItem(SITE_NAME_STORAGE_KEY) || 'Souq & Sheba';

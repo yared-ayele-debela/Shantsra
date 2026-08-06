@@ -50,7 +50,7 @@ export default function Header({
               )}
             </span> */}
             {/* <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-500 mt-0.5">
-              P2P Delivery
+              Trusted Delivery Network
             </span> */}
           {/* </div> */}
         </button>
@@ -67,7 +67,7 @@ export default function Header({
             onClick={() => setCurrentView('packages')} 
             className={`hover:text-amber-600 transition-colors ${currentView === 'packages' ? 'font-bold text-amber-600' : ''}`}
           >
-            Search Packages
+             Packages
           </button>
           <button 
             onClick={() => setCurrentView('travelers')} 
@@ -88,18 +88,9 @@ export default function Header({
         {/* Right Side Grouped Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
           
-          {/* GROUP 1: Utilities Capsule (Language & Chat) */}
+          {/* GROUP 1: Utilities Capsule */}
           <div className="bg-white/80 border border-amber-200/60 rounded-2xl p-1 shadow-2xs flex items-center gap-1">
             <LanguageSelector />
-            <button 
-              onClick={onOpenChatDrawer}
-              className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-amber-600 px-2.5 py-1.5 rounded-xl hover:bg-amber-50 transition-colors relative"
-              title="Open Chat Drawer"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-amber-600" />
-              <span className="hidden sm:inline text-[11px]">Chat</span>
-              <span className="w-4 h-4 rounded-full bg-amber-500 text-[#1C160F] text-[9px] font-extrabold flex items-center justify-center">2</span>
-            </button>
           </div>
 
           {/* GROUP 2: Account & Primary CTA */}
@@ -147,7 +138,7 @@ export default function Header({
               className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-white bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] px-4 py-2.5 rounded-2xl transition-all shadow-2xs"
             >
               <PlusCircle className="w-3.5 h-3.5" />
-              <span>Request Delivery</span>
+              <span>Post a Request</span>
             </button>
           </div>
 

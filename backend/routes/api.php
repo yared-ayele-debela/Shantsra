@@ -30,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user', [AuthController::class, 'updateProfile']);
     Route::get('/shipments', [ShipmentController::class, 'index']);
     Route::post('/shipments', [ShipmentController::class, 'store']);
+    Route::put('/shipments/{shipment}', [ShipmentController::class, 'update']);
+    Route::post('/shipments/{shipment}', [ShipmentController::class, 'update']);
+    Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy']);
     Route::post('/travels', [TravelListingController::class, 'store']);
     Route::get('/travels/mine', [TravelListingController::class, 'mine']);
     Route::get('/conversations', [ConversationController::class, 'index']);

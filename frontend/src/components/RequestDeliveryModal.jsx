@@ -1,22 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { X, Package, Plus, Upload, AlertCircle, CheckCircle2, Calendar, Phone, MapPin, Weight, User, Zap } from 'lucide-react';
 
-export default function RequestDeliveryModal({ onClose, onSubmit }) {
-  const [receiverName, setReceiverName] = useState('');
-  const [receiverPhone, setReceiverPhone] = useState('');
-  const [fromCity, setFromCity] = useState('Addis Ababa');
-  const [toCity, setToCity] = useState('Dubai');
-  const [weight, setWeight] = useState('1.5');
-  const [description, setDescription] = useState('');
-  const [isUrgent, setIsUrgent] = useState(false);
-  const [categoryId, setCategoryId] = useState('');
+export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage }) {
+  const [receiverName, setReceiverName] = useState(() => {
+    if (editingPackage) {
+      return editingPackage.receiver_name || editingPackage.title?.replace('Shipment for ', '') || editingPackage.title || '';
+    }
+    return '';
+  });
+  const [receiverPhone, setReceiverPhone] = useState(editingPackage?.phone || editingPackage?.receiver_phone || '');
+  const [fromCity, setFromCity] = useState(() => {
+    if (editingPackage) {
+      if (editingPackage.from_city) return editingPackage.from_city;
+      return editingPackage.route === 'DXB_TO_ADD' ? 'Dubai' : 'Addis Ababa';
+    }
+    return 'Addis Ababa';
+  });
+  const [toCity, setToCity] = useState(() => {
+    if (editingPackage) {
+      if (editingPackage.to_city) return editingPackage.to_city;
+      return editingPackage.route === 'DXB_TO_ADD' ? 'Addis Ababa' : 'Dubai';
+    }
+    return 'Dubai';
+  });
+  const [weight, setWeight] = useState(editingPackage?.weight || '1.5');
+  const [description, setDescription] = useState(editingPackage?.desc || editingPackage?.description || '');
+  const [isUrgent, setIsUrgent] = useState(Boolean(editingPackage?.is_urgent));
+  const [categoryId, setCategoryId] = useState(editingPackage?.category_id || '');
   const [dbCategories, setDbCategories] = useState([]);
   const [travelDate, setTravelDate] = useState(() => {
+    if (editingPackage?.travel_date) return editingPackage.travel_date;
+    if (editingPackage?.deadline && typeof editingPackage.deadline === 'string' && editingPackage.deadline.includes('Needed by ')) {
+      return editingPackage.deadline.replace('Needed by ', '');
+    }
     const today = new Date();
     today.setDate(today.getDate() + 7);
     return today.toISOString().split('T')[0];
   });
   const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreview, setImagePreview] = useState(editingPackage?.img || null);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -33,7 +55,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
           const data = await response.json();
           if (data.categories && data.categories.length > 0) {
             setDbCategories(data.categories);
-            setCategoryId(data.categories[0].id);
+            if (!categoryId) setCategoryId(data.categories[0].id);
           }
         }
       } catch (err) {
@@ -54,8 +76,14 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files) {
-      setImageFiles(Array.from(e.target.files).slice(0, 5));
+    if (e.target.files && e.target.files[0]) {
+      const files = Array.from(e.target.files).slice(0, 5);
+      setImageFiles(files);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(files[0]);
     }
   };
 
@@ -86,27 +114,55 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
         });
       }
 
-      const response = await fetch('/api/shipments', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData
-      });
+      let response;
+      if (editingPackage && editingPackage.id) {
+        response = await fetch(`/api/shipments/${editingPackage.id}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({
+            receiver_name: receiverName,
+            receiver_phone: receiverPhone,
+            from_city: fromCity,
+            to_city: toCity,
+            weight: parseFloat(weight),
+            description,
+            travel_date: travelDate,
+            is_urgent: isUrgent ? 1 : 0,
+            category_id: categoryId || null,
+            cover_image: imagePreview
+          })
+        });
+      } else {
+        response = await fetch('/api/shipments', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: formData
+        });
+      }
 
-      const data = await response.json();
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (e) {}
 
-      if (!response.ok) {
-        if (data.errors) setFieldErrors(data.errors);
-        setErrorMsg(data.message || 'Failed to create shipment request. Please check inputs.');
+      if (response && !response.ok && data.errors) {
+        setFieldErrors(data.errors);
+        setErrorMsg(data.message || 'Failed to submit shipment request. Please check inputs.');
         setLoading(false);
         return;
       }
 
       const created = data.shipment || {
-        id: `ship_${Date.now()}`,
+        id: editingPackage ? editingPackage.id : `ship_${Date.now()}`,
         receiver_name: receiverName,
         receiver_phone: receiverPhone,
         from_city: fromCity,
@@ -115,51 +171,67 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
         description,
         travel_date: travelDate,
         is_urgent: isUrgent,
-        status: 'pending'
+        status: editingPackage?.status || 'pending'
       };
+
+      const finalPackageImg = imagePreview || created.cover_image || created.product_images?.[0] || editingPackage?.img || '/assets/No-Image-Found-400x264.png';
+      const selectedCategory = dbCategories.find(category => String(category.id) === String(categoryId));
+      const categoryName = created.category_name || selectedCategory?.name || editingPackage?.category || 'Uncategorized';
 
       const mappedPackage = {
-        id: created.id,
-        title: `Shipment for ${created.receiver_name}`,
-        desc: created.description || `Delivery from ${created.from_city} to ${created.to_city}`,
-        sender: 'You (Current User)',
-        route: (created.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
-        weight: String(created.weight),
-        reward: `AED ${(parseFloat(created.weight || 1) * 35).toFixed(0)}`,
-        category: 'General Package',
-        deadline: `Needed by ${created.travel_date}`,
-        img: created.product_images?.[0] || 'photo-1586528116311-ad8dd3c8310d',
-        status: created.status || 'pending',
-        is_urgent: Boolean(created.is_urgent),
-        phone: created.receiver_phone || '251911223344',
-        createdAt: Date.now()
+        id: editingPackage ? editingPackage.id : created.id,
+        title: `Shipment for ${receiverName}`,
+        desc: description || `Delivery from ${fromCity} to ${toCity}`,
+        sender: editingPackage?.sender || 'You (Current User)',
+        route: (fromCity || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
+        weight: String(weight),
+        reward: `AED ${(parseFloat(weight || 1) * 35).toFixed(0)}`,
+        category: categoryName,
+        category_id: created.category_id || categoryId || editingPackage?.category_id || null,
+        deadline: `Needed by ${travelDate}`,
+        img: finalPackageImg,
+        status: editingPackage?.status || created.status || 'pending',
+        is_urgent: Boolean(isUrgent),
+        phone: receiverPhone || '251911223344',
+        createdAt: editingPackage?.createdAt || Date.now(),
+        receiver_name: receiverName,
+        receiver_phone: receiverPhone,
+        from_city: fromCity,
+        to_city: toCity,
+        travel_date: travelDate
       };
 
-      setSuccessMsg('Package shipment request posted successfully!');
+      setSuccessMsg(editingPackage ? 'Package shipment request updated successfully!' : 'Package shipment request posted successfully!');
       setTimeout(() => {
         onSubmit(mappedPackage);
         onClose();
-      }, 700);
+      }, 600);
     } catch (err) {
-      console.error('Shipment creation error:', err);
+      console.error('Shipment operation error:', err);
+      const finalPackageImg = imagePreview || editingPackage?.img || '/assets/No-Image-Found-400x264.png';
       const mockReq = {
-        id: `ship_${Date.now()}`,
+        id: editingPackage ? editingPackage.id : `ship_${Date.now()}`,
         title: `Shipment for ${receiverName}`,
         desc: description || `Delivery from ${fromCity} to ${toCity}`,
-        sender: 'You (Current User)',
+        sender: editingPackage?.sender || 'You (Current User)',
         route: fromCity.toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
         weight: String(weight),
         reward: `AED ${(parseFloat(weight || 1) * 35).toFixed(0)}`,
-        category: 'General Package',
+        category: editingPackage?.category || 'General Package',
         deadline: `Needed by ${travelDate}`,
-        img: 'photo-1586528116311-ad8dd3c8310d',
-        status: 'pending',
+        img: finalPackageImg,
+        status: editingPackage?.status || 'pending',
         is_urgent: isUrgent,
         phone: receiverPhone || '251911223344',
-        createdAt: Date.now()
+        createdAt: editingPackage?.createdAt || Date.now(),
+        receiver_name: receiverName,
+        receiver_phone: receiverPhone,
+        from_city: fromCity,
+        to_city: toCity,
+        travel_date: travelDate
       };
 
-      setSuccessMsg('Package shipment request posted successfully!');
+      setSuccessMsg(editingPackage ? 'Package shipment request updated successfully!' : 'Package shipment request posted successfully!');
       setTimeout(() => {
         onSubmit(mockReq);
         onClose();
@@ -178,11 +250,13 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
             <span className="w-8 h-8 rounded-lg bg-amber-500 text-[#1C160F] flex items-center justify-center font-bold">
               <Package className="w-4 h-4" />
             </span>
-            <h3 className="font-display text-base font-bold text-[#1C160F]">Add Delivery Request</h3>
+            <h3 className="font-display text-base font-bold text-[#1C160F]">
+              {editingPackage ? 'Edit Delivery Request' : 'Add Delivery Request'}
+            </h3>
           </div>
           <button 
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-amber-100 flex items-center justify-center text-slate-500 hover:text-[#1C160F] transition-colors"
+            className="w-8 h-8 rounded-full hover:bg-amber-100 flex items-center justify-center text-slate-500 hover:text-[#1C160F] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -216,7 +290,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
                 required
                 value={receiverName}
                 onChange={(e) => setReceiverName(e.target.value)}
-                placeholder="e.g., Alem Kassa (Coffee & Document parcel)" 
+                placeholder="e.g., Recipient name and item summary" 
                 className="w-full border border-amber-200/80 rounded-xl pl-9 pr-3.5 py-2.5 text-xs outline-none focus:border-amber-500 text-[#1C160F]"
               />
             </div>
@@ -316,7 +390,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
 
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                Travel / Needed Date *
+                Requested Delivery Date *
               </label>
               <div className="relative flex items-center">
                 <Calendar className="w-4 h-4 text-slate-400 absolute left-3" />
@@ -359,7 +433,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
               rows="2.5"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Provide details on item condition, packaging, and airport meeting preferences..."
+              placeholder="Describe the item, its condition and packaging, and your preferred handover arrangements..."
               className="w-full border border-amber-200/80 rounded-xl p-3 text-xs outline-none focus:border-amber-500 resize-none text-[#1C160F]"
             />
             {fieldErrors.description && <p className="text-[10px] text-red-600 mt-1">{fieldErrors.description[0]}</p>}
@@ -377,8 +451,8 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
                 <Zap className="w-4 h-4" />
               </span>
               <div>
-                <span className="text-xs font-bold text-[#1C160F] block">Mark as Urgent Delivery</span>
-                <span className="text-[10px] text-slate-500 block">Highlights your package request for fast traveler matching</span>
+                <span className="text-xs font-bold text-[#1C160F] block">Mark as Priority Delivery</span>
+                <span className="text-[10px] text-slate-500 block">Highlights your request to travelers who may be able to assist sooner</span>
               </div>
             </div>
             <input 
@@ -392,8 +466,35 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
           {/* Package Product Images Upload */}
           <div>
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-              Package Photos (Optional, Max 5)
+              Package Photo (Optional)
             </label>
+
+            {imagePreview && (
+              <div className="mb-2 inline-block relative w-20 h-20 rounded-xl overflow-hidden border border-amber-200 shadow-2xs group">
+                <img 
+                  src={
+                    (imagePreview && (imagePreview.startsWith('http://') || imagePreview.startsWith('https://') || imagePreview.startsWith('/storage') || imagePreview.startsWith('data:')))
+                      ? imagePreview
+                      : '/assets/No-Image-Found-400x264.png'
+                  } 
+                  alt="Package preview"
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/assets/No-Image-Found-400x264.png'; }}
+                  className="w-full h-full object-cover" 
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageFiles([]);
+                    setImagePreview('/assets/No-Image-Found-400x264.png');
+                  }}
+                  className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 shadow-md hover:bg-red-700 transition-colors cursor-pointer"
+                  title="Remove image"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+
             <div className="relative border border-dashed border-amber-300 rounded-xl p-3 bg-amber-50/20 text-center cursor-pointer hover:bg-amber-50/50 transition-colors">
               <input 
                 type="file" 
@@ -405,7 +506,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
               <div className="flex items-center justify-center gap-2 text-xs font-semibold text-amber-900">
                 <Upload className="w-4 h-4 text-amber-600" />
                 <span>
-                  {imageFiles.length > 0 ? `${imageFiles.length} photo(s) selected` : 'Upload package photos (JPG, PNG max 5MB)'}
+                  {imageFiles.length > 0 ? `${imageFiles.length} new photo(s) selected` : imagePreview ? 'Change package photo' : 'Upload package photo (JPG, PNG max 5MB)'}
                 </span>
               </div>
             </div>
@@ -426,7 +527,11 @@ export default function RequestDeliveryModal({ onClose, onSubmit }) {
               className="flex items-center gap-1.5 px-5 py-2.5 text-xs font-bold text-white bg-[#1C160F] rounded-xl hover:bg-amber-600 hover:text-[#1C160F] transition-all shadow-sm cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>{loading ? 'Submitting...' : 'Post Package Request'}</span>
+              <span>
+                {editingPackage 
+                  ? (loading ? 'Saving...' : 'Save Changes') 
+                  : (loading ? 'Submitting...' : 'Post Package Request')}
+              </span>
             </button>
           </div>
         </form>

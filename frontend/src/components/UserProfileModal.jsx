@@ -99,7 +99,7 @@ export default function UserProfileModal({ profile, onClose }) {
 
           {/* Verifications */}
           <div className="space-y-2">
-            <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Security Verifications</h5>
+            <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Verification Status</h5>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {verifications.map(b => {
                 const IconComponent = b.icon;
@@ -127,7 +127,7 @@ export default function UserProfileModal({ profile, onClose }) {
 
           {/* Community Feedback */}
           <div className="space-y-2">
-            <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Community Feedback</h5>
+            <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Member Reviews</h5>
             <div className="space-y-2">
               {profile.reviews && profile.reviews.length > 0 ? (
                 profile.reviews.map((r, idx) => (
@@ -145,7 +145,7 @@ export default function UserProfileModal({ profile, onClose }) {
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-slate-400 italic text-center py-4">No community reviews received yet.</p>
+                <p className="text-xs text-slate-400 italic text-center py-4">No member reviews have been received yet.</p>
               )}
             </div>
           </div>

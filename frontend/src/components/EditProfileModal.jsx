@@ -389,7 +389,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
                 onChange={(e) => setMarketingOptIn(e.target.checked)}
                 className="accent-amber-600 rounded" 
               />
-              <span>Receive email notifications for new package requests &amp; traveler deals</span>
+              <span>Receive email updates about new delivery requests and traveler availability</span>
             </label>
           </div>
 

@@ -65,7 +65,7 @@ export default function HomeView({
   onSelectProfile,
   onOfferToCarry,
   onOpenPostModal,
-  onOpenChatDrawer
+  onContactPhone
 }) {
   const [filterRoute, setFilterRoute] = useState('ALL');
   const [activeCategory, setActiveCategory] = useState('ALL');
@@ -173,12 +173,13 @@ export default function HomeView({
             const mapped = data.shipments.map(s => ({
               id: s.id || `ship_${Date.now()}`,
               title: s.receiver_name ? `Shipment for ${s.receiver_name}` : `Cargo (${s.from_city || 'ADD'} ➔ ${s.to_city || 'DXB'})`,
-              desc: s.description || `P2P cargo transit from ${s.from_city || 'Addis Ababa'} to ${s.to_city || 'Dubai'}.`,
+              desc: s.description || `Delivery request from ${s.from_city || 'Addis Ababa'} to ${s.to_city || 'Dubai'}.`,
               route: (s.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
               weight: String(s.weight || '1.0'),
               reward: `AED ${(parseFloat(s.weight || 1) * 35).toFixed(0)}`,
-              category: 'General Cargo',
-              deadline: s.travel_date_label || 'Needed soon',
+              category: s.category_name || s.category || 'General Cargo',
+              category_id: s.category_id ?? null,
+              deadline: s.travel_date_label || 'Date to be confirmed',
               img: s.cover_image || 'photo-1447933601403-0c6688de566e',
               status: 'pending',
               is_urgent: Boolean(s.is_urgent),
@@ -208,16 +209,17 @@ export default function HomeView({
             const mapped = data.shipments.map(s => ({
               id: s.id || `urgent_${Date.now()}`,
               title: s.receiver_name ? `Shipment for ${s.receiver_name}` : `Urgent Cargo (${s.from_city || 'ADD'} ➔ ${s.to_city || 'DXB'})`,
-              desc: s.description || `Urgent P2P cargo transit from ${s.from_city || 'Addis Ababa'} to ${s.to_city || 'Dubai'}.`,
+              desc: s.description || `Priority delivery request from ${s.from_city || 'Addis Ababa'} to ${s.to_city || 'Dubai'}.`,
               route: (s.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
               weight: String(s.weight || '1.0'),
-              reward: `AED ${(parseFloat(s.weight || 1) * 45).toFixed(0)}`,
-              category: 'Urgent Package',
-              deadline: s.travel_date_label || 'Needed ASAP',
-              img: s.cover_image || 'photo-1586528116311-ad8dd3c8310d',
-              status: 'pending',
+              reward: s.reward || `AED ${(parseFloat(s.weight || 1) * 45).toFixed(0)}`,
+              category: s.category_name || s.category || 'General Cargo',
+              category_id: s.category_id ?? null,
+              deadline: s.travel_date_label || 'Priority timing requested',
+              img: s.cover_image || (s.product_images && s.product_images[0]) || '/assets/No-Image-Found-400x264.png',
+              status: s.status || 'pending',
               is_urgent: true,
-              phone: '251911223344',
+              phone: s.receiver_phone || '251911223344',
               sender: s.sender_display || 'Member'
             }));
             setUrgentShipments(mapped);
@@ -262,30 +264,78 @@ export default function HomeView({
   }, [realTravelers]);
   const allRequestsList = realShipments.length > 0 ? [...realShipments, ...requests] : requests;
 
+  const normalizeCategory = (category) => String(category || '').trim().toLowerCase();
+  const getCategoryDisplayName = (category) => {
+    if (!category || category === 'ALL') return 'ALL';
+    if (typeof category === 'string') return category;
+    return String(category);
+  };
+
   const handleResetFilters = () => {
     setFilterRoute('ALL');
     setActiveCategory('ALL');
     setSearchQuery('');
   };
 
-  // Featured Urgent Packages (horizontal slider)
+  // Featured Urgent & High-Reward Packages (Only items with is_urgent = true)
   const featuredRequests = useMemo(() => {
-    if (urgentShipments.length > 0) return urgentShipments;
-    return allRequestsList.filter(r => r.is_urgent).concat(allRequestsList.filter(r => !r.is_urgent)).slice(0, 6);
+    const parseRewardVal = (rewardStr) => {
+      if (!rewardStr) return 0;
+      const match = String(rewardStr).replace(/[^0-9.]/g, '');
+      return match ? parseFloat(match) : 0;
+    };
+
+    const combined = [...urgentShipments, ...allRequestsList];
+    const urgentOnly = combined.filter(r => r && Boolean(r.is_urgent));
+
+    const uniqueMap = new Map();
+    urgentOnly.forEach(item => {
+      if (item && item.id && !uniqueMap.has(item.id)) {
+        uniqueMap.set(item.id, item);
+      }
+    });
+
+    const sorted = Array.from(uniqueMap.values()).sort((a, b) => {
+      return parseRewardVal(b.reward) - parseRewardVal(a.reward);
+    });
+
+    return sorted.slice(0, 4);
   }, [urgentShipments, allRequestsList]);
 
   // Main Feed Filtering
   const filteredRequests = useMemo(() => {
     return allRequestsList.filter(r => {
+      if (!r) return false;
+
+      // 1. Route match (ALL, ADD_TO_DXB, DXB_TO_ADD, URGENT)
       const routeMatch = filterRoute === 'ALL' ? true 
                        : filterRoute === 'URGENT' ? Boolean(r.is_urgent)
-                       : r.route === filterRoute;
-      const catMatch = activeCategory === 'ALL' || r.category === activeCategory;
+                       : (r.route === filterRoute);
+
+      // 2. Category match
+      const selectedCategoryId = activeCategory === 'ALL' ? 'ALL' : String(activeCategory);
+      const selectedCategoryName = activeCategory === 'ALL' ? 'ALL' : String(activeCategory);
+      const pkgCat = (r.category || '').trim();
+      const pkgCatId = r.category_id == null ? null : String(r.category_id);
+      const idMatch = pkgCatId !== null && selectedCategoryId !== 'ALL' && pkgCatId === selectedCategoryId;
+      const nameMatch = selectedCategoryId === 'ALL' || normalizeCategory(pkgCat) === normalizeCategory(selectedCategoryName);
+      const catMatch = selectedCategoryId === 'ALL' ? true : idMatch || nameMatch;
+
+      // 3. Search match
       const query = searchQuery.toLowerCase().trim();
+      const titleText = (r.title || '').toLowerCase();
+      const descText = (r.desc || '').toLowerCase();
+      const catText = (r.category || '').toLowerCase();
+      const senderText = (r.sender || '').toLowerCase();
+      const routeText = (r.route || '').toLowerCase();
+
       const searchMatch = !query || 
-        r.title.toLowerCase().includes(query) || 
-        r.desc.toLowerCase().includes(query) ||
-        r.category.toLowerCase().includes(query);
+        titleText.includes(query) || 
+        descText.includes(query) ||
+        catText.includes(query) ||
+        senderText.includes(query) ||
+        routeText.includes(query);
+
       return routeMatch && catMatch && searchMatch;
     });
   }, [allRequestsList, filterRoute, activeCategory, searchQuery]);
@@ -302,18 +352,18 @@ export default function HomeView({
           <div className="lg:col-span-7 text-center lg:text-left">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase text-amber-300 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              Peer-to-Peer Shipping (Addis Ababa ⇄ Dubai)
+              Verified Traveler Delivery · Addis Ababa ⇄ Dubai
             </span>
             
             <h1 className="font-display mt-5 text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white">
-              Send packages via travelers,<br className="hidden sm:inline" />
+              Deliver across borders with<br className="hidden sm:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-emerald-300">
-                fly and earn rewards.
+                trusted travelers.
               </span>
             </h1>
 
             <p className="mt-4 sm:mt-6 text-slate-300 text-sm sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Got flight tickets? Deliver local packages between Ethiopia and UAE to subsidize your trip. Need something shipped quickly? Find a verified traveler heading your way.
+              Connect with verified travelers for package delivery between Ethiopia and the UAE. Travelers can offset travel costs by carrying approved items on their planned route.
             </p>
 
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4">
@@ -321,13 +371,13 @@ export default function HomeView({
                 onClick={onOpenPostModal} 
                 className="bg-amber-500 hover:bg-amber-400 text-[#1C160F] font-bold px-6 py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 w-full sm:w-auto"
               >
-                <PackagePlus className="w-5 h-5" /> Send a Package
+                <PackagePlus className="w-5 h-5" /> Post a Delivery Request
               </button>
               <a 
                 href="#requests-section" 
                 className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto text-center"
               >
-                <Search className="w-5 h-5" /> Browse Requests
+                <Search className="w-5 h-5" /> Browse Delivery Requests
               </a>
             </div>
           </div>
@@ -338,11 +388,11 @@ export default function HomeView({
               <div className="flex items-center gap-2">
                 <Compass className="w-5 h-5 text-amber-400" />
                 <span className="text-sm font-semibold tracking-wide uppercase text-slate-200">
-                  Active Air Corridor
+                  Delivery Corridor
                 </span>
               </div>
               <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium">
-                Live flight status
+                Addis Ababa ⇄ Dubai
               </span>
             </div>
 
@@ -380,11 +430,11 @@ export default function HomeView({
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-center text-xs">
               <div className="bg-white/5 rounded-lg p-2.5 border border-white/5">
-                <p className="text-slate-400">Total Active Requests</p>
+              <p className="text-slate-400">Open Delivery Requests</p>
                 <p className="text-lg font-extrabold font-display text-amber-300 mt-0.5">{allRequestsList.length}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-2.5 border border-white/5">
-                <p className="text-slate-400">Active Verified Flyers</p>
+              <p className="text-slate-400">Verified Travelers</p>
                 <p className="text-lg font-extrabold font-display text-emerald-300 mt-0.5">{travelersList.length}+</p>
               </div>
             </div>
@@ -393,51 +443,53 @@ export default function HomeView({
       </section>
 
       {/* ============ ROW 1: FEATURED OPPORTUNITIES ============ */}
-      <section className="max-w-7xl mx-auto px-5 lg:px-8 mt-12">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1.5 mb-1">
-              <Zap className="w-4 h-4 text-amber-600 fill-amber-500" /> Featured Opportunities
+      {featuredRequests.length > 0 && (
+        <section className="max-w-7xl mx-auto px-5 lg:px-8 mt-12">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1.5 mb-1">
+                <Zap className="w-4 h-4 text-amber-600 fill-amber-500" /> Featured Opportunities
+              </span>
+              <h2 className="font-display text-2xl font-extrabold text-[#1C160F]">
+                Priority Delivery Requests
+              </h2>
+              <p className="text-slate-500 text-xs mt-1">
+                Browse time-sensitive requests that offer higher delivery rewards.
+              </p>
+            </div>
+            <span className="text-xs text-slate-400 font-semibold hidden sm:inline flex items-center gap-1">
+                <ArrowRightLeft className="w-3.5 h-3.5" /> Browse requests
             </span>
-            <h2 className="font-display text-2xl font-extrabold text-[#1C160F]">
-              Urgent &amp; High-Reward Packages
-            </h2>
-            <p className="text-slate-500 text-xs mt-1">
-              Directly carry these packages on your flight to earn premium payout rewards.
-            </p>
           </div>
-          <span className="text-xs text-slate-400 font-semibold hidden sm:inline flex items-center gap-1">
-            <ArrowRightLeft className="w-3.5 h-3.5" /> Scroll to browse
-          </span>
-        </div>
 
-        {/* Urgent & High-Reward Package Grid (2 columns on mobile) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-          {featuredRequests.map(item => (
-            <PackageCard 
-              key={item.id} 
-              item={item} 
-              profile={profiles[item.sender]}
-              onSelectPackage={onSelectPackage}
-              onSelectProfile={onSelectProfile}
-              onOfferToCarry={onOfferToCarry}
-            />
-          ))}
-        </div>
-      </section>
+          {/* Urgent & High-Reward Package Grid (2 columns on mobile) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            {featuredRequests.map(item => (
+              <PackageCard 
+                key={item.id} 
+                item={item} 
+                profile={profiles[item.sender]}
+                onSelectPackage={onSelectPackage}
+                onSelectProfile={onSelectProfile}
+                onOfferToCarry={onOfferToCarry}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ============ MAIN SEARCH & FEED ============ */}
       <section id="requests-section" className="max-w-7xl mx-auto px-5 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1">
-              <Package className="w-3.5 h-3.5" /> Live Cargo List
+              <Package className="w-3.5 h-3.5" /> Open Delivery Requests
             </span>
             <h2 className="font-display text-3xl font-extrabold text-[#1C160F]">
               Package delivery requests
             </h2>
             <p className="text-slate-500 text-sm mt-1">
-              Browse requests from senders. Click user avatars to inspect profiles and verification histories.
+              Browse requests from senders and review member profiles and verification details before arranging a handover.
             </p>
           </div>
 
@@ -485,7 +537,7 @@ export default function HomeView({
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search (e.g. coffee, phone)" 
+                placeholder="Search requests, items, or destinations" 
                 className="text-xs outline-none text-slate-700 bg-transparent w-full" 
               />
             </div>
@@ -504,19 +556,24 @@ export default function HomeView({
           >
             All Items
           </button>
-          {(categoriesList.length > 0 ? categoriesList : CATEGORIES).map(cat => (
-            <button
-              key={cat.id || cat.name}
-              onClick={() => setActiveCategory(cat.name)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 border transition-all cursor-pointer ${
-                activeCategory === cat.name
-                  ? 'bg-amber-500 text-[#1C160F] border-amber-500 shadow-xs'
-                  : 'bg-white text-slate-600 border-amber-200/60 hover:bg-amber-50'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {(categoriesList.length > 0 ? categoriesList : CATEGORIES).map((cat, idx) => {
+            const catName = typeof cat === 'string' ? cat : (cat.name || 'Category');
+            const catValue = typeof cat === 'string' ? catName : String(cat.id);
+            const isActive = activeCategory === catValue;
+            return (
+              <button
+                key={cat.id || catName || idx}
+                onClick={() => setActiveCategory(catValue)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 border transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-amber-500 text-[#1C160F] border-amber-500 shadow-xs'
+                    : 'bg-white text-slate-600 border-amber-200/60 hover:bg-amber-50'
+                }`}
+              >
+                {catName}
+              </button>
+            );
+          })}
         </div>
 
         {/* Results Count Meta */}
@@ -579,7 +636,7 @@ export default function HomeView({
               Available Travelers &amp; Transit Agents
             </h2>
             <p className="text-slate-500 text-xs mt-1">
-              Directly chat with real verified flyers scheduled on upcoming flights between Addis and Dubai.
+              Review verified travelers with upcoming flights between Addis Ababa and Dubai.
             </p>
           </div>
           <span className="text-xs text-slate-400 font-semibold hidden sm:flex items-center gap-1">
@@ -628,20 +685,11 @@ export default function HomeView({
               </div>
 
               <div className="flex gap-2 pt-2">
-                <a 
-                  href={`https://wa.me/${t.phone}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-xl bg-emerald-50 hover:bg-emerald-100 flex items-center justify-center text-emerald-700 border border-emerald-100 transition-colors shrink-0"
-                  title="WhatsApp Contact"
-                >
-                  <Phone className="w-4 h-4" />
-                </a>
                 <button 
-                  onClick={onOpenChatDrawer}
-                  className="flex-1 bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white text-xs font-bold py-2 rounded-xl transition-all"
+                  onClick={() => onContactPhone && onContactPhone(t)}
+                  className="w-full bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white text-xs font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
                 >
-                  Chat &amp; Negotiate
+                  <Phone className="w-3.5 h-3.5 text-amber-400" /> Show Phone Number &amp; Contact
                 </button>
               </div>
             </div>
@@ -653,7 +701,7 @@ export default function HomeView({
       <section id="how-it-works" className="max-w-7xl mx-auto px-5 lg:px-8 mt-12 mb-16">
         <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
           <h2 className="font-display text-3xl font-extrabold text-[#1C160F]">
-            Simple &amp; Trust-Based P2P Shipping
+            How the Delivery Network Works
           </h2>
           <p className="text-slate-500 text-sm leading-relaxed">
             Connecting travelers and package senders directly to avoid high courier fees and long transit delays.
@@ -667,9 +715,9 @@ export default function HomeView({
               1
             </div>
             <div>
-              <h3 className="font-display font-bold text-base text-[#1C160F]">Sender Posts Package</h3>
+              <h3 className="font-display font-bold text-base text-[#1C160F]">Post a Delivery Request</h3>
               <p className="text-slate-500 text-xs leading-relaxed mt-1.5">
-                Post what you need shipped, which route direction, its weight, and the cash reward offered for the delivery.
+                Provide the item details, delivery route, weight, and the reward you are offering for completion.
               </p>
             </div>
           </div>
@@ -680,9 +728,9 @@ export default function HomeView({
               2
             </div>
             <div>
-              <h3 className="font-display font-bold text-base text-[#1C160F]">Traveler Offers to Carry</h3>
+              <h3 className="font-display font-bold text-base text-[#1C160F]">Match with a Traveler</h3>
               <p className="text-slate-500 text-xs leading-relaxed mt-1.5">
-                An airline traveler on that route accepts the request, prompting a direct secure P2P chat room connection.
+                A verified traveler on the relevant route can express interest, allowing you to coordinate securely through the platform.
               </p>
             </div>
           </div>
@@ -693,9 +741,9 @@ export default function HomeView({
               3
             </div>
             <div>
-              <h3 className="font-display font-bold text-base text-[#1C160F]">Chat, Handover &amp; Deliver</h3>
+              <h3 className="font-display font-bold text-base text-[#1C160F]">Coordinate and Deliver</h3>
               <p className="text-slate-500 text-xs leading-relaxed mt-1.5">
-                Coordinate pickup at airports, inspect contents together, hand over the package, and deliver to release rewards.
+                Coordinate a safe handover, inspect the item together, and complete delivery to receive the agreed reward.
               </p>
             </div>
           </div>
@@ -710,7 +758,7 @@ export default function HomeView({
               <ShieldAlert className="w-5 h-5" />
             </span>
             <h2 className="font-display text-2xl font-extrabold text-[#1C160F]">
-              Important Safety Guidelines
+              Safety and Compliance Guidelines
             </h2>
           </div>
           
@@ -719,15 +767,15 @@ export default function HomeView({
               <div className="flex gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-[#1C160F] mb-1">Inspect All Content</h4>
-                  <p className="leading-relaxed">Travelers must physically inspect all packages before checking them into their luggage. Never accept closed, gift-wrapped, or mystery items.</p>
+                  <h4 className="font-bold text-[#1C160F] mb-1">Inspect Every Item</h4>
+                  <p className="leading-relaxed">Travelers must inspect each item before placing it in their luggage. Do not accept packages whose contents cannot be verified.</p>
                 </div>
               </div>
               <div className="flex gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-[#1C160F] mb-1">Verify Government ID</h4>
-                  <p className="leading-relaxed">Use the chat interface to request a verification of the passenger's boarding pass / passport and the sender's local government ID.</p>
+                  <h4 className="font-bold text-[#1C160F] mb-1">Verify Identity and Travel Details</h4>
+                  <p className="leading-relaxed">Use secure messaging to confirm the traveler’s itinerary and the sender’s valid government-issued identification before handover.</p>
                 </div>
               </div>
             </div>
@@ -737,14 +785,14 @@ export default function HomeView({
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-[#1C160F] mb-1">Check Airport Restrictions</h4>
-                  <p className="leading-relaxed">Ensure that the goods do not violate customs regulations of Dubai (UAE) or Addis Ababa (Ethiopia). Strictly observe weight limitations.</p>
+                  <p className="leading-relaxed">Confirm that items comply with applicable customs, airline, and baggage requirements for the UAE and Ethiopia, including weight limits.</p>
                 </div>
               </div>
               <div className="flex gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-[#1C160F] mb-1">Coordinate Safe Handover</h4>
-                  <p className="leading-relaxed">For high-value items, perform handovers in public places (e.g. airport lobbies, registered hotels) and use digital payment escrow systems.</p>
+                  <p className="leading-relaxed">For valuable items, arrange handovers in public, well-monitored locations such as airport lobbies, and use secure payment methods where available.</p>
                 </div>
               </div>
             </div>

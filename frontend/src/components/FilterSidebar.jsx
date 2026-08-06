@@ -35,12 +35,23 @@ export default function FilterSidebar({
   }, []);
 
   const categoriesList = dbCategories.length > 0 ? dbCategories : CATEGORIES;
-  const handleCategoryToggle = (catName) => {
-    if (filterCategories.includes(catName)) {
-      setFilterCategories(filterCategories.filter(c => c !== catName));
-    } else {
-      setFilterCategories([...filterCategories, catName]);
-    }
+  const getCategoryName = (category) => typeof category === 'string' ? category : category?.name || '';
+  const getCategoryValue = (category) => category?.id != null ? String(category.id) : getCategoryName(category);
+  const handleCategoryToggle = (categoryValue, categoryName) => {
+    setFilterCategories((currentCategories) => {
+      const isSelected = currentCategories.includes(categoryValue);
+
+      if (isSelected) {
+        return currentCategories.filter((category) => category !== categoryValue && category !== categoryName);
+      }
+
+      const nextCategories = [...currentCategories, categoryValue];
+      if (categoryName && categoryName !== categoryValue && !currentCategories.includes(categoryName)) {
+        nextCategories.push(categoryName);
+      }
+
+      return nextCategories;
+    });
   };
 
   return (
@@ -109,21 +120,27 @@ export default function FilterSidebar({
           Categories
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-1 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
-          {categoriesList.map(cat => (
+          {categoriesList.map(cat => {
+            const categoryName = getCategoryName(cat);
+            const categoryValue = getCategoryValue(cat);
+            const isSelected = filterCategories.includes(categoryValue);
+
+            return (
             <label 
-              key={cat.id || cat.name} 
+              key={cat.id || categoryName} 
               className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer hover:text-amber-600 transition-colors py-1"
             >
               <input 
                 type="checkbox" 
-                value={cat.name} 
-                checked={filterCategories.includes(cat.name)}
-                onChange={() => handleCategoryToggle(cat.name)}
+                value={categoryValue} 
+                checked={isSelected}
+                onChange={() => handleCategoryToggle(categoryValue, categoryName)}
                 className="accent-amber-600 rounded h-4 w-4" 
               />
-              <span className="truncate">{cat.name}</span>
+              <span className="truncate">{categoryName}</span>
             </label>
-          ))}
+            );
+          })}
         </div>
       </div>
 

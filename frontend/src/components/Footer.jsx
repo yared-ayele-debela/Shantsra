@@ -13,7 +13,7 @@ export default function Footer({
 
   const logoUrl = settings?.logo_url || sessionStorage.getItem(SITE_LOGO_STORAGE_KEY);
   const siteName = settings?.site_name || sessionStorage.getItem(SITE_NAME_STORAGE_KEY) || 'Souq & Sheba';
-  const siteDescription = settings?.site_description || 'Direct peer-to-peer package delivery platform linking flight passengers and package senders in Ethiopia and UAE.';
+  const siteDescription = settings?.site_description || 'A trusted delivery platform connecting package senders with verified travelers between Ethiopia and the UAE.';
   const contactEmail = settings?.contact_email || settings?.email || 'support@souqsheba.com';
   const contactPhone = settings?.contact_phone || settings?.phone || '+251 91 122 3344';
   const address = settings?.address || 'Addis Ababa & Dubai';
@@ -89,16 +89,16 @@ export default function Footer({
 
         {/* Quick Links Column */}
         <div className="space-y-3">
-          <h4 className="text-white font-bold text-xs uppercase tracking-wider">Shipments &amp; Network</h4>
+          <h4 className="text-white font-bold text-xs uppercase tracking-wider">Delivery Network</h4>
           <ul className="space-y-2 text-xs">
             <li>
               <button onClick={() => setCurrentView('packages')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
-                Find Package Requests
+                Browse Delivery Requests
               </button>
             </li>
             <li>
               <button onClick={() => setCurrentView('travelers')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
-                Find Verified Travelers
+                Browse Verified Travelers
               </button>
             </li>
             <li>
@@ -108,7 +108,7 @@ export default function Footer({
             </li>
             <li>
               <button onClick={() => setCurrentView('dashboard')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
-                My Delivery Dashboard
+                Delivery Dashboard
               </button>
             </li>
           </ul>
@@ -130,7 +130,7 @@ export default function Footer({
             </li>
             <li>
               <button onClick={() => setCurrentView('safety')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
-                Help &amp; Support Center
+                Support Center
               </button>
             </li>
           </ul>
@@ -138,9 +138,9 @@ export default function Footer({
 
         {/* Newsletter Column */}
         <div className="space-y-3">
-          <h4 className="text-white font-bold text-xs uppercase tracking-wider">Flight Updates</h4>
+          <h4 className="text-white font-bold text-xs uppercase tracking-wider">Delivery Updates</h4>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Subscribe for instant route alerts and priority package rewards.
+            Subscribe for route updates and priority delivery opportunities.
           </p>
           <form onSubmit={handleSubscribe} className="space-y-2">
             <div className="flex gap-2">
@@ -148,20 +148,20 @@ export default function Footer({
                 type="email" 
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
-                placeholder="Enter email address" 
+                placeholder="Enter your email address" 
                 className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400 transition-colors min-w-0" 
               />
               <button 
                 type="submit"
                 className="bg-amber-500 hover:bg-amber-400 transition-colors rounded-xl px-3.5 font-bold text-[#1C160F] text-xs shrink-0 flex items-center gap-1 cursor-pointer"
               >
-                <span>Join</span>
+                <span>Subscribe</span>
                 <Send className="w-3 h-3" />
               </button>
             </div>
             {subscribed && (
               <p className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" /> Subscribed successfully!
+                <CheckCircle className="w-3 h-3" /> Subscription confirmed.
               </p>
             )}
           </form>
@@ -170,7 +170,7 @@ export default function Footer({
       </div>
 
       <div className="border-t border-white/10 py-5 text-center text-xs text-slate-500 font-semibold px-4">
-        © {new Date().getFullYear()} {siteName}. All rights reserved. Connecting travelers and senders worldwide.
+        © {new Date().getFullYear()} {siteName}. All rights reserved.
       </div>
     </footer>
   );

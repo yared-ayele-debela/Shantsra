@@ -12,7 +12,7 @@ import UserProfileModal from './components/UserProfileModal';
 import RequestDeliveryModal from './components/RequestDeliveryModal';
 import FlightVerificationModal from './components/FlightVerificationModal';
 import AuthModal from './components/AuthModal';
-import ChatDrawer from './components/ChatDrawer';
+import PhoneContactModal from './components/PhoneContactModal';
 import AppLoadingOverlay from './components/AppLoadingOverlay';
 import MobileBottomNav from './components/MobileBottomNav';
 import Footer from './components/Footer';
@@ -29,8 +29,8 @@ const DEFAULT_CHATS = [
       { sender: 'them', text: "Hello! Thank you for offering to carry the coffee. When is your flight leaving Addis?", time: "3:40 PM" }
     ],
     replies: [
-      "Awesome! Bole Airport T2 works perfectly for handover. I can meet you there.",
-      "Sure, the bag is clean and tightly sealed. No issues with inspection! Looking forward to it."
+      "Bole Airport Terminal 2 works well for the handover. I can meet you there.",
+      "The bag is clean and securely packed. You are welcome to inspect the contents before handover."
     ],
     replyIndex: 0
   },
@@ -43,8 +43,8 @@ const DEFAULT_CHATS = [
       { sender: 'them', text: "Hi! The iPhone is fully paid and invoice is in the bag. Are you able to pick it up from Al Barsha?", time: "1:20 PM" }
     ],
     replies: [
-      "That is perfect! I will coordinate the handover address. Let me know when you are nearby.",
-      "Thanks so much! My family in Addis will meet you immediately upon your flight arrival."
+      "I will coordinate the handover location. Please let me know when you are nearby.",
+      "My family in Addis Ababa will be available to receive the item after your arrival."
     ],
     replyIndex: 0
   }
@@ -121,6 +121,7 @@ export default function App() {
   // Modal & Drawer States
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedProfileModal, setSelectedProfileModal] = useState(null);
+  const [selectedPhoneContact, setSelectedPhoneContact] = useState(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isFlightModalOpen, setIsFlightModalOpen] = useState(false);
 
@@ -161,7 +162,7 @@ export default function App() {
         photo_url: photoSrc,
         rating: '5.0',
         deliveriesCount: 3,
-        bio: 'Verified active user on Souq & Sheba platform.',
+        bio: 'Verified member of the Souq & Sheba delivery network.',
         verifications: { id: Boolean(currentUser.id_document_status === 'approved'), flight: true, phone: Boolean(currentUser.phone) },
         reviews: []
       });
@@ -190,7 +191,7 @@ export default function App() {
       photo_url: null,
       rating: '4.8',
       deliveriesCount: 5,
-      bio: 'Member of Souq & Sheba delivery community.',
+      bio: 'Member of the Souq & Sheba delivery network.',
       verifications: { id: true, flight: true, phone: true },
       reviews: []
     });
@@ -232,15 +233,23 @@ export default function App() {
     showToast(`Package request "${newReq.title}" posted successfully!`);
   };
 
+  const handleUpdatePackage = (updatedReq) => {
+    setRequests(prev => prev.map(req => req.id === updatedReq.id ? updatedReq : req));
+    showToast(`Package request "${updatedReq.title}" updated successfully!`);
+  };
+
+  const handleDeletePackage = (packageId) => {
+    setRequests(prev => prev.filter(req => req.id !== packageId));
+    showToast('Package request deleted successfully.');
+  };
+
   const handleOfferToCarry = (item) => {
-    if (!currentUser) {
-      handleOpenAuth('login');
-      showToast('Please sign in to offer package carriage.');
-      return;
-    }
     setSelectedPackage(null);
-    setIsChatDrawerOpen(true);
-    showToast(`Negotiation chat room opened for "${item.title}".`);
+    setSelectedPhoneContact(item);
+  };
+
+  const handleContactPhone = (contact) => {
+    setSelectedPhoneContact(contact);
   };
 
   const handleVerifyFlightSubmit = (flightData) => {
@@ -265,7 +274,65 @@ export default function App() {
     showToast(`Flight ticket ${flightData.carrier} ${flightData.flightNumber} verified! Badge added to profile.`);
   };
 
+  const handleOpenPackageModal = (pkg) => {
+    setSelectedPackage(pkg);
+    if (pkg && typeof window !== 'undefined' && window.history && window.history.replaceState) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('package', pkg.id);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
 
+  const handleClosePackageModal = () => {
+    setSelectedPackage(null);
+    if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('package');
+      const newSearch = url.searchParams.toString();
+      const cleanUrl = url.pathname + (newSearch ? `?${newSearch}` : '') + url.hash;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+  };
+
+  // Deep Link Parser: Automatically open shared package modal if URL contains ?package=id
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const packageId = params.get('package');
+    if (!packageId) return;
+
+    // Search in current requests list first
+    const matched = requests.find(r => String(r.id) === String(packageId));
+    if (matched) {
+      setSelectedPackage(matched);
+    } else {
+      // Fetch open shipments from API if not found in local requests state
+      fetch('/api/shipments/open')
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data && data.shipments) {
+            const found = data.shipments.find(s => String(s.id) === String(packageId));
+            if (found) {
+              setSelectedPackage({
+                id: found.id,
+                title: found.receiver_name ? `Shipment for ${found.receiver_name}` : `Package (${found.from_city || 'ADD'} ➔ ${found.to_city || 'DXB'})`,
+                desc: found.description || `Cargo transit from ${found.from_city || 'Addis Ababa'} to ${found.to_city || 'Dubai'}.`,
+                route: (found.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
+                weight: String(found.weight || '1.0'),
+                reward: found.reward || `AED ${(parseFloat(found.weight || 1) * 35).toFixed(0)}`,
+                category: found.category || 'General Cargo',
+                deadline: found.travel_date ? `Needed by ${found.travel_date}` : 'Needed soon',
+                img: found.cover_image || found.product_images?.[0] || 'photo-1447933601403-0c6688de566e',
+                status: found.status || 'pending',
+                phone: found.receiver_phone || '251911223344',
+                sender: found.sender_display || 'Verified Poster'
+              });
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [requests]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1C160F] pb-16 lg:pb-0">
@@ -304,9 +371,10 @@ export default function App() {
           <HomeView 
             requests={requests}
             profiles={profiles}
-            onSelectPackage={setSelectedPackage}
+            onSelectPackage={handleOpenPackageModal}
             onSelectProfile={handleSelectProfile}
             onOfferToCarry={handleOfferToCarry}
+            onContactPhone={handleContactPhone}
             onOpenPostModal={() => {
               if (!currentUser) {
                 handleOpenAuth('login');
@@ -315,7 +383,6 @@ export default function App() {
                 setIsPostModalOpen(true);
               }
             }}
-            onOpenChatDrawer={() => setIsChatDrawerOpen(true)}
           />
         )}
 
@@ -323,7 +390,7 @@ export default function App() {
           <PackagesView 
             requests={requests}
             profiles={profiles}
-            onSelectPackage={setSelectedPackage}
+            onSelectPackage={handleOpenPackageModal}
             onSelectProfile={handleSelectProfile}
             onOfferToCarry={handleOfferToCarry}
           />
@@ -333,6 +400,7 @@ export default function App() {
           <TravelersView 
             profiles={profiles}
             onSelectProfile={handleSelectProfile}
+            onContactPhone={handleContactPhone}
           />
         )}
 
@@ -345,8 +413,10 @@ export default function App() {
               onUpdateCurrentUser={setCurrentUser}
               onOpenPostModal={() => setIsPostModalOpen(true)}
               onOpenFlightModal={() => setIsFlightModalOpen(true)}
-              onOpenChatDrawer={() => setIsChatDrawerOpen(true)}
-              onSelectPackage={setSelectedPackage}
+              onContactPhone={handleContactPhone}
+              onSelectPackage={handleOpenPackageModal}
+              onUpdatePackage={handleUpdatePackage}
+              onDeletePackage={handleDeletePackage}
             />
           ) : (
             <div className="max-w-xl mx-auto px-5 py-24 text-center space-y-6">
@@ -387,7 +457,7 @@ export default function App() {
         <PackageDetailModal 
           item={selectedPackage}
           profile={profiles[selectedPackage.sender]}
-          onClose={() => setSelectedPackage(null)}
+          onClose={handleClosePackageModal}
           onOfferToCarry={handleOfferToCarry}
         />
       )}
@@ -397,6 +467,14 @@ export default function App() {
         <UserProfileModal 
           profile={selectedProfileModal}
           onClose={() => setSelectedProfileModal(null)}
+        />
+      )}
+
+      {/* Direct Phone Contact Modal */}
+      {selectedPhoneContact && (
+        <PhoneContactModal 
+          contact={selectedPhoneContact}
+          onClose={() => setSelectedPhoneContact(null)}
         />
       )}
 
@@ -423,16 +501,6 @@ export default function App() {
         onAuthSuccess={handleAuthSuccess}
       />
 
-      {/* Interactive Chat Drawer */}
-      <ChatDrawer 
-        isOpen={isChatDrawerOpen}
-        onClose={() => setIsChatDrawerOpen(false)}
-        chats={chats}
-        setChats={setChats}
-        activeChatId={activeChatId}
-        setActiveChatId={setActiveChatId}
-      />
-
       {/* Mobile Bottom Navigation Bar */}
       <MobileBottomNav 
         currentView={currentView}
@@ -445,7 +513,6 @@ export default function App() {
             setIsPostModalOpen(true);
           }
         }}
-        onOpenChatDrawer={() => setIsChatDrawerOpen(true)}
         currentUser={currentUser}
         onOpenAuthModal={handleOpenAuth}
       />

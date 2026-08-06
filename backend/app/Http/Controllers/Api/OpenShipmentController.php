@@ -18,13 +18,24 @@ class OpenShipmentController extends Controller
         $shipments = Shipment::query()
             ->where('status', 'pending')
             ->whereDoesntHave('booking')
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $categoryIds = collect(explode(',', $request->input('category_id')))
+                    ->map(fn (string $id) => trim($id))
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                if (! empty($categoryIds)) {
+                    $query->whereIn('category_id', $categoryIds);
+                }
+            })
             ->with(['sender:id,name', 'category:id,name'])
             ->latest()
             ->limit($limit)
             ->get()
             ->map(function (Shipment $shipment) {
                 $images = collect($shipment->product_images ?? [])
-                    ->map(fn (string $path) => asset('storage/'.$path))
+                    ->map(fn (string $path) => (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_starts_with($path, '/assets')) ? $path : asset('storage/'.$path))
                     ->values()
                     ->all();
                 $travelDate = $shipment->travel_date ? Carbon::parse($shipment->travel_date) : null;
@@ -69,7 +80,7 @@ class OpenShipmentController extends Controller
             ->get()
             ->map(function (Shipment $shipment) {
                 $images = collect($shipment->product_images ?? [])
-                    ->map(fn (string $path) => asset('storage/'.$path))
+                    ->map(fn (string $path) => (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_starts_with($path, '/assets')) ? $path : asset('storage/'.$path))
                     ->values()
                     ->all();
                 $travelDate = $shipment->travel_date ? Carbon::parse($shipment->travel_date) : null;

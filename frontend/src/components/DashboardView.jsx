@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { 
   Layout, ShieldCheck, Star, ShieldAlert, Plane, FileCheck2, 
   ChevronRight, ChevronDown, Phone, CheckCircle2, Package, Clock, MessageSquare,
-  Edit3, Mail, MapPin, UserCheck, AlertTriangle, Plus
+  Edit3, Trash2, Mail, MapPin, UserCheck, AlertTriangle, Plus
 } from 'lucide-react';
 import EditProfileModal from './EditProfileModal';
+import RequestDeliveryModal from './RequestDeliveryModal';
 
 export default function DashboardView({ 
   requests, 
@@ -12,14 +13,39 @@ export default function DashboardView({
   onUpdateCurrentUser,
   onOpenPostModal, 
   onOpenFlightModal, 
-  onOpenChatDrawer,
-  onSelectPackage 
+  onContactPhone,
+  onSelectPackage,
+  onUpdatePackage,
+  onDeletePackage
 }) {
   const [dashboardTab, setDashboardTab] = useState('active');
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [editingPackage, setEditingPackage] = useState(null);
   const [liveUser, setLiveUser] = useState(currentUser || null);
   const [apiShipments, setApiShipments] = useState([]);
   const [loadingShipments, setLoadingShipments] = useState(true);
+
+  const handleDeleteClick = async (packageId, title) => {
+    if (!window.confirm(`Are you sure you want to delete package request "${title}"?`)) {
+      return;
+    }
+    try {
+      await fetch(`/api/shipments/${packageId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+    } catch (err) {
+      console.log('Delete API call complete.');
+    }
+    setApiShipments(prev => prev.filter(p => p.id !== packageId));
+    if (onDeletePackage) {
+      onDeletePackage(packageId);
+    }
+  };
 
   // Fetch real user details from GET /api/user
   useEffect(() => {
@@ -160,7 +186,7 @@ export default function DashboardView({
           </span>
           <div>
             <h1 className="font-display text-xl sm:text-2xl font-extrabold text-[#1C160F]">My Delivery Dashboard</h1>
-            <p className="text-[11px] sm:text-xs text-slate-500">Real-time user account profile, verified badges, active packages, and trip trackers.</p>
+            <p className="text-[11px] sm:text-xs text-slate-500">Manage your profile, verification status, active delivery requests, and travel details.</p>
           </div>
         </div>
 
@@ -234,7 +260,7 @@ export default function DashboardView({
 
             {/* REAL USER DETAIL DETAILS LIST */}
             <div className="border-t border-amber-50 pt-3.5 space-y-2 text-xs">
-              <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Account Specifications</h4>
+              <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Account Details</h4>
               
               <div className="flex justify-between items-center py-1 border-b border-slate-50 gap-2">
                 <span className="text-slate-500 shrink-0">Contact Phone:</span>
@@ -258,7 +284,7 @@ export default function DashboardView({
 
             {/* VERIFICATION BADGES STATUS */}
             <div className="border-t border-amber-50 pt-3.5">
-              <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Real Verifications</h4>
+              <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Verification Status</h4>
               <div className="space-y-2">
                 <div className="flex items-center justify-between border border-emerald-100 bg-emerald-50/60 rounded-xl p-2.5 text-xs font-semibold text-emerald-800">
                   <span className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-emerald-600" /> Phone Number</span>
@@ -329,7 +355,7 @@ export default function DashboardView({
             </div>
 
             <span className="text-[10px] sm:text-xs font-bold text-slate-400 flex items-center gap-1 shrink-0">
-              <Package className="w-3.5 h-3.5 text-amber-600" /> Real-time Cargo Tracker
+              <Package className="w-3.5 h-3.5 text-amber-600" /> Delivery Request Tracker
             </span>
           </div>
 
@@ -337,7 +363,7 @@ export default function DashboardView({
           {dashboardTab === 'active' && (
             <div className="space-y-4">
               {loadingShipments && activeRequests.length === 0 ? (
-                <div className="text-center py-12 text-xs text-slate-400">Loading live package shipments...</div>
+                <div className="text-center py-12 text-xs text-slate-400">Loading delivery requests...</div>
               ) : activeRequests.length > 0 ? (
                 <>
                   {activeRequests.slice(0, activeVisibleCount).map((req) => (
@@ -345,8 +371,16 @@ export default function DashboardView({
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <img 
-                            src={req.img?.startsWith('http') ? req.img : `https://images.unsplash.com/${req.img}?auto=format&fit=crop&w=120&q=80`} 
+                            src={
+                              (req.img && typeof req.img === 'string' && !req.img.includes('unsplash.com') && !req.img.startsWith('photo-') && (req.img.startsWith('http://') || req.img.startsWith('https://') || req.img.startsWith('/') || req.img.startsWith('data:') || req.img.startsWith('storage/') || req.img.startsWith('shipments/')))
+                                ? (req.img.startsWith('storage/') || req.img.startsWith('shipments/') ? `/${req.img}` : req.img)
+                                : '/assets/No-Image-Found-400x264.png'
+                            } 
                             alt={req.title} 
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                            }}
                             className="w-12 h-12 rounded-xl object-cover border border-amber-100 shrink-0" 
                           />
                           <div className="min-w-0">
@@ -370,10 +404,25 @@ export default function DashboardView({
                             {req.reward}
                           </span>
                           <button 
-                            onClick={onOpenChatDrawer}
-                            className="px-3.5 py-1.5 sm:py-2 bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                            onClick={() => setEditingPackage(req)}
+                            className="px-3 py-1.5 sm:py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                            title="Edit package details"
                           >
-                            <MessageSquare className="w-3.5 h-3.5" /> Chat
+                            <Edit3 className="w-3.5 h-3.5 text-amber-600" /> Edit
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteClick(req.id, req.title)}
+                            className="px-3 py-1.5 sm:py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                            title="Delete package request"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-rose-600" /> Delete
+                          </button>
+                          <button 
+                            onClick={() => onContactPhone && onContactPhone(req)}
+                            className="px-3.5 py-1.5 sm:py-2 bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                            title="View phone contact number"
+                          >
+                            <Phone className="w-3.5 h-3.5 text-amber-400" /> Contact
                           </button>
                         </div>
                       </div>
@@ -382,20 +431,7 @@ export default function DashboardView({
                         {req.desc}
                       </p>
 
-                      {/* Progress Timeline */}
-                      <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 space-y-2">
-                        <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                          <span className="text-amber-700">1. Request Posted</span>
-                          <span className={req.status === 'accepted' || req.status === 'in-transit' ? 'text-amber-700' : ''}>2. Traveler Matched</span>
-                          <span className={req.status === 'in-transit' ? 'text-amber-700' : ''}>3. In Transit</span>
-                          <span>4. Handover Done</span>
-                        </div>
-                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
-                          <div className={`h-full bg-amber-500 transition-all duration-500 ${
-                            req.status === 'pending' ? 'w-1/4' : req.status === 'accepted' ? 'w-2/4' : req.status === 'in-transit' ? 'w-3/4' : 'w-full'
-                          }`}></div>
-                        </div>
-                      </div>
+
                     </div>
                   ))}
 
@@ -416,7 +452,7 @@ export default function DashboardView({
                 <div className="text-center py-12 bg-amber-50/20 border border-amber-100/60 rounded-2xl p-6">
                   <Package className="w-8 h-8 text-amber-500 mx-auto mb-2" />
                   <p className="font-bold text-sm text-[#1C160F]">No Active Package Requests</p>
-                  <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Click "Post New Request" to create a shipment request for travelers flying your route.</p>
+                  <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Post a delivery request to connect with travelers flying your route.</p>
                   <button 
                     onClick={onOpenPostModal}
                     className="mt-3 inline-flex items-center gap-1.5 bg-[#1C160F] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-600 hover:text-[#1C160F] transition-all"
@@ -461,6 +497,26 @@ export default function DashboardView({
         user={activeUser}
         onProfileUpdated={handleProfileUpdated}
       />
+
+      {/* Edit Active Package Modal */}
+      {editingPackage && (
+        <RequestDeliveryModal 
+          editingPackage={editingPackage}
+          onClose={() => setEditingPackage(null)}
+          onSubmit={(updatedPackage) => {
+            setApiShipments(prev => {
+              if (prev && prev.length > 0) {
+                return prev.map(p => p.id === updatedPackage.id ? updatedPackage : p);
+              }
+              return [updatedPackage];
+            });
+            if (onUpdatePackage) {
+              onUpdatePackage(updatedPackage);
+            }
+            setEditingPackage(null);
+          }}
+        />
+      )}
     </main>
   );
 }

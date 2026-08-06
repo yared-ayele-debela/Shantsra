@@ -40,8 +40,16 @@ export default function PackageCard({
       >
         <div className="relative h-28 sm:h-36 overflow-hidden shrink-0">
           <img 
-            src={item.img?.startsWith('http') ? item.img : `https://images.unsplash.${item.img?.includes('?') ? item.img : item.img + '?auto=format&fit=crop&w=480&q=80'}`} 
+            src={
+              (item.img && typeof item.img === 'string' && !item.img.includes('unsplash.com') && !item.img.startsWith('photo-') && (item.img.startsWith('http://') || item.img.startsWith('https://') || item.img.startsWith('/') || item.img.startsWith('data:') || item.img.startsWith('storage/') || item.img.startsWith('shipments/')))
+                ? (item.img.startsWith('storage/') || item.img.startsWith('shipments/') ? `/${item.img}` : item.img)
+                : '/assets/No-Image-Found-400x264.png'
+            } 
             alt={item.title} 
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+            }}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
           <span className={`absolute top-2 left-2 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider ${statusBadgeClass} px-1.5 sm:px-2 py-0.5 rounded-full shadow-xs`}>
@@ -89,25 +97,16 @@ export default function PackageCard({
       <div className="p-3 sm:p-4 pt-0">
         <div className="pt-2 flex items-center justify-between gap-1.5 sm:gap-3">
           <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 w-full">
-            <a 
-              href={`https://wa.me/${item.phone}?text=${whatsappMessage}`} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 flex items-center justify-center transition-colors border border-emerald-100 shrink-0" 
-              title="Contact via WhatsApp"
-            >
-              <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-700" />
-            </a>
             <button 
               onClick={() => onOfferToCarry(item)}
-              className={`flex-1 text-center rounded-xl py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              className={`w-full text-center rounded-xl py-2 text-[10px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 isUrgent 
                   ? 'bg-red-600 hover:bg-red-700 text-white shadow-xs' 
-                  : 'bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white'
+                  : 'bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white shadow-xs'
               }`}
             >
-              <Zap className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isUrgent ? 'text-yellow-300 fill-yellow-300' : 'text-amber-400'}`} />
-              <span className="truncate">Offer Carry</span>
+              <Phone className="w-3.5 h-3.5 text-amber-400" />
+              <span className="truncate">Contact Poster (Show Phone)</span>
             </button>
           </div>
         </div>

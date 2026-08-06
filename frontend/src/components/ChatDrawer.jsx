@@ -68,7 +68,7 @@ export default function ChatDrawer({ isOpen, onClose, chats, setChats, activeCha
             <span className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700">
               <MessageSquare className="w-4 h-4" />
             </span>
-            <h3 className="font-display font-extrabold text-lg text-[#1C160F]">Active Negotiations</h3>
+            <h3 className="font-display font-extrabold text-lg text-[#1C160F]">Active Conversations</h3>
           </div>
           <button 
             onClick={onClose}
@@ -161,7 +161,7 @@ export default function ChatDrawer({ isOpen, onClose, chats, setChats, activeCha
                 </form>
                 <div className="mt-2 text-center">
                   <a 
-                    href={`https://wa.me/251911223344?text=${encodeURIComponent('Hi, inquiring about P2P package carriage terms.')}`} 
+                    href={`https://wa.me/251911223344?text=${encodeURIComponent('Hello, I would like to inquire about delivery arrangements.')}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="text-[10px] text-emerald-700 font-bold hover:underline inline-flex items-center gap-1"
