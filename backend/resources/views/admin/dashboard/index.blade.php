@@ -5,6 +5,113 @@
 @extends('layouts.admin')
 
 @section('content')
+<!-- Website Identity & Settings Information Card -->
+<div class="card content-card mb-4 border-0 shadow-sm overflow-hidden" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 251, 241, 0.75)); border: 1px solid var(--admin-border) !important;">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 pb-3 mb-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-2 rounded-3 bg-white border shadow-xs d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; min-width: 56px;">
+                    @if ($siteSettings?->logoPublicUrl())
+                        <img src="{{ $siteSettings->logoPublicUrl() }}" alt="{{ $siteSettings->site_name }}" style="max-height: 40px; max-width: 44px; object-fit: contain;">
+                    @else
+                        <div class="fw-bold text-primary fs-4">{{ strtoupper(substr($siteSettings->site_name ?? 'PB', 0, 2)) }}</div>
+                    @endif
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <h4 class="mb-0 fw-bold text-dark">{{ $siteSettings->site_name ?? 'PeerBridge' }}</h4>
+                        <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2.5 py-1 small fw-semibold">
+                            <i class="bi bi-patch-check-fill me-1"></i> Live Settings Info
+                        </span>
+                    </div>
+                    @if ($siteSettings?->site_tagline)
+                        <p class="text-muted small mb-0 mt-0.5 fw-medium">{{ $siteSettings->site_tagline }}</p>
+                    @endif
+                </div>
+            </div>
+            <div>
+                <a href="{{ route('admin.settings.website.edit') }}" class="btn btn-outline-primary rounded-3 btn-sm fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5">
+                    <i class="bi bi-sliders"></i>
+                    <span>Manage Settings</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <div class="p-3 rounded-3 bg-white border h-100 shadow-xs">
+                    <div class="text-uppercase small fw-bold text-muted mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Site Description</div>
+                    <p class="small mb-0 text-secondary" style="line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ $siteSettings?->site_description ?: 'No site description set yet. Click manage to add metadata.' }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="p-3 rounded-3 bg-white border h-100 shadow-xs">
+                    <div class="text-uppercase small fw-bold text-muted mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Brand Assets</div>
+                    <div class="d-flex align-items-center gap-3 mt-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="small text-muted fw-medium">Logo:</span>
+                            @if ($siteSettings?->logoPublicUrl())
+                                <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">Uploaded</span>
+                            @else
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">Default Mark</span>
+                            @endif
+                        </div>
+                        <div class="vr"></div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="small text-muted fw-medium">Favicon:</span>
+                            @if ($siteSettings?->faviconPublicUrl())
+                                <img src="{{ $siteSettings->faviconPublicUrl() }}" alt="Favicon" width="20" height="20" class="rounded">
+                                <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Set</span>
+                            @else
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">None</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-lg-4">
+                <div class="p-3 rounded-3 bg-white border h-100 shadow-xs">
+                    <div class="text-uppercase small fw-bold text-muted mb-1.5" style="font-size: 0.72rem; letter-spacing: 0.05em;">Social Channels</div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        @if ($siteSettings?->social_facebook)
+                            <a href="{{ $siteSettings->social_facebook }}" target="_blank" class="btn btn-sm btn-light border text-primary px-2 py-1" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                        @endif
+                        @if ($siteSettings?->social_twitter)
+                            <a href="{{ $siteSettings->social_twitter }}" target="_blank" class="btn btn-sm btn-light border text-dark px-2 py-1" title="X / Twitter">
+                                <i class="bi bi-twitter-x"></i>
+                            </a>
+                        @endif
+                        @if ($siteSettings?->social_instagram)
+                            <a href="{{ $siteSettings->social_instagram }}" target="_blank" class="btn btn-sm btn-light border text-danger px-2 py-1" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        @endif
+                        @if ($siteSettings?->social_linkedin)
+                            <a href="{{ $siteSettings->social_linkedin }}" target="_blank" class="btn btn-sm btn-light border text-info px-2 py-1" title="LinkedIn">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                        @endif
+                        @if ($siteSettings?->social_youtube)
+                            <a href="{{ $siteSettings->social_youtube }}" target="_blank" class="btn btn-sm btn-light border text-danger px-2 py-1" title="YouTube">
+                                <i class="bi bi-youtube"></i>
+                            </a>
+                        @endif
+                        @if (!$siteSettings?->social_facebook && !$siteSettings?->social_twitter && !$siteSettings?->social_instagram && !$siteSettings?->social_linkedin && !$siteSettings?->social_youtube)
+                            <span class="small text-muted italic">No social media links connected yet.</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <div class="col-6 col-xl-3">
         <div class="card stat-card h-100">
@@ -43,6 +150,16 @@
                 <p class="text-muted mb-2 small text-uppercase fw-semibold">Bookings</p>
                 <h3 class="mb-1">{{ $stats['bookings'] }}</h3>
                 <p class="text-muted small mb-0">Confirmed and pending delivery matches</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <div class="metric-icon mb-3"><i class="bi bi-hand-thumbs-up text-success"></i></div>
+                <p class="text-muted mb-2 small text-uppercase fw-semibold">Confirmed Deals</p>
+                <h3 class="mb-1">{{ $stats['deals_confirmed'] ?? 0 }}</h3>
+                <p class="text-muted small mb-0">Successful deals agreed by members</p>
             </div>
         </div>
     </div>

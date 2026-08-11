@@ -4,9 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Shipment;
+use App\Models\PackageAlert;
+use App\Models\PackageNotification;
+use App\Mail\PackageAlertMatchedMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class ShipmentController extends Controller
 {
@@ -20,6 +25,10 @@ class ShipmentController extends Controller
             ->latest()
             ->get()
             ->map(function (Shipment $shipment) {
+                $isConfirmed = $shipment->deal_status === 'confirmed'
+                    || $shipment->status === 'deal_made'
+                    || \App\Models\DealConfirmation::where('shipment_id', $shipment->id)->where('status', 'deal_made')->exists();
+
                 return [
                     'id' => $shipment->id,
                     'category_id' => $shipment->category_id,
@@ -35,6 +44,8 @@ class ShipmentController extends Controller
                         : null,
                     'is_urgent' => (bool) $shipment->is_urgent,
                     'status' => $shipment->status,
+                    'approval_status' => $shipment->approval_status ?? 'pending',
+                    'deal_status' => $isConfirmed ? 'confirmed' : ($shipment->deal_status ?? 'pending'),
                     'product_images' => collect($shipment->product_images ?? [])
                         ->map(fn (string $path) => (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_starts_with($path, '/assets')) ? $path : asset('storage/'.$path))
                         ->all(),
@@ -89,9 +100,23 @@ class ShipmentController extends Controller
             'travel_date' => $validated['travel_date'],
             'is_urgent' => $validated['is_urgent'] ?? false,
             'status' => 'pending',
+            'approval_status' => 'pending',
         ]);
 
         $shipment->load('category:id,name');
+
+        // Create Admin Notification alert for newly posted package
+        \App\Models\AdminNotification::create([
+            'shipment_id' => $shipment->id,
+            'user_id' => $user->id,
+            'type' => 'new_package',
+            'title' => "New Package Posted: {$shipment->from_city} ➔ {$shipment->to_city}",
+            'message' => "User {$user->name} posted a new package request ({$shipment->weight}kg) for {$shipment->receiver_name}.",
+            'is_read' => false,
+        ]);
+
+        // Check matching package alerts and send email notifications
+        $this->triggerPackageAlerts($shipment);
 
         return response()->json([
             'message' => 'Shipment created successfully.',
@@ -110,6 +135,8 @@ class ShipmentController extends Controller
                     : null,
                 'is_urgent' => (bool) $shipment->is_urgent,
                 'status' => $shipment->status,
+                'approval_status' => $shipment->approval_status,
+                'deal_status' => $shipment->deal_status ?? 'pending',
                 'product_images' => collect($shipment->product_images ?? [])
                     ->map(fn (string $path) => (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_starts_with($path, '/assets')) ? $path : asset('storage/'.$path))
                     ->all(),
@@ -203,5 +230,73 @@ class ShipmentController extends Controller
         return response()->json([
             'message' => 'Shipment deleted successfully.',
         ]);
+    }
+
+    protected function triggerPackageAlerts(Shipment $shipment): void
+    {
+        try {
+            $fromCity = mb_strtolower(trim($shipment->from_city));
+            $toCity = mb_strtolower(trim($shipment->to_city));
+            $travelDate = $shipment->travel_date ? Carbon::parse($shipment->travel_date)->startOfDay() : null;
+
+            // Query active package alerts from other users
+            $alerts = PackageAlert::with('user')
+                ->where('is_active', true)
+                ->when($shipment->sender_id, fn ($q) => $q->where('user_id', '!=', $shipment->sender_id))
+                ->get();
+
+            foreach ($alerts as $alert) {
+                $alertFrom = mb_strtolower(trim($alert->from_city));
+                $alertTo = mb_strtolower(trim($alert->to_city));
+
+                // Check city match (exact or partial / substring match)
+                $fromMatch = ($alertFrom === $fromCity)
+                    || str_contains($fromCity, $alertFrom)
+                    || str_contains($alertFrom, $fromCity);
+
+                $toMatch = ($alertTo === $toCity)
+                    || str_contains($toCity, $alertTo)
+                    || str_contains($alertTo, $toCity);
+
+                if (!$fromMatch || !$toMatch) {
+                    continue;
+                }
+
+                // Check date range if configured
+                if ($travelDate) {
+                    if ($alert->start_date && $travelDate->lt(Carbon::parse($alert->start_date)->startOfDay())) {
+                        continue;
+                    }
+                    if ($alert->end_date && $travelDate->gt(Carbon::parse($alert->end_date)->endOfDay())) {
+                        continue;
+                    }
+                }
+
+                // Matched! Notify user
+                $emailSent = false;
+                $recipientUser = $alert->user;
+
+                if ($recipientUser && $alert->email_notify && $recipientUser->email) {
+                    try {
+                        Mail::to($recipientUser->email)->send(new PackageAlertMatchedMail($shipment, $alert, $recipientUser));
+                        $emailSent = true;
+                    } catch (\Throwable $mailErr) {
+                        Log::error('Package alert email send error: '.$mailErr->getMessage());
+                    }
+                }
+
+                PackageNotification::create([
+                    'user_id' => $alert->user_id,
+                    'package_alert_id' => $alert->id,
+                    'shipment_id' => $shipment->id,
+                    'title' => "New Package Posted: {$shipment->from_city} ➔ {$shipment->to_city}",
+                    'message' => "A package matching your route alert ({$alert->from_city} to {$alert->to_city}) has been posted for recipient {$shipment->receiver_name}.",
+                    'email_sent' => $emailSent,
+                    'is_read' => false,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('triggerPackageAlerts error: '.$e->getMessage());
+        }
     }
 }

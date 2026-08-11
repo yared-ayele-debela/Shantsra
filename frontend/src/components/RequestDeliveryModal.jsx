@@ -179,26 +179,27 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
       const categoryName = created.category_name || selectedCategory?.name || editingPackage?.category || 'Uncategorized';
 
       const mappedPackage = {
-        id: editingPackage ? editingPackage.id : created.id,
-        title: `Shipment for ${receiverName}`,
-        desc: description || `Delivery from ${fromCity} to ${toCity}`,
+        id: editingPackage ? editingPackage.id : (created?.id || `ship_${Date.now()}`),
+        title: receiverName ? `Shipment for ${receiverName}` : `Package (${fromCity || 'ADD'} ➔ ${toCity || 'DXB'})`,
+        desc: description || `Delivery request from ${fromCity || 'Addis Ababa'} to ${toCity || 'Dubai'}`,
         sender: editingPackage?.sender || 'You (Current User)',
         route: (fromCity || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
-        weight: String(weight),
+        weight: String(weight || '1.0'),
         reward: `AED ${(parseFloat(weight || 1) * 35).toFixed(0)}`,
-        category: categoryName,
-        category_id: created.category_id || categoryId || editingPackage?.category_id || null,
-        deadline: `Needed by ${travelDate}`,
+        category: categoryName || 'General Cargo',
+        category_id: created?.category_id || categoryId || editingPackage?.category_id || null,
+        deadline: travelDate ? `Needed by ${travelDate}` : 'Needed soon',
         img: finalPackageImg,
-        status: editingPackage?.status || created.status || 'pending',
+        status: editingPackage?.status || created?.status || 'pending',
+        approval_status: created?.approval_status || editingPackage?.approval_status || 'pending',
         is_urgent: Boolean(isUrgent),
         phone: receiverPhone || '251911223344',
         createdAt: editingPackage?.createdAt || Date.now(),
-        receiver_name: receiverName,
-        receiver_phone: receiverPhone,
-        from_city: fromCity,
-        to_city: toCity,
-        travel_date: travelDate
+        receiver_name: receiverName || '',
+        receiver_phone: receiverPhone || '',
+        from_city: fromCity || 'Addis Ababa',
+        to_city: toCity || 'Dubai',
+        travel_date: travelDate || ''
       };
 
       setSuccessMsg(editingPackage ? 'Package shipment request updated successfully!' : 'Package shipment request posted successfully!');

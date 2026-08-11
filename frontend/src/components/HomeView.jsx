@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { 
   Sparkles, PackagePlus, Search, Compass, Award, ArrowRightLeft, 
   Package, RotateCcw, PackageSearch, PlaneTakeoff, Phone, 
@@ -68,13 +68,20 @@ export default function HomeView({
   onContactPhone
 }) {
   const [filterRoute, setFilterRoute] = useState('ALL');
+  const [urgentOnly, setUrgentOnly] = useState(false);
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   
   const [realShipments, setRealShipments] = useState([]);
+  const [hasLoadedOpenShipments, setHasLoadedOpenShipments] = useState(false);
+  const [nextShipmentPage, setNextShipmentPage] = useState(1);
+  const [hasMoreShipments, setHasMoreShipments] = useState(true);
+  const [isLoadingMoreShipments, setIsLoadingMoreShipments] = useState(false);
   const [urgentShipments, setUrgentShipments] = useState([]);
   const [realTravelers, setRealTravelers] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
+  const shipmentObserver = useRef(null);
+  const shipmentRequest = useRef(null);
 
   // Fetch package categories from GET /api/package-categories
   useEffect(() => {
@@ -158,42 +165,103 @@ export default function HomeView({
     fetchRealTravelers();
   }, []);
 
-  // Fetch real shipments data from GET /api/shipments/open
-  useEffect(() => {
-    async function fetchRealShipments() {
-      try {
-        const response = await fetch('/api/shipments/open', {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.shipments && data.shipments.length > 0) {
-            const mapped = data.shipments.map(s => ({
-              id: s.id || `ship_${Date.now()}`,
-              title: s.receiver_name ? `Shipment for ${s.receiver_name}` : `Cargo (${s.from_city || 'ADD'} ➔ ${s.to_city || 'DXB'})`,
-              desc: s.description || `Delivery request from ${s.from_city || 'Addis Ababa'} to ${s.to_city || 'Dubai'}.`,
-              route: (s.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
-              weight: String(s.weight || '1.0'),
-              reward: `AED ${(parseFloat(s.weight || 1) * 35).toFixed(0)}`,
-              category: s.category_name || s.category || 'General Cargo',
-              category_id: s.category_id ?? null,
-              deadline: s.travel_date_label || 'Date to be confirmed',
-              img: s.cover_image || 'photo-1447933601403-0c6688de566e',
-              status: 'pending',
-              is_urgent: Boolean(s.is_urgent),
-              phone: '251911223344',
-              sender: s.sender_display || 'You'
-            }));
-            setRealShipments(mapped);
-          }
-        }
-      } catch (err) {
-        console.log('Using default requests on landing page.');
+  const fetchOpenShipments = useCallback(async (page) => {
+    shipmentRequest.current?.abort();
+    const controller = new AbortController();
+    shipmentRequest.current = controller;
+    setIsLoadingMoreShipments(true);
+    try {
+      const query = new URLSearchParams({
+        page: String(page),
+        per_page: '20'
+      });
+
+      if (activeCategory !== 'ALL') query.set('category_id', activeCategory);
+      if (filterRoute === 'ADD_TO_DXB') {
+        query.set('from_city', 'Addis Ababa');
+        query.set('to_city', 'Dubai');
+      }
+      if (filterRoute === 'DXB_TO_ADD') {
+        query.set('from_city', 'Dubai');
+        query.set('to_city', 'Addis Ababa');
+      }
+      if (urgentOnly) query.set('is_urgent', '1');
+
+      const response = await fetch(`/api/shipments/open?${query.toString()}`, {
+        headers: {
+          'Accept': 'application/json'
+        },
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        throw new Error(`Unable to load open shipments: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const mapped = Array.isArray(data.shipments) ? data.shipments.map(s => ({
+        id: s.id,
+        title: s.receiver_name ? `Shipment for ${s.receiver_name}` : `Cargo (${s.from_city || 'ADD'} ➔ ${s.to_city || 'DXB'})`,
+        desc: s.description || `Delivery request from ${s.from_city || 'Addis Ababa'} to ${s.to_city || 'Dubai'}.`,
+        route: (s.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
+        weight: String(s.weight || '1.0'),
+        reward: `AED ${(parseFloat(s.weight || 1) * 35).toFixed(0)}`,
+        category: s.category_name || s.category || 'General Cargo',
+        category_id: s.category_id ?? null,
+        deadline: s.travel_date_label || 'Date to be confirmed',
+        img: s.cover_image || '/assets/No-Image-Found-400x264.png',
+        status: s.status || 'pending',
+            is_urgent: Boolean(s.is_urgent),
+            phone: s.receiver_phone || '',
+            sender: s.sender_display || 'Member',
+            sender_avatar: s.sender_photo || null,
+            sender_rating: s.sender_rating ?? null,
+            sender_review_count: s.sender_review_count ?? 0
+      })) : [];
+
+      setRealShipments(previous => {
+        if (page === 1) return mapped;
+
+        const seen = new Set(previous.map(shipment => shipment.id));
+        return [...previous, ...mapped.filter(shipment => !seen.has(shipment.id))];
+      });
+      setHasMoreShipments(Boolean(data.meta?.has_more));
+      setNextShipmentPage(page + 1);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.log('Unable to load open shipments.', err);
+        setHasMoreShipments(false);
+      }
+    } finally {
+      if (shipmentRequest.current === controller) {
+        setHasLoadedOpenShipments(true);
+        setIsLoadingMoreShipments(false);
+        shipmentRequest.current = null;
       }
     }
-    fetchRealShipments();
+  }, [activeCategory, filterRoute, urgentOnly]);
+
+  useEffect(() => {
+    setHasMoreShipments(true);
+    setNextShipmentPage(1);
+    fetchOpenShipments(1);
+  }, [fetchOpenShipments]);
+
+  const loadMoreShipmentRef = useCallback((node) => {
+    if (shipmentObserver.current) shipmentObserver.current.disconnect();
+    if (!node || !hasMoreShipments || isLoadingMoreShipments) return;
+
+    shipmentObserver.current = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        fetchOpenShipments(nextShipmentPage);
+      }
+    }, { rootMargin: '240px' });
+
+    shipmentObserver.current.observe(node);
+  }, [fetchOpenShipments, hasMoreShipments, isLoadingMoreShipments, nextShipmentPage]);
+
+  useEffect(() => () => {
+    shipmentObserver.current?.disconnect();
+    shipmentRequest.current?.abort();
   }, []);
 
   // Fetch urgent shipments from GET /api/shipments/urgent
@@ -220,7 +288,10 @@ export default function HomeView({
               status: s.status || 'pending',
               is_urgent: true,
               phone: s.receiver_phone || '251911223344',
-              sender: s.sender_display || 'Member'
+              sender: s.sender_display || 'Member',
+              sender_avatar: s.sender_photo || null,
+              sender_rating: s.sender_rating ?? null,
+              sender_review_count: s.sender_review_count ?? 0
             }));
             setUrgentShipments(mapped);
           }
@@ -262,7 +333,10 @@ export default function HomeView({
     });
     return Array.from(uniqueMap.values());
   }, [realTravelers]);
-  const allRequestsList = realShipments.length > 0 ? [...realShipments, ...requests] : requests;
+  // Until the API responds, keep the existing request data as a loading fallback.
+  // Afterwards, the feed must represent the server's open-shipment inventory,
+  // including the valid case where it is empty.
+  const allRequestsList = hasLoadedOpenShipments ? realShipments : requests;
 
   const normalizeCategory = (category) => String(category || '').trim().toLowerCase();
   const getCategoryDisplayName = (category) => {
@@ -273,6 +347,7 @@ export default function HomeView({
 
   const handleResetFilters = () => {
     setFilterRoute('ALL');
+    setUrgentOnly(false);
     setActiveCategory('ALL');
     setSearchQuery('');
   };
@@ -312,14 +387,12 @@ export default function HomeView({
                        : filterRoute === 'URGENT' ? Boolean(r.is_urgent)
                        : (r.route === filterRoute);
 
-      // 2. Category match
-      const selectedCategoryId = activeCategory === 'ALL' ? 'ALL' : String(activeCategory);
-      const selectedCategoryName = activeCategory === 'ALL' ? 'ALL' : String(activeCategory);
-      const pkgCat = (r.category || '').trim();
-      const pkgCatId = r.category_id == null ? null : String(r.category_id);
-      const idMatch = pkgCatId !== null && selectedCategoryId !== 'ALL' && pkgCatId === selectedCategoryId;
-      const nameMatch = selectedCategoryId === 'ALL' || normalizeCategory(pkgCat) === normalizeCategory(selectedCategoryName);
-      const catMatch = selectedCategoryId === 'ALL' ? true : idMatch || nameMatch;
+      // 2. Category match strictly by category_id
+      let catMatch = true;
+      if (activeCategory !== 'ALL') {
+        const targetCatId = String(activeCategory);
+        catMatch = r.category_id != null && String(r.category_id) === targetCatId;
+      }
 
       // 3. Search match
       const query = searchQuery.toLowerCase().trim();
@@ -478,131 +551,119 @@ export default function HomeView({
         </section>
       )}
 
-      {/* ============ MAIN SEARCH & FEED ============ */}
+      {/* ============ MAIN FEED ============ */}
       <section id="requests-section" className="max-w-7xl mx-auto px-5 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-3 border-b border-amber-100/60">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1">
               <Package className="w-3.5 h-3.5" /> Open Delivery Requests
             </span>
-            <h2 className="font-display text-3xl font-extrabold text-[#1C160F]">
+            <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#1C160F]">
               Package delivery requests
             </h2>
-            <p className="text-slate-500 text-sm mt-1">
-              Browse requests from senders and review member profiles and verification details before arranging a handover.
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
+              Browse open package requests from senders and arrange handovers directly.
             </p>
           </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-full">
-            {/* Route Filter Pills */}
-            <div className="flex items-center gap-1 bg-white border border-amber-200/60 rounded-xl p-1 shadow-sm overflow-x-auto scrollbar-none max-w-full shrink-0">
-              <button 
-                onClick={() => setFilterRoute('ALL')}
-                className={`text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
-                  filterRoute === 'ALL' ? 'bg-[#1C160F] text-white' : 'text-slate-600 hover:bg-amber-50'
-                }`}
-              >
-                All Routes
-              </button>
-              <button 
-                onClick={() => setFilterRoute('ADD_TO_DXB')}
-                className={`text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
-                  filterRoute === 'ADD_TO_DXB' ? 'bg-[#1C160F] text-white' : 'text-slate-600 hover:bg-amber-50'
-                }`}
-              >
-                ADD ➔ DXB
-              </button>
-              <button 
-                onClick={() => setFilterRoute('DXB_TO_ADD')}
-                className={`text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
-                  filterRoute === 'DXB_TO_ADD' ? 'bg-[#1C160F] text-white' : 'text-slate-600 hover:bg-amber-50'
-                }`}
-              >
-                DXB ➔ ADD
-              </button>
-              <button 
-                onClick={() => setFilterRoute('URGENT')}
-                className={`text-xs font-bold px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap transition-all flex items-center gap-1 ${
-                  filterRoute === 'URGENT' ? 'bg-red-600 text-white shadow-sm font-extrabold ring-2 ring-red-300' : 'bg-red-600 text-white hover:bg-red-700'
-                }`}
-              >
-                <Zap className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" /> Urgent Only
-              </button>
-            </div>
-
-            {/* Search Input Box */}
-            <div className="relative flex items-center bg-white border border-amber-200/60 rounded-xl px-3.5 py-2 shadow-sm w-full sm:max-w-xs">
-              <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
-              <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search requests, items, or destinations" 
-                className="text-xs outline-none text-slate-700 bg-transparent w-full" 
-              />
-            </div>
-          </div>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider shrink-0">
+            {allRequestsList.length} package{allRequestsList.length === 1 ? '' : 's'} available
+          </p>
         </div>
 
-        {/* Category Chips Horizontal Scrollbar */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-4 mb-6">
+        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-3">
+          {[
+            { value: 'ALL', label: 'All routes' },
+            { value: 'ADD_TO_DXB', label: 'Addis Ababa → Dubai' },
+            { value: 'DXB_TO_ADD', label: 'Dubai → Addis Ababa' }
+          ].map((route) => (
+            <button
+              key={route.value}
+              type="button"
+              onClick={() => setFilterRoute(route.value)}
+              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                filterRoute === route.value
+                  ? 'border-[#1C160F] bg-[#1C160F] text-white'
+                  : 'border-amber-200 bg-white text-slate-600 hover:bg-amber-50'
+              }`}
+            >
+              {route.label}
+            </button>
+          ))}
           <button
-            onClick={() => setActiveCategory('ALL')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 border transition-all ${
-              activeCategory === 'ALL'
-                ? 'bg-amber-500 text-[#1C160F] border-amber-500 shadow-xs'
-                : 'bg-white text-slate-600 border-amber-200/60 hover:bg-amber-50'
+            type="button"
+            onClick={() => setUrgentOnly((current) => !current)}
+            className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition-colors ${
+              urgentOnly
+                ? 'border-red-600 bg-red-600 text-white'
+                : 'border-red-200 bg-white text-red-600 hover:bg-red-50'
             }`}
           >
-            All Items
+            Urgent only
           </button>
-          {(categoriesList.length > 0 ? categoriesList : CATEGORIES).map((cat, idx) => {
-            const catName = typeof cat === 'string' ? cat : (cat.name || 'Category');
-            const catValue = typeof cat === 'string' ? catName : String(cat.id);
-            const isActive = activeCategory === catValue;
-            return (
-              <button
-                key={cat.id || catName || idx}
-                onClick={() => setActiveCategory(catValue)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 border transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-amber-500 text-[#1C160F] border-amber-500 shadow-xs'
-                    : 'bg-white text-slate-600 border-amber-200/60 hover:bg-amber-50'
-                }`}
-              >
-                {catName}
-              </button>
-            );
-          })}
         </div>
 
-        {/* Results Count Meta */}
-        <div className="flex items-center justify-between border-b border-amber-100/50 pb-3 mb-6">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            {filteredRequests.length} package{filteredRequests.length === 1 ? '' : 's'} waiting
-          </p>
-          <button 
-            onClick={handleResetFilters}
-            className="flex items-center gap-1.5 text-xs text-amber-600 font-semibold cursor-pointer hover:underline"
-          >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset Filters
-          </button>
-        </div>
+        {categoriesList.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-5">
+            <button
+              type="button"
+              onClick={() => setActiveCategory('ALL')}
+              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                activeCategory === 'ALL'
+                  ? 'border-amber-500 bg-amber-500 text-[#1C160F]'
+                  : 'border-amber-200 bg-white text-slate-600 hover:bg-amber-50'
+              }`}
+            >
+              All categories
+            </button>
+            {categoriesList.map((category) => {
+              const categoryId = String(category.id);
+              const isActive = activeCategory === categoryId;
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => setActiveCategory(categoryId)}
+                  className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                    isActive
+                      ? 'border-amber-500 bg-amber-500 text-[#1C160F]'
+                      : 'border-amber-200 bg-white text-slate-600 hover:bg-amber-50'
+                  }`}
+                >
+                  {category.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* 4-Column Requests Feed Grid (2 columns on mobile) */}
-        {filteredRequests.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-            {filteredRequests.map(item => (
-              <PackageCard 
-                key={item.id} 
-                item={item} 
-                profile={profiles[item.sender]}
-                onSelectPackage={onSelectPackage}
-                onSelectProfile={onSelectProfile}
-                onOfferToCarry={onOfferToCarry}
-              />
-            ))}
-          </div>
+        {allRequestsList.length > 0 ? (
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+              {allRequestsList.map(item => (
+                <PackageCard 
+                  key={item.id} 
+                  item={item} 
+                  profile={profiles[item.sender]}
+                  onSelectPackage={onSelectPackage}
+                  onSelectProfile={onSelectProfile}
+                  onOfferToCarry={onOfferToCarry}
+                />
+              ))}
+            </div>
+
+            <div
+              ref={hasMoreShipments ? loadMoreShipmentRef : undefined}
+              className="py-8 text-center text-xs font-semibold text-slate-400"
+            >
+              {isLoadingMoreShipments
+                ? 'Loading more delivery requests…'
+                : hasMoreShipments
+                  ? 'Scroll to load more delivery requests'
+                  : 'All open delivery requests are loaded'}
+            </div>
+          </>
         ) : (
           /* Empty State */
           <div className="text-center py-16 bg-white rounded-2xl border border-amber-100/60 p-8 shadow-sm">
@@ -613,14 +674,8 @@ export default function HomeView({
               No delivery requests found
             </h3>
             <p className="text-slate-500 text-sm max-w-sm mx-auto">
-              Try resetting your search, checking another route, or post a new request if you are a sender.
+              No open delivery requests currently available. Check back soon or post a new request if you are a sender.
             </p>
-            <button 
-              onClick={handleResetFilters}
-              className="mt-4 bg-amber-50 hover:bg-amber-100 text-amber-800 text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-            >
-              Clear Filters
-            </button>
           </div>
         )}
       </section>

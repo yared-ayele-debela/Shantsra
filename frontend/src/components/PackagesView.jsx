@@ -12,12 +12,14 @@ export default function PackagesView({
 }) {
   const [filterRoute, setFilterRoute] = useState('ALL');
   const [filterCategories, setFilterCategories] = useState([]);
-  const [filterMaxWeight, setFilterMaxWeight] = useState(10);
+  const [filterMaxWeight, setFilterMaxWeight] = useState(50);
   const [filterMinReward, setFilterMinReward] = useState(0);
+  const [filterUrgent, setFilterUrgent] = useState(false);
   const [filterSearchText, setFilterSearchText] = useState('');
   const [activeSort, setActiveSort] = useState('latest');
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [apiRequests, setApiRequests] = useState([]);
+  const [hasLoadedDirectory, setHasLoadedDirectory] = useState(false);
 
   // Progressive scroll / Infinite loading batch size
   const BATCH_SIZE = 6;
@@ -33,15 +35,25 @@ export default function PackagesView({
 
     async function fetchOpenShipments() {
       try {
-        const response = await fetch('/api/shipments/open', {
-          headers: { Accept: 'application/json' }
-        });
-        if (!response.ok) return;
+        const shipments = [];
+        let page = 1;
+        let hasMore = true;
 
-        const data = await response.json();
-        if (!isCurrent || !Array.isArray(data.shipments)) return;
+        while (hasMore && isCurrent) {
+          const response = await fetch(`/api/shipments/open?page=${page}&per_page=50`, {
+            headers: { Accept: 'application/json' }
+          });
+          if (!response.ok) throw new Error(`Unable to load package directory: ${response.status}`);
 
-        setApiRequests(data.shipments.map((shipment) => ({
+          const data = await response.json();
+          shipments.push(...(Array.isArray(data.shipments) ? data.shipments : []));
+          hasMore = Boolean(data.meta?.has_more);
+          page += 1;
+        }
+
+        if (!isCurrent) return;
+
+        const mapped = shipments.map((shipment) => ({
           id: shipment.id,
           category_id: shipment.category_id,
           category: shipment.category_name || 'Uncategorized',
@@ -55,11 +67,18 @@ export default function PackagesView({
           reward: shipment.reward || `AED ${(parseFloat(shipment.weight || 1) * 35).toFixed(0)}`,
           deadline: shipment.travel_date_label || 'Date to be confirmed',
           img: shipment.cover_image || '/assets/No-Image-Found-400x264.png',
-          status: 'pending',
+          status: shipment.status || 'pending',
+          deal_status: shipment.deal_status || 'pending',
           is_urgent: Boolean(shipment.is_urgent),
           phone: shipment.receiver_phone || '',
+          sender_avatar: shipment.sender_photo || null,
+          sender_rating: shipment.sender_rating ?? null,
+          sender_review_count: shipment.sender_review_count ?? 0,
           createdAt: shipment.posted_at ? Date.parse(shipment.posted_at) : 0
-        })));
+        }));
+
+        setApiRequests(Array.from(new Map(mapped.map((request) => [String(request.id), request])).values()));
+        setHasLoadedDirectory(true);
       } catch {
         // The local request state remains available if the directory API is unavailable.
       }
@@ -69,10 +88,7 @@ export default function PackagesView({
     return () => { isCurrent = false; };
   }, []);
 
-  const directoryRequests = useMemo(() => {
-    const merged = [...apiRequests, ...requests];
-    return Array.from(new Map(merged.map((request) => [String(request.id), request])).values());
-  }, [apiRequests, requests]);
+  const directoryRequests = hasLoadedDirectory ? apiRequests : requests;
 
   // Convert reward string (e.g. AED 120 or ETB 4,000) to numeric for sorting/filtering
   const parseRewardVal = (rewardStr) => {
@@ -84,8 +100,9 @@ export default function PackagesView({
   const handleResetFilters = () => {
     setFilterRoute('ALL');
     setFilterCategories([]);
-    setFilterMaxWeight(10);
+    setFilterMaxWeight(50);
     setFilterMinReward(0);
+    setFilterUrgent(false);
     setFilterSearchText('');
     setActiveSort('latest');
     setVisibleCount(BATCH_SIZE);
@@ -94,33 +111,31 @@ export default function PackagesView({
   // Reset pagination count whenever filter criteria change
   useEffect(() => {
     setVisibleCount(BATCH_SIZE);
-  }, [filterRoute, filterCategories, filterMaxWeight, filterMinReward, filterSearchText, activeSort]);
+  }, [filterRoute, filterCategories, filterMaxWeight, filterMinReward, filterUrgent, filterSearchText, activeSort]);
 
   // Filter & Sort Logic
   const filteredPackages = useMemo(() => {
     let result = directoryRequests.filter(r => {
+      // Exclude packages with confirmed deal status from open directory pages
+      if (r.deal_status === 'confirmed' || r.status === 'deal_made') {
+        return false;
+      }
+
       const routeMatch = filterRoute === 'ALL' || r.route === filterRoute;
-      const requestCategoryId = r.category_id == null ? null : String(r.category_id);
-      const requestCategoryName = normalizeCategory(r.category || r.category_name);
-      const catMatch = filterCategories.length === 0 || filterCategories.some((category) => {
-        const normalizedCategory = normalizeCategory(category);
-        const categoryMatchesById = requestCategoryId !== null && category === requestCategoryId;
-        const categoryMatchesByName = normalizedCategory === requestCategoryName;
-        return categoryMatchesById || categoryMatchesByName;
-      });
+      const catMatch = filterCategories.length === 0 || filterCategories.includes(normalizeCategory(r.category));
       const weightMatch = parseFloat(r.weight) <= filterMaxWeight;
-      
+      const urgentMatch = !filterUrgent || Boolean(r.is_urgent);
       const numReward = parseRewardVal(r.reward);
       const rewardMatch = numReward >= filterMinReward;
 
       const query = filterSearchText.toLowerCase().trim();
       const searchMatch = !query || 
-                          r.title.toLowerCase().includes(query) || 
-                          r.desc.toLowerCase().includes(query) ||
+                          String(r.title || '').toLowerCase().includes(query) || 
+                          String(r.desc || '').toLowerCase().includes(query) ||
                           String(r.category || r.category_name || '').toLowerCase().includes(query) ||
                           String(r.sender || '').toLowerCase().includes(query);
 
-      return routeMatch && catMatch && weightMatch && rewardMatch && searchMatch;
+      return routeMatch && catMatch && weightMatch && rewardMatch && urgentMatch && searchMatch;
     });
 
     if (activeSort === 'reward_desc') {
@@ -139,6 +154,7 @@ export default function PackagesView({
     filterCategories, 
     filterMaxWeight, 
     filterMinReward, 
+    filterUrgent,
     filterSearchText, 
     activeSort
   ]);
@@ -216,6 +232,8 @@ export default function PackagesView({
             setFilterMaxWeight={setFilterMaxWeight}
             filterMinReward={filterMinReward}
             setFilterMinReward={setFilterMinReward}
+            filterUrgent={filterUrgent}
+            setFilterUrgent={setFilterUrgent}
             onResetFilters={handleResetFilters}
           />
         </div>

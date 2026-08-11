@@ -51,19 +51,28 @@
                             <span class="text-muted small">No file uploaded</span>
                         @endif
                     </div>
+                    @if($user->id_document_comment)
+                        <div class="alert alert-warning border border-warning-subtle mt-3 py-2 px-3 small mb-0 rounded-3">
+                            <i class="bi bi-info-circle me-1"></i> <strong>Admin Note / Reason:</strong> {{ $user->id_document_comment }}
+                        </div>
+                    @endif
                 </div>
                 @if($user->id_document_path)
                     <form method="POST" action="{{ route('admin.users.id-document-status', $user) }}" class="detail-card p-3 mb-0">
                         @csrf
                         @method('PATCH')
-                        <div class="text-muted small mb-2">Verification</div>
-                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <div class="text-muted small mb-2">Verification Action</div>
+                        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
                             <select name="id_document_status" class="form-select form-select-sm" style="max-width: 12rem;">
                                 <option value="pending" @selected(($user->id_document_status ?? 'pending') === 'pending')>Pending</option>
                                 <option value="verified" @selected(($user->id_document_status ?? '') === 'verified')>Verified</option>
                                 <option value="rejected" @selected(($user->id_document_status ?? '') === 'rejected')>Rejected</option>
                             </select>
                             <button type="submit" class="btn btn-sm btn-primary">Update status</button>
+                        </div>
+                        <div>
+                            <label class="form-label small text-muted mb-1">Comment / Rejection Reason</label>
+                            <textarea name="id_document_comment" class="form-control form-control-sm" rows="2" placeholder="e.g. Reject reason: ID document is expired or illegible...">{{ old('id_document_comment', $user->id_document_comment) }}</textarea>
                         </div>
                     </form>
                 @endif

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\MarketingSubscriptionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ShipmentController;
+use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\TravelController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
@@ -33,6 +34,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/settings/website', [WebsiteSettingController::class, 'edit'])->name('settings.website.edit');
         Route::put('/settings/website', [WebsiteSettingController::class, 'update'])->name('settings.website.update');
 
+        Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('/notifications/{notification}/read', [AdminNotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/mark-all-read', [AdminNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::delete('/notifications/{notification}', [AdminNotificationController::class, 'destroy'])->name('notifications.destroy');
+
         Route::get('/campaigns', [EmailCampaignController::class, 'index'])->name('campaigns.index');
         Route::get('/campaigns/create', [EmailCampaignController::class, 'create'])->name('campaigns.create');
         Route::post('/campaigns', [EmailCampaignController::class, 'store'])->name('campaigns.store');
@@ -47,6 +53,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
         Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
+        Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])->name('shipments.edit');
+        Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
+        Route::patch('/shipments/{shipment}/approve', [ShipmentController::class, 'approve'])->name('shipments.approve');
+        Route::patch('/shipments/{shipment}/reject', [ShipmentController::class, 'reject'])->name('shipments.reject');
         Route::patch('/shipments/{shipment}/status', [ShipmentController::class, 'updateStatus'])->name('shipments.update-status');
         Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])->name('shipments.destroy');
 

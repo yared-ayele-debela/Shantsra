@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Admin Dashboard' }} | PeerBridge Admin</title>
+    <title>{{ $title ?? 'Admin Dashboard' }} | {{ $siteSettings->site_name ?? 'PeerBridge' }} Admin</title>
+    @if ($siteSettings?->faviconPublicUrl())
+        <link rel="icon" href="{{ $siteSettings->faviconPublicUrl() }}">
+    @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abyssinica+SIL&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -702,10 +705,14 @@
     <div class="admin-mobile-bar d-lg-none">
         <div class="admin-mobile-bar-inner">
             <div class="d-flex align-items-center gap-3 min-w-0">
-                <div class="admin-logo-mark flex-shrink-0">PB</div>
+                @if ($siteSettings?->logoPublicUrl())
+                    <img src="{{ $siteSettings->logoPublicUrl() }}" alt="{{ $siteSettings->site_name }}" style="height: 38px; max-width: 100px; object-fit: contain;" class="rounded-2 flex-shrink-0">
+                @else
+                    <div class="admin-logo-mark flex-shrink-0">{{ strtoupper(substr($siteSettings->site_name ?? 'PB', 0, 2)) }}</div>
+                @endif
                 <div class="min-w-0">
-                    <div class="admin-logo-title text-truncate">PeerBridge</div>
-                    <div class="admin-logo-tagline text-truncate">Admin · UAE to Ethiopia</div>
+                    <div class="admin-logo-title text-truncate">{{ $siteSettings->site_name ?? 'PeerBridge' }}</div>
+                    <div class="admin-logo-tagline text-truncate">Admin · {{ $siteSettings->site_tagline ?? 'UAE to Ethiopia' }}</div>
                 </div>
             </div>
             <button class="admin-mobile-menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Open menu">
@@ -717,9 +724,13 @@
     <div class="offcanvas offcanvas-start admin-offcanvas d-lg-none" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center gap-3">
-                <div class="admin-logo-mark">PB</div>
+                @if ($siteSettings?->logoPublicUrl())
+                    <img src="{{ $siteSettings->logoPublicUrl() }}" alt="{{ $siteSettings->site_name }}" style="height: 36px; max-width: 90px; object-fit: contain;" class="rounded-2 flex-shrink-0">
+                @else
+                    <div class="admin-logo-mark">{{ strtoupper(substr($siteSettings->site_name ?? 'PB', 0, 2)) }}</div>
+                @endif
                 <div>
-                    <h2 class="h5 mb-0" id="adminSidebarLabel">PeerBridge</h2>
+                    <h2 class="h5 mb-0" id="adminSidebarLabel">{{ $siteSettings->site_name ?? 'PeerBridge' }}</h2>
                     <p class="small text-muted mb-0">Admin console</p>
                 </div>
             </div>
@@ -736,10 +747,14 @@
                 <aside class="admin-sidebar-aside">
                     <div class="admin-sidebar-inner">
                         <div class="admin-sidebar-brand">
-                            <div class="admin-logo-mark">PB</div>
+                            @if ($siteSettings?->logoPublicUrl())
+                                <img src="{{ $siteSettings->logoPublicUrl() }}" alt="{{ $siteSettings->site_name }}" style="height: 42px; max-width: 110px; object-fit: contain;" class="rounded-2 flex-shrink-0">
+                            @else
+                                <div class="admin-logo-mark">{{ strtoupper(substr($siteSettings->site_name ?? 'PB', 0, 2)) }}</div>
+                            @endif
                             <div class="min-w-0">
-                                <div class="admin-logo-title">PeerBridge</div>
-                                <div class="admin-logo-tagline">Admin · UAE to Ethiopia</div>
+                                <div class="admin-logo-title text-truncate">{{ $siteSettings->site_name ?? 'PeerBridge' }}</div>
+                                <div class="admin-logo-tagline text-truncate">Admin · {{ $siteSettings->site_tagline ?? 'UAE to Ethiopia' }}</div>
                             </div>
                         </div>
                         @include('admin.partials.sidebar')

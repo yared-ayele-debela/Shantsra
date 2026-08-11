@@ -8,6 +8,8 @@ use App\Models\Shipment;
 use App\Models\SubscriptionPlan;
 use App\Models\Travel;
 use App\Models\User;
+use App\Models\WebsiteSetting;
+use App\Models\DealConfirmation;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
@@ -15,16 +17,20 @@ class AdminDashboardController extends Controller
 {
     public function index(): View
     {
+        $siteSettings = WebsiteSetting::current();
+
         $stats = [
             'users' => User::count(),
             'shipments' => Shipment::count(),
             'travels' => Travel::count(),
             'bookings' => Booking::count(),
+            'deals_confirmed' => DealConfirmation::where('status', 'deal_made')->count(),
             'subscription_plans' => SubscriptionPlan::count(),
         ];
 
         $recentShipments = Shipment::with('sender')->latest()->take(5)->get();
         $recentBookings = Booking::with(['sender', 'traveler', 'shipment'])->latest()->take(5)->get();
+        $recentDeals = DealConfirmation::with(['shipment', 'user', 'partner'])->latest()->take(5)->get();
 
         $shipmentStatusCounts = Shipment::query()
             ->selectRaw('status, COUNT(*) as total')
@@ -77,6 +83,6 @@ class AdminDashboardController extends Controller
             'travelTrend' => $travelTrend->values(),
         ];
 
-        return view('admin.dashboard.index', compact('stats', 'recentShipments', 'recentBookings', 'chartData'));
+        return view('admin.dashboard.index', compact('stats', 'recentShipments', 'recentBookings', 'recentDeals', 'chartData', 'siteSettings'));
     }
 }

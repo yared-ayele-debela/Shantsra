@@ -34,7 +34,6 @@ const LinkedInIcon = ({ className = "w-4 h-4" }) => (
 
 export default function PackageDetailModal({ 
   item, 
-  profile, 
   onClose, 
   onOfferToCarry 
 }) {
@@ -42,14 +41,11 @@ export default function PackageDetailModal({
 
   if (!item) return null;
 
-  const isAccepted = item.status !== 'pending';
-  const senderProfile = profile || {
-    name: item.sender,
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
-    rating: '4.8'
-  };
-
-  const phoneNum = (item.phone || senderProfile.phone || '251911223344').replace(/[^0-9]/g, '');
+  const senderName = item.sender || 'Sender details unavailable';
+  const senderAvatar = item.sender_avatar || null;
+  const senderRating = Number(item.sender_rating);
+  const hasSenderRating = Number.isFinite(senderRating) && Number(item.sender_review_count) > 0;
+  const hasPhone = Boolean(item.phone && String(item.phone).trim());
   const routeText = item.route === 'ADD_TO_DXB' ? 'Addis Ababa to Dubai' : 'Dubai to Addis Ababa';
   
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://souqsheba.com';
@@ -61,10 +57,6 @@ export default function PackageDetailModal({
   
   const encodedUrl = encodeURIComponent(packageShareUrl);
   const encodedShareText = encodeURIComponent(shareText);
-
-  const whatsappMessage = encodeURIComponent(
-    `Hi ${item.sender}, I am interested in carrying your package request "${item.title}" on Souq & Sheba.`
-  );
 
   const handleCopyLink = () => {
     const textToCopy = packageShareUrl;
@@ -148,22 +140,31 @@ export default function PackageDetailModal({
           {/* Sender Profile */}
           <div className="border-t border-amber-50 pt-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img 
-                src={senderProfile.avatar} 
-                alt={senderProfile.name}
-                className="w-10 h-10 rounded-full object-cover border border-amber-100" 
-              />
+              {senderAvatar ? (
+                <img 
+                  src={senderAvatar} 
+                  alt={senderName}
+                  onError={(event) => { event.currentTarget.style.display = 'none'; }}
+                  className="w-10 h-10 rounded-full object-cover border border-amber-100" 
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 font-extrabold text-sm flex items-center justify-center border border-amber-200">
+                  {senderName.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div>
-                <p className="font-bold text-xs text-[#1C160F]">{senderProfile.name}</p>
+                <p className="font-bold text-xs text-[#1C160F]">{senderName}</p>
                 <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Request Sender</p>
               </div>
             </div>
-            <div className="text-right">
-              <span className="inline-flex items-center text-xs font-bold text-amber-600">
-                <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-0.5" /> 
-                {senderProfile.rating}
-              </span>
-            </div>
+            {hasSenderRating && (
+              <div className="text-right">
+                <span className="inline-flex items-center text-xs font-bold text-amber-600">
+                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-0.5" /> 
+                  {senderRating.toFixed(1)} ({item.sender_review_count})
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Social Media Sharing Section */}
@@ -268,10 +269,11 @@ export default function PackageDetailModal({
         {/* Footer Actions */}
         <div className="p-4 border-t border-amber-50 bg-slate-50 flex items-center gap-3 shrink-0">
           <button 
-            onClick={() => onOfferToCarry(item)}
-            className="w-full flex items-center justify-center gap-2 text-xs font-extrabold text-white bg-[#1C160F] rounded-xl py-3.5 hover:bg-amber-500 hover:text-[#1C160F] transition-all shadow-sm cursor-pointer"
+            onClick={() => hasPhone && onOfferToCarry(item)}
+            disabled={!hasPhone}
+            className="w-full flex items-center justify-center gap-2 text-xs font-extrabold text-white bg-[#1C160F] rounded-xl py-3.5 hover:bg-amber-500 hover:text-[#1C160F] transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
           >
-            <Phone className="w-4 h-4 text-amber-400" /> Show Direct Phone Number &amp; Contact Poster
+            <Phone className="w-4 h-4 text-amber-400" /> {hasPhone ? 'Show Direct Phone Number & Contact Poster' : 'Contact details unavailable'}
           </button>
         </div>
       </div>

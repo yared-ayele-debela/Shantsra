@@ -28,5 +28,15 @@ class AppServiceProvider extends ServiceProvider
 
             return $frontendUrl.'/reset-password?token='.$token.'&email='.urlencode($user->email);
         });
+
+        \Illuminate\Support\Facades\View::composer('admin.*', function ($view) {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('website_settings')) {
+                    $view->with('siteSettings', \App\Models\WebsiteSetting::current());
+                }
+            } catch (\Throwable $e) {
+                // Ignore if db is uninitialized
+            }
+        });
     }
 }

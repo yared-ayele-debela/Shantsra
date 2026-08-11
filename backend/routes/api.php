@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\TravelerController;
 use App\Http\Controllers\Api\TravelListingController;
 use App\Http\Controllers\Api\SiteSettingController;
 use App\Http\Controllers\Api\PackageCategoryController;
+use App\Http\Controllers\Api\PackageAlertController;
+use App\Http\Controllers\Api\DealConfirmationController;
+use App\Http\Controllers\Api\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -39,5 +42,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/conversations/start', [ConversationController::class, 'start']);
     Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'storeMessage']);
+    
+    // Simple Deal Confirmations
+    Route::get('/deals/mine', [DealConfirmationController::class, 'index']);
+    Route::post('/deals/confirm', [DealConfirmationController::class, 'store']);
+
+    // Deal & Package Reviews
+    Route::get('/reviews/mine', [ReviewController::class, 'index']);
+    Route::get('/reviews/shipment/{shipment}', [ReviewController::class, 'show']);
+    Route::post('/reviews', [ReviewController::class, 'store']);
+
+    // Package Alert Notifications
+    Route::get('/package-alerts', [PackageAlertController::class, 'index']);
+    Route::post('/package-alerts', [PackageAlertController::class, 'store']);
+    Route::patch('/package-alerts/{alert}/toggle', [PackageAlertController::class, 'toggle']);
+    Route::delete('/package-alerts/{alert}', [PackageAlertController::class, 'destroy']);
+    Route::delete('/package-notifications/{notification}', [PackageAlertController::class, 'dismissNotification']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
 });

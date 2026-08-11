@@ -54,12 +54,14 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'id_document_status' => ['required', Rule::in(['pending', 'verified', 'rejected'])],
+            'id_document_comment' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $user->update([
             'id_document_status' => $validated['id_document_status'],
+            'id_document_comment' => $validated['id_document_comment'] ?? null,
         ]);
 
-        return back()->with('success', 'ID document verification status updated.');
+        return back()->with('success', 'ID document verification status updated successfully.');
     }
 }

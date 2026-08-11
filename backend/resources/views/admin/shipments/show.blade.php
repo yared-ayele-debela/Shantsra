@@ -18,17 +18,51 @@
                             @endif
                         </p>
                     </div>
-                    <div>
-                        <span
-                            class="badge {{ match ($shipment->status) {
-                                'accepted' => 'bg-primary-subtle text-primary',
-                                'in_transit' => 'bg-warning-subtle text-warning-emphasis',
-                                'delivered' => 'bg-success-subtle text-success',
-                                default => 'bg-secondary-subtle text-secondary-emphasis',
-                            } }} px-3 py-2 fs-6"
-                        >
-                            {{ str($shipment->status)->headline() }}
-                        </span>
+                    <div class="d-flex flex-column align-items-end gap-2">
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="badge {{ match($shipment->approval_status ?? 'pending') {
+                                'approved' => 'bg-success-subtle text-success border border-success-subtle',
+                                'rejected' => 'bg-danger-subtle text-danger border border-danger-subtle',
+                                default => 'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+                            } }} px-3 py-2 fs-6">
+                                <i class="bi {{ match($shipment->approval_status ?? 'pending') {
+                                    'approved' => 'bi-check-circle-fill me-1',
+                                    'rejected' => 'bi-x-circle-fill me-1',
+                                    default => 'bi-clock-history me-1',
+                                } }}"></i>
+                                {{ match($shipment->approval_status ?? 'pending') {
+                                    'approved' => 'Approved Listing',
+                                    'rejected' => 'Rejected Listing',
+                                    default => 'Pending Approval',
+                                } }}
+                            </span>
+                            <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">
+                                Delivery: {{ str($shipment->status)->headline() }}
+                            </span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            @if(($shipment->approval_status ?? 'pending') !== 'approved')
+                                <form method="POST" action="{{ route('admin.shipments.approve', $shipment) }}" class="d-inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-sm btn-success px-3 font-bold">
+                                        <i class="bi bi-check-circle me-1"></i> Approve Package
+                                    </button>
+                                </form>
+                            @endif
+                            @if(($shipment->approval_status ?? 'pending') !== 'rejected')
+                                <form method="POST" action="{{ route('admin.shipments.reject', $shipment) }}" class="d-inline" onsubmit="return confirm('Reject this shipment listing?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger px-3 font-bold">
+                                        <i class="bi bi-x-circle me-1"></i> Reject
+                                    </button>
+                                </form>
+                            @endif
+                            <a href="{{ route('admin.shipments.edit', $shipment) }}" class="btn btn-sm btn-dark px-3">
+                                <i class="bi bi-pencil-square me-1"></i> Edit Shipment
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -150,7 +184,12 @@
 
         <div class="card content-card mb-4">
             <div class="card-body p-4">
-                <h5 class="mb-3">Update Status</h5>
+                <h5 class="mb-3">Shipment Actions</h5>
+                <a href="{{ route('admin.shipments.edit', $shipment) }}" class="btn btn-dark w-100 mb-3">
+                    <i class="bi bi-pencil-square me-1"></i> Edit All Shipment Details
+                </a>
+                <hr class="my-3">
+                <h6 class="mb-2 text-muted">Quick Status Update</h6>
                 <form method="POST" action="{{ route('admin.shipments.update-status', $shipment) }}">
                     @csrf
                     @method('PATCH')

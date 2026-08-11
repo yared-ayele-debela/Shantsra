@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'email', 'password', 'phone', 'role', 'status', 'city', 'country', 'photo', 'id_document_type', 'id_document_number', 'id_document_path', 'id_document_status', 'marketing_opt_in', 'unsubscribe_token'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'role', 'status', 'city', 'country', 'photo', 'id_document_type', 'id_document_number', 'id_document_path', 'id_document_status', 'id_document_comment', 'marketing_opt_in', 'unsubscribe_token'])]
 #[Hidden(['password', 'remember_token', 'id_document_path'])]
 class User extends Authenticatable
 {
@@ -69,6 +69,16 @@ class User extends Authenticatable
     public function emailCampaignRecipients(): HasMany
     {
         return $this->hasMany(EmailCampaignRecipient::class);
+    }
+
+    public function packageAlerts(): HasMany
+    {
+        return $this->hasMany(PackageAlert::class);
+    }
+
+    public function packageNotifications(): HasMany
+    {
+        return $this->hasMany(PackageNotification::class);
     }
 
     public function getPhotoUrlAttribute(): ?string

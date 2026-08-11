@@ -72,9 +72,6 @@ export default function PackageCard({
             <span className="text-[10px] sm:text-xs font-bold flex items-center gap-1 text-[#1C160F]">
               {item.route === 'ADD_TO_DXB' ? 'ADD ➔ DXB' : 'DXB ➔ ADD'}
             </span>
-            <span className="text-[8px] sm:text-[9px] font-bold border rounded px-1 sm:px-1.5 py-0.5 bg-amber-50/60 text-amber-800 border-amber-200/60 truncate max-w-[70px] sm:max-w-none">
-              {item.category}
-            </span>
           </div>
 
           <h3 className="text-xs sm:text-sm font-bold text-[#1C160F] leading-snug truncate" title={item.title}>

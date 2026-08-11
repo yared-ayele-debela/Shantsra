@@ -24,7 +24,14 @@ class Shipment extends Model
         'travel_date',
         'is_urgent',
         'status',
+        'approval_status',
+        'deal_status',
     ];
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
+    }
 
     protected function casts(): array
     {
@@ -49,5 +56,23 @@ class Shipment extends Model
     public function booking(): HasOne
     {
         return $this->hasOne(Booking::class);
+    }
+
+    public function getFirstPhotoUrlAttribute(): ?string
+    {
+        if (empty($this->product_images) || !is_array($this->product_images)) {
+            return null;
+        }
+
+        $first = $this->product_images[0] ?? null;
+        if (! $first) {
+            return null;
+        }
+
+        if (str_starts_with($first, 'http://') || str_starts_with($first, 'https://') || str_starts_with($first, 'data:') || str_starts_with($first, '/assets')) {
+            return $first;
+        }
+
+        return asset('storage/' . ltrim($first, '/'));
     }
 }

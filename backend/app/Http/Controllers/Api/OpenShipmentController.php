@@ -13,11 +13,19 @@ class OpenShipmentController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $limit = min(max($request->integer('limit', 20), 1), 50);
+        $perPage = min(max($request->integer('per_page', 20), 1), 50);
 
-        $shipments = Shipment::query()
-            ->where('status', 'pending')
+        $paginator = Shipment::query()
+            ->where('approval_status', 'approved')
+            // ->where('status', 'pending')
+            ->where(function ($q) {
+                $q->where('deal_status', '!=', 'confirmed')
+                  ->orWhereNull('deal_status');
+            })
             ->whereDoesntHave('booking')
+            ->when($request->filled('from_city'), fn ($query) => $query->where('from_city', $request->input('from_city')))
+            ->when($request->filled('to_city'), fn ($query) => $query->where('to_city', $request->input('to_city')))
+            ->when($request->boolean('is_urgent'), fn ($query) => $query->where('is_urgent', true))
             ->when($request->filled('category_id'), function ($query) use ($request) {
                 $categoryIds = collect(explode(',', $request->input('category_id')))
                     ->map(fn (string $id) => trim($id))
@@ -29,10 +37,17 @@ class OpenShipmentController extends Controller
                     $query->whereIn('category_id', $categoryIds);
                 }
             })
-            ->with(['sender:id,name', 'category:id,name'])
+            ->with([
+                'sender' => fn ($query) => $query
+                    ->select(['id', 'name', 'photo'])
+                    ->withCount('reviewsReceived')
+                    ->withAvg('reviewsReceived', 'rating'),
+                'category:id,name',
+            ])
             ->latest()
-            ->limit($limit)
-            ->get()
+            ->paginate($perPage);
+
+        $shipments = $paginator->getCollection()
             ->map(function (Shipment $shipment) {
                 $images = collect($shipment->product_images ?? [])
                     ->map(fn (string $path) => (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_starts_with($path, '/assets')) ? $path : asset('storage/'.$path))
@@ -48,6 +63,8 @@ class OpenShipmentController extends Controller
                     'to_city' => $shipment->to_city,
                     'weight' => (float) $shipment->weight,
                     'is_urgent' => (bool) $shipment->is_urgent,
+                    'status' => $shipment->status,
+                    'deal_status' => $shipment->deal_status ?? 'pending',
                     'description' => $shipment->description
                         ? Str::limit($shipment->description, 280)
                         : null,
@@ -57,12 +74,27 @@ class OpenShipmentController extends Controller
                     'cover_image' => $images[0] ?? null,
                     'posted_at' => $shipment->created_at?->toIso8601String(),
                     'sender_display' => $this->senderDisplayName($shipment->sender?->name),
+                    'sender_photo' => $shipment->sender?->photo_url,
+                    'sender_rating' => ($shipment->sender?->reviews_received_count ?? 0) > 0
+                        ? round((float) $shipment->sender->reviews_received_avg_rating, 1)
+                        : null,
+                    'sender_review_count' => $shipment->sender?->reviews_received_count ?? 0,
+                    'receiver_phone' => $shipment->receiver_phone,
                 ];
             })
             ->values();
 
+        $paginator->setCollection($shipments);
+
         return response()->json([
             'shipments' => $shipments,
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'has_more' => $paginator->hasMorePages(),
+            ],
         ]);
     }
 
@@ -71,10 +103,32 @@ class OpenShipmentController extends Controller
         $limit = min(max($request->integer('limit', 10), 1), 20);
 
         $shipments = Shipment::query()
-            ->where('status', 'pending')
+            ->where('approval_status', 'approved')
+            // ->where('status', 'pending')
             ->where('is_urgent', true)
+            ->where(function ($q) {
+                $q->where('deal_status', '!=', 'confirmed')
+                  ->orWhereNull('deal_status');
+            })
             ->whereDoesntHave('booking')
-            ->with(['sender:id,name', 'category:id,name'])
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $categoryIds = collect(explode(',', $request->input('category_id')))
+                    ->map(fn (string $id) => trim($id))
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                if (! empty($categoryIds)) {
+                    $query->whereIn('category_id', $categoryIds);
+                }
+            })
+            ->with([
+                'sender' => fn ($query) => $query
+                    ->select(['id', 'name', 'photo'])
+                    ->withCount('reviewsReceived')
+                    ->withAvg('reviewsReceived', 'rating'),
+                'category:id,name',
+            ])
             ->latest()
             ->limit($limit)
             ->get()
@@ -103,6 +157,11 @@ class OpenShipmentController extends Controller
                     'cover_image' => $images[0] ?? null,
                     'posted_at' => $shipment->created_at?->toIso8601String(),
                     'sender_display' => $this->senderDisplayName($shipment->sender?->name),
+                    'sender_photo' => $shipment->sender?->photo_url,
+                    'sender_rating' => ($shipment->sender?->reviews_received_count ?? 0) > 0
+                        ? round((float) $shipment->sender->reviews_received_avg_rating, 1)
+                        : null,
+                    'sender_review_count' => $shipment->sender?->reviews_received_count ?? 0,
                 ];
             })
             ->values();

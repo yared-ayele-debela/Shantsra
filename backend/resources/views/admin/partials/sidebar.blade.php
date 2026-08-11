@@ -4,6 +4,14 @@
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </a>
+    <a href="{{ route('admin.notifications.index') }}" class="admin-nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+        <i class="bi bi-bell"></i>
+        <span>Notifications</span>
+        @php($unreadNavCount = \App\Models\AdminNotification::unread()->count())
+        @if($unreadNavCount > 0)
+            <span class="badge bg-danger rounded-pill ms-auto">{{ $unreadNavCount }}</span>
+        @endif
+    </a>
     <a href="{{ route('admin.users.index') }}" class="admin-nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
         <i class="bi bi-people"></i>
         <span>Users</span>

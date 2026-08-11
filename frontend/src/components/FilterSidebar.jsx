@@ -11,6 +11,8 @@ export default function FilterSidebar({
   setFilterMaxWeight,
   filterMinReward,
   setFilterMinReward,
+  filterUrgent,
+  setFilterUrgent,
   onResetFilters
 }) {
   const [dbCategories, setDbCategories] = useState([]);
@@ -36,21 +38,14 @@ export default function FilterSidebar({
 
   const categoriesList = dbCategories.length > 0 ? dbCategories : CATEGORIES;
   const getCategoryName = (category) => typeof category === 'string' ? category : category?.name || '';
-  const getCategoryValue = (category) => category?.id != null ? String(category.id) : getCategoryName(category);
-  const handleCategoryToggle = (categoryValue, categoryName) => {
+  const getCategoryValue = (category) => getCategoryName(category).trim().toLocaleLowerCase();
+  const handleCategoryToggle = (categoryValue) => {
     setFilterCategories((currentCategories) => {
       const isSelected = currentCategories.includes(categoryValue);
-
       if (isSelected) {
-        return currentCategories.filter((category) => category !== categoryValue && category !== categoryName);
+        return currentCategories.filter((catId) => catId !== categoryValue);
       }
-
-      const nextCategories = [...currentCategories, categoryValue];
-      if (categoryName && categoryName !== categoryValue && !currentCategories.includes(categoryName)) {
-        nextCategories.push(categoryName);
-      }
-
-      return nextCategories;
+      return [...currentCategories, categoryValue];
     });
   };
 
@@ -157,7 +152,7 @@ export default function FilterSidebar({
         <input 
           type="range" 
           min="0.2" 
-          max="10" 
+          max="500" 
           step="0.2" 
           value={filterMaxWeight}
           onChange={(e) => setFilterMaxWeight(parseFloat(e.target.value))}
@@ -165,10 +160,24 @@ export default function FilterSidebar({
         />
         <div className="flex justify-between text-[9px] text-slate-400 font-semibold">
           <span>0.2 kg</span>
-          <span>5.0 kg</span>
-          <span>10.0 kg</span>
+          <span>25.0 kg</span>
+          <span>50.0 kg</span>
         </div>
       </div>
+
+      {/* Urgency */}
+      <label className="flex items-center justify-between gap-3 border border-red-100 rounded-xl p-3 cursor-pointer hover:bg-red-50/40 transition-colors">
+        <span>
+          <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Urgency</span>
+          <span className="block mt-0.5 text-xs font-semibold text-slate-700">Urgent requests only</span>
+        </span>
+        <input
+          type="checkbox"
+          checked={filterUrgent}
+          onChange={(event) => setFilterUrgent(event.target.checked)}
+          className="h-4 w-4 rounded accent-red-600"
+        />
+      </label>
 
       {/* Reward Threshold */}
       <div className="space-y-2">
