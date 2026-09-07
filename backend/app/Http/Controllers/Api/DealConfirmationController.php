@@ -70,7 +70,11 @@ class DealConfirmationController extends Controller
                 'is_read' => false,
             ]);
         } elseif ($validated['status'] === 'no_deal') {
-            $shipment->update(['deal_status' => 'declined']);
+            $shipment->update([
+                'deal_status' => 'pending',
+                'is_paused_by_inquiries' => false,
+                'inquiry_count' => 0,
+            ]);
         }
 
         $deal->load(['shipment', 'partner:id,name,phone', 'travel']);

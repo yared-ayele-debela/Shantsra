@@ -25,7 +25,7 @@ class AdminPackageApprovalAndNotificationTest extends TestCase
             'to_city' => 'Dubai',
             'weight' => 6.0,
             'description' => 'Coffee beans parcel',
-            'travel_date' => '2026-08-30',
+            'travel_date' => now()->addDays(7)->toDateString(),
         ]);
 
         $response->assertStatus(201)
@@ -65,7 +65,7 @@ class AdminPackageApprovalAndNotificationTest extends TestCase
             'weight' => 3.5,
             'status' => 'pending',
             'approval_status' => 'pending',
-            'travel_date' => '2026-08-28',
+            'travel_date' => now()->addDays(5)->toDateString(),
         ]);
 
         AdminNotification::create([
@@ -115,7 +115,7 @@ class AdminPackageApprovalAndNotificationTest extends TestCase
             'weight' => 4.0,
             'status' => 'pending',
             'approval_status' => 'pending',
-            'travel_date' => '2026-08-29',
+            'travel_date' => now()->addDays(5)->toDateString(),
         ]);
 
         $rejectResponse = $this->actingAs($admin, 'admin')->patch(route('admin.shipments.reject', $shipment));
@@ -196,5 +196,79 @@ class AdminPackageApprovalAndNotificationTest extends TestCase
         $urgentResponse->assertOk()
             ->assertJsonCount(1, 'shipments')
             ->assertJsonPath('shipments.0.id', $urgentDubaiToAddis->id);
+    }
+
+    public function test_open_shipments_endpoint_excludes_past_deadline_packages(): void
+    {
+        $user = User::factory()->create();
+
+        // Expired package (deadline passed yesterday)
+        $expiredShipment = Shipment::create([
+            'sender_id' => $user->id,
+            'receiver_name' => 'Past Receiver',
+            'from_city' => 'Addis Ababa',
+            'to_city' => 'Dubai',
+            'weight' => 2.0,
+            'status' => 'pending',
+            'approval_status' => 'approved',
+            'deal_status' => 'pending',
+            'travel_date' => now()->subDay()->toDateString(),
+        ]);
+
+        // Valid package (deadline in the future)
+        $validShipment = Shipment::create([
+            'sender_id' => $user->id,
+            'receiver_name' => 'Future Receiver',
+            'from_city' => 'Addis Ababa',
+            'to_city' => 'Dubai',
+            'weight' => 3.0,
+            'status' => 'pending',
+            'approval_status' => 'approved',
+            'deal_status' => 'pending',
+            'travel_date' => now()->addDays(3)->toDateString(),
+        ]);
+
+        $response = $this->getJson('/api/shipments/open');
+        $response->assertOk();
+        $response->assertJsonCount(1, 'shipments');
+        $response->assertJsonPath('shipments.0.id', $validShipment->id);
+    }
+
+    public function test_urgent_shipments_endpoint_excludes_past_deadline_packages(): void
+    {
+        $user = User::factory()->create();
+
+        // Expired urgent package (deadline passed)
+        $expiredUrgent = Shipment::create([
+            'sender_id' => $user->id,
+            'receiver_name' => 'Past Urgent Receiver',
+            'from_city' => 'Dubai',
+            'to_city' => 'Addis Ababa',
+            'weight' => 2.5,
+            'is_urgent' => true,
+            'status' => 'pending',
+            'approval_status' => 'approved',
+            'deal_status' => 'pending',
+            'travel_date' => now()->subDays(2)->toDateString(),
+        ]);
+
+        // Valid urgent package (deadline upcoming)
+        $validUrgent = Shipment::create([
+            'sender_id' => $user->id,
+            'receiver_name' => 'Future Urgent Receiver',
+            'from_city' => 'Dubai',
+            'to_city' => 'Addis Ababa',
+            'weight' => 4.0,
+            'is_urgent' => true,
+            'status' => 'pending',
+            'approval_status' => 'approved',
+            'deal_status' => 'pending',
+            'travel_date' => now()->addDay()->toDateString(),
+        ]);
+
+        $response = $this->getJson('/api/shipments/urgent');
+        $response->assertOk();
+        $response->assertJsonCount(1, 'shipments');
+        $response->assertJsonPath('shipments.0.id', $validUrgent->id);
     }
 }

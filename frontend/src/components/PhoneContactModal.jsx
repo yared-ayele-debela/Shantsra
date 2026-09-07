@@ -20,7 +20,26 @@ export default function PhoneContactModal({ contact, onClose }) {
       : `Hi ${name}, I am reaching out to you via PeerBridge.`
   );
 
+  const logInquiry = async (type = 'whatsapp') => {
+    const shipmentId = contact.id || contact.shipment_id;
+    if (!shipmentId) return;
+    try {
+      await fetch(`/api/shipments/${shipmentId}/inquire`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ contact_type: type })
+      });
+    } catch (err) {
+      // Non-blocking inquiry logging
+    }
+  };
+
   const handleCopyPhone = () => {
+    logInquiry('copy');
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(rawPhone);
     } else {
@@ -93,6 +112,7 @@ export default function PhoneContactModal({ contact, onClose }) {
               <div className="flex items-center gap-2 pt-0.5">
                 <a
                   href={`tel:${cleanPhone}`}
+                  onClick={() => logInquiry('call')}
                   className="flex-1 bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white text-xs font-bold py-2.5 px-3 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <Phone className="w-3.5 h-3.5 text-amber-400" /> Call Now
@@ -115,6 +135,7 @@ export default function PhoneContactModal({ contact, onClose }) {
             {/* WhatsApp Direct Option */}
             <a
               href={`https://wa.me/${cleanPhone.replace('+', '')}?text=${whatsappMessage}`}
+              onClick={() => logInquiry('whatsapp')}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-between gap-2 text-xs font-bold text-emerald-900 bg-emerald-50/70 hover:bg-emerald-100/80 border border-emerald-200/80 rounded-2xl px-4 py-3 transition-colors shadow-2xs cursor-pointer"

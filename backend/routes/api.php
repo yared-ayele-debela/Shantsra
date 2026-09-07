@@ -24,6 +24,7 @@ Route::middleware('guest')->group(function () {
 Route::get('/travelers', [TravelerController::class, 'index']);
 Route::get('/shipments/open', [OpenShipmentController::class, 'index']);
 Route::get('/shipments/urgent', [OpenShipmentController::class, 'urgent']);
+Route::post('/shipments/{shipment}/inquire', [ShipmentController::class, 'inquire']);
 Route::get('/package-categories', [PackageCategoryController::class, 'index']);
 Route::get('/site-settings', [SiteSettingController::class, 'show']);
 
@@ -35,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/shipments', [ShipmentController::class, 'store']);
     Route::put('/shipments/{shipment}', [ShipmentController::class, 'update']);
     Route::post('/shipments/{shipment}', [ShipmentController::class, 'update']);
+    Route::post('/shipments/{shipment}/reactivate', [ShipmentController::class, 'reactivate']);
     Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy']);
     Route::post('/travels', [TravelListingController::class, 'store']);
     Route::get('/travels/mine', [TravelListingController::class, 'mine']);

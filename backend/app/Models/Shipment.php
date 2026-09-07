@@ -26,6 +26,8 @@ class Shipment extends Model
         'status',
         'approval_status',
         'deal_status',
+        'inquiry_count',
+        'is_paused_by_inquiries',
     ];
 
     public function scopeApproved($query)
@@ -40,6 +42,8 @@ class Shipment extends Model
             'weight' => 'decimal:2',
             'product_images' => 'array',
             'is_urgent' => 'boolean',
+            'is_paused_by_inquiries' => 'boolean',
+            'inquiry_count' => 'integer',
         ];
     }
 
@@ -56,6 +60,11 @@ class Shipment extends Model
     public function booking(): HasOne
     {
         return $this->hasOne(Booking::class);
+    }
+
+    public function inquiries(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ShipmentInquiry::class);
     }
 
     public function getFirstPhotoUrlAttribute(): ?string

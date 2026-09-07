@@ -22,8 +22,8 @@ class PackageAlertNotificationTest extends TestCase
         $response = $this->actingAs($user, 'sanctum')->postJson('/api/package-alerts', [
             'from_city' => 'Addis Ababa',
             'to_city' => 'Dubai',
-            'start_date' => '2026-08-10',
-            'end_date' => '2026-08-30',
+            'start_date' => now()->subDays(5)->toDateString(),
+            'end_date' => now()->addDays(20)->toDateString(),
             'email_notify' => true,
         ]);
 
@@ -48,8 +48,8 @@ class PackageAlertNotificationTest extends TestCase
             'user_id' => $userA->id,
             'from_city' => 'Addis Ababa',
             'to_city' => 'Dubai',
-            'start_date' => '2026-08-10',
-            'end_date' => '2026-08-30',
+            'start_date' => now()->subDays(5)->toDateString(),
+            'end_date' => now()->addDays(20)->toDateString(),
             'email_notify' => true,
             'is_active' => true,
         ]);
@@ -64,7 +64,7 @@ class PackageAlertNotificationTest extends TestCase
             'to_city' => 'Dubai',
             'weight' => 5.5,
             'description' => 'Coffee beans and gifts',
-            'travel_date' => '2026-08-20',
+            'travel_date' => now()->addDays(5)->toDateString(),
         ]);
 
         $response->assertStatus(201);

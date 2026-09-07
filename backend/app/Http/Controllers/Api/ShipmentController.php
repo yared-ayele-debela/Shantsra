@@ -46,6 +46,8 @@ class ShipmentController extends Controller
                     'status' => $shipment->status,
                     'approval_status' => $shipment->approval_status ?? 'pending',
                     'deal_status' => $isConfirmed ? 'confirmed' : ($shipment->deal_status ?? 'pending'),
+                    'inquiry_count' => (int) ($shipment->inquiry_count ?? 0),
+                    'is_paused_by_inquiries' => (bool) ($shipment->is_paused_by_inquiries ?? false),
                     'product_images' => collect($shipment->product_images ?? [])
                         ->map(fn (string $path) => (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_starts_with($path, '/assets')) ? $path : asset('storage/'.$path))
                         ->all(),
@@ -298,5 +300,94 @@ class ShipmentController extends Controller
         } catch (\Throwable $e) {
             Log::error('triggerPackageAlerts error: '.$e->getMessage());
         }
+    }
+
+    public function inquire(Request $request, Shipment $shipment): JsonResponse
+    {
+        $user = $request->user('sanctum');
+        $ip = $request->ip();
+        $contactType = $request->input('contact_type', 'whatsapp');
+
+        // If the sender themselves clicks contact on their own package, ignore
+        if ($user && $shipment->sender_id === $user->id) {
+            return response()->json([
+                'message' => 'Sender viewing own contact.',
+                'inquiry_count' => (int) ($shipment->inquiry_count ?? 0),
+                'is_paused' => (bool) ($shipment->is_paused_by_inquiries ?? false),
+            ]);
+        }
+
+        // Check if an inquiry was already recorded for this user or IP in the last 24 hours
+        $alreadyInquired = \App\Models\ShipmentInquiry::query()
+            ->where('shipment_id', $shipment->id)
+            ->where(function ($q) use ($user, $ip) {
+                if ($user) {
+                    $q->where('user_id', $user->id);
+                } elseif ($ip) {
+                    $q->where('ip_address', $ip);
+                }
+            })
+            ->where('created_at', '>=', Carbon::now()->subHours(24))
+            ->exists();
+
+        if (! $alreadyInquired) {
+            \App\Models\ShipmentInquiry::create([
+                'shipment_id' => $shipment->id,
+                'user_id' => $user?->id,
+                'ip_address' => $ip,
+                'contact_type' => $contactType,
+            ]);
+
+            $newCount = (int) ($shipment->inquiry_count ?? 0) + 1;
+            $shouldPause = $newCount >= 5;
+
+            $shipment->update([
+                'inquiry_count' => $newCount,
+                'is_paused_by_inquiries' => $shouldPause,
+            ]);
+
+            if ($shouldPause) {
+                \App\Models\AdminNotification::create([
+                    'shipment_id' => $shipment->id,
+                    'user_id' => $shipment->sender_id,
+                    'type' => 'inquiry_pause',
+                    'title' => "Listing Paused (5 Inquiries): {$shipment->from_city} ➔ {$shipment->to_city}",
+                    'message' => "Package #{$shipment->id} for {$shipment->receiver_name} received 5 traveler inquiries and was automatically paused on the website to prevent spam calls.",
+                    'is_read' => false,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Inquiry recorded.',
+            'inquiry_count' => (int) $shipment->inquiry_count,
+            'is_paused' => (bool) $shipment->is_paused_by_inquiries,
+        ]);
+    }
+
+    public function reactivate(Request $request, Shipment $shipment): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if ($shipment->sender_id && $user && $shipment->sender_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized action.'], 403);
+        }
+
+        $shipment->update([
+            'inquiry_count' => 0,
+            'is_paused_by_inquiries' => false,
+            'deal_status' => 'pending',
+        ]);
+
+        return response()->json([
+            'message' => 'Shipment listing reactivated successfully on directory!',
+            'shipment' => [
+                'id' => $shipment->id,
+                'inquiry_count' => 0,
+                'is_paused_by_inquiries' => false,
+                'deal_status' => 'pending',
+            ],
+        ]);
     }
 }

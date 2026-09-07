@@ -23,6 +23,11 @@ class OpenShipmentController extends Controller
                   ->orWhereNull('deal_status');
             })
             ->whereDoesntHave('booking')
+            ->where(function ($q) {
+                $q->whereNull('travel_date')
+                  ->orWhereDate('travel_date', '>=', Carbon::today());
+            })
+            ->where('is_paused_by_inquiries', false)
             ->when($request->filled('from_city'), fn ($query) => $query->where('from_city', $request->input('from_city')))
             ->when($request->filled('to_city'), fn ($query) => $query->where('to_city', $request->input('to_city')))
             ->when($request->boolean('is_urgent'), fn ($query) => $query->where('is_urgent', true))
@@ -111,6 +116,11 @@ class OpenShipmentController extends Controller
                   ->orWhereNull('deal_status');
             })
             ->whereDoesntHave('booking')
+            ->where(function ($q) {
+                $q->whereNull('travel_date')
+                  ->orWhereDate('travel_date', '>=', Carbon::today());
+            })
+            ->where('is_paused_by_inquiries', false)
             ->when($request->filled('category_id'), function ($query) use ($request) {
                 $categoryIds = collect(explode(',', $request->input('category_id')))
                     ->map(fn (string $id) => trim($id))
