@@ -4,9 +4,14 @@
  * Configures the base API URL using Vite environment variables (VITE_API_URL).
  * For production, requests route to the specified backend domain.
  */
+const configuredApiUrl = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+// ByetHost free hosting blocks direct browser requests with an anti-bot challenge (aes.js).
+// In production, route through the same-origin Vercel proxy ('') when targeting ByetHost or left empty.
+const isByethost = configuredApiUrl.includes('byethost');
+
 export const API_URL = import.meta.env.DEV
   ? (import.meta.env.VITE_DEV_API_URL || '')
-  : (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+  : (isByethost ? '' : configuredApiUrl);
 
 /**
  * Resolves an API or endpoint path against the configured VITE_API_URL.

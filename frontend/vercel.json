@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/api/:match*",
+      "destination": "/api/proxy?proxy_path=api/:match*"
+    },
+    {
+      "source": "/sanctum/:match*",
+      "destination": "/api/proxy?proxy_path=sanctum/:match*"
+    },
+    {
+      "source": "/storage/:match*",
+      "destination": "/api/proxy?proxy_path=storage/:match*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
