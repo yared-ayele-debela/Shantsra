@@ -10,6 +10,7 @@ import RequestDeliveryModal from './RequestDeliveryModal';
 import PackageAlertsModal from './PackageAlertsModal';
 import DealConfirmationModal from './DealConfirmationModal';
 import ReviewModal from './ReviewModal';
+import { getApiUrl, getStorageUrl } from '../lib/api';
 
 export default function DashboardView({ 
   requests, 
@@ -49,7 +50,7 @@ export default function DashboardView({
       return;
     }
     try {
-      await fetch(`/api/shipments/${packageId}`, {
+      await fetch(getApiUrl(`/api/shipments/${packageId}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -68,7 +69,7 @@ export default function DashboardView({
 
   const handleReactivatePackage = async (packageId, title) => {
     try {
-      const response = await fetch(`/api/shipments/${packageId}/reactivate`, {
+      const response = await fetch(getApiUrl(`/api/shipments/${packageId}/reactivate`), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -90,7 +91,7 @@ export default function DashboardView({
   useEffect(() => {
     async function fetchUserDetail() {
       try {
-        const response = await fetch('/api/user', {
+        const response = await fetch(getApiUrl('/api/user'), {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
@@ -118,7 +119,7 @@ export default function DashboardView({
     async function fetchRealShipments() {
       setLoadingShipments(true);
       try {
-        const response = await fetch('/api/shipments', {
+        const response = await fetch(getApiUrl('/api/shipments'), {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
@@ -163,7 +164,7 @@ export default function DashboardView({
   const fetchPackageAlerts = async () => {
     setLoadingAlerts(true);
     try {
-      const res = await fetch('/api/package-alerts', {
+      const res = await fetch(getApiUrl('/api/package-alerts'), {
         credentials: 'include',
         headers: {
           'Accept': 'application/json',
@@ -192,7 +193,7 @@ export default function DashboardView({
     setAlertFeedback({ type: '', msg: '' });
 
     try {
-      const res = await fetch('/api/package-alerts', {
+      const res = await fetch(getApiUrl('/api/package-alerts'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -230,7 +231,7 @@ export default function DashboardView({
 
   const handleToggleAlert = async (alertId) => {
     try {
-      const res = await fetch(`/api/package-alerts/${alertId}/toggle`, {
+      const res = await fetch(getApiUrl(`/api/package-alerts/${alertId}/toggle`), {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -250,7 +251,7 @@ export default function DashboardView({
   const handleDeleteAlert = async (alertId) => {
     if (!window.confirm('Delete this route notification alert rule?')) return;
     try {
-      const res = await fetch(`/api/package-alerts/${alertId}`, {
+      const res = await fetch(getApiUrl(`/api/package-alerts/${alertId}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -268,7 +269,7 @@ export default function DashboardView({
 
   const handleDismissNotification = async (notifId) => {
     try {
-      await fetch(`/api/package-notifications/${notifId}`, {
+      await fetch(getApiUrl(`/api/package-notifications/${notifId}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -415,7 +416,7 @@ export default function DashboardView({
               <div className="relative">
                 {activeUser.photo_url || activeUser.photo ? (
                   <img 
-                    src={activeUser.photo_url || activeUser.photo} 
+                    src={getStorageUrl(activeUser.photo_url || activeUser.photo)} 
                     alt={activeUser.name} 
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-amber-300 shadow-md" 
                   />
@@ -680,11 +681,7 @@ export default function DashboardView({
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3.5 min-w-0">
                           <img 
-                            src={
-                              (req.img && typeof req.img === 'string' && !req.img.includes('unsplash.com') && !req.img.startsWith('photo-') && (req.img.startsWith('http://') || req.img.startsWith('https://') || req.img.startsWith('/') || req.img.startsWith('data:') || req.img.startsWith('storage/') || req.img.startsWith('shipments/')))
-                                ? (req.img.startsWith('storage/') || req.img.startsWith('shipments/') ? `/${req.img}` : req.img)
-                                : '/assets/No-Image-Found-400x264.png'
-                            } 
+                            src={getStorageUrl(req.img) || '/assets/No-Image-Found-400x264.png'} 
                             alt={req.title} 
                             onError={(e) => {
                               e.currentTarget.onerror = null;

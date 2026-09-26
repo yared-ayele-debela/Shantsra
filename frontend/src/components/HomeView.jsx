@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import PackageCard from './PackageCard';
 import { CATEGORIES } from '../data/initialData';
+import { getApiUrl, getStorageUrl } from '../lib/api';
 
 const DEFAULT_TRAVELERS = [
   {
@@ -87,7 +88,7 @@ export default function HomeView({
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch('/api/package-categories', {
+        const response = await fetch(getApiUrl('/api/package-categories'), {
           headers: { 'Accept': 'application/json' }
         });
         if (response.ok) {
@@ -107,7 +108,7 @@ export default function HomeView({
   useEffect(() => {
     async function fetchRealTravelers() {
       try {
-        const response = await fetch('/api/travelers', {
+        const response = await fetch(getApiUrl('/api/travelers'), {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
@@ -132,10 +133,7 @@ export default function HomeView({
                 );
                 let photoSrc = '';
                 if (hasPhoto) {
-                  photoSrc = rawPhoto.trim();
-                  if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
-                    photoSrc = `/storage/${photoSrc}`;
-                  }
+                  photoSrc = getStorageUrl(rawPhoto);
                 }
 
                 uniqueMap.set(key, {
@@ -187,7 +185,7 @@ export default function HomeView({
       }
       if (urgentOnly) query.set('is_urgent', '1');
 
-      const response = await fetch(`/api/shipments/open?${query.toString()}`, {
+      const response = await fetch(getApiUrl(`/api/shipments/open?${query.toString()}`), {
         headers: {
           'Accept': 'application/json'
         },
@@ -268,7 +266,7 @@ export default function HomeView({
   useEffect(() => {
     async function fetchUrgentShipments() {
       try {
-        const response = await fetch('/api/shipments/urgent', {
+        const response = await fetch(getApiUrl('/api/shipments/urgent'), {
           headers: { 'Accept': 'application/json' }
         });
         if (response.ok) {
@@ -318,10 +316,7 @@ export default function HomeView({
         );
         let photoSrc = '';
         if (hasPhoto) {
-          photoSrc = rawPhoto.trim();
-          if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
-            photoSrc = `/storage/${photoSrc}`;
-          }
+          photoSrc = getStorageUrl(rawPhoto);
         }
 
         uniqueMap.set(key, {

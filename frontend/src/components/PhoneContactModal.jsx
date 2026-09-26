@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Phone, Copy, Check, MessageCircle, ExternalLink, ShieldCheck, Handshake } from 'lucide-react';
 import DealConfirmationModal from './DealConfirmationModal';
+import { getApiUrl } from '../lib/api';
 
 export default function PhoneContactModal({ contact, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -24,7 +25,7 @@ export default function PhoneContactModal({ contact, onClose }) {
     const shipmentId = contact.id || contact.shipment_id;
     if (!shipmentId) return;
     try {
-      await fetch(`/api/shipments/${shipmentId}/inquire`, {
+      await fetch(getApiUrl(`/api/shipments/${shipmentId}/inquire`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

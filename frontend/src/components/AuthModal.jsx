@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Lock, Mail, User, Phone, MapPin, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight, PlaneTakeoff } from 'lucide-react';
+import { getApiUrl } from '../lib/api';
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAuthSuccess }) {
   const [mode, setMode] = useState(initialMode); // 'login' | 'register' | 'forgot'
@@ -49,7 +50,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
     try {
       // 1. Initialize Sanctum CSRF Cookie
       try {
-        await fetch('/sanctum/csrf-cookie', { 
+        await fetch(getApiUrl('/sanctum/csrf-cookie'), { 
           credentials: 'include',
           headers: { 'Accept': 'application/json' }
         });
@@ -58,7 +59,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
       }
 
       // 2. Perform Login POST with session credentials
-      const response = await fetch('/api/login', {
+      const response = await fetch(getApiUrl('/api/login'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -120,7 +121,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
     try {
       // 1. Initialize Sanctum CSRF Cookie
       try {
-        await fetch('/sanctum/csrf-cookie', { 
+        await fetch(getApiUrl('/sanctum/csrf-cookie'), { 
           credentials: 'include',
           headers: { 'Accept': 'application/json' }
         });
@@ -129,7 +130,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
       }
 
       // 2. Perform Register POST with session credentials
-      const response = await fetch('/api/register', {
+      const response = await fetch(getApiUrl('/api/register'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -187,7 +188,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
     setLoading(true);
 
     try {
-      const response = await fetch('/api/forgot-password', {
+      const response = await fetch(getApiUrl('/api/forgot-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

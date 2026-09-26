@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SlidersHorizontal, RotateCcw, CircleDollarSign } from 'lucide-react';
 import { CATEGORIES } from '../data/initialData';
+import { getApiUrl } from '../lib/api';
 
 export default function FilterSidebar({
   filterRoute,
@@ -20,7 +21,7 @@ export default function FilterSidebar({
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch('/api/package-categories', {
+        const response = await fetch(getApiUrl('/api/package-categories'), {
           headers: { 'Accept': 'application/json' }
         });
         if (response.ok) {

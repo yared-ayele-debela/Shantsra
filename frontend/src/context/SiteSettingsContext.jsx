@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { api } from '../lib/api.js'
+import { api, getStorageUrl } from '../lib/api.js'
 
 /** Lets the loading overlay show the last known logo & site name before the next /api/site-settings response. */
 export const SITE_LOGO_STORAGE_KEY = 'peerbridge_logo_url'
@@ -26,30 +26,35 @@ export function SiteSettingsProvider({ children }) {
         if (cancelled) {
           return
         }
-        setSettings(data)
-        if (data.logo_url) {
+        const resolvedData = {
+          ...data,
+          logo_url: data.logo_url ? getStorageUrl(data.logo_url) : data.logo_url,
+          favicon_url: data.favicon_url ? getStorageUrl(data.favicon_url) : data.favicon_url
+        }
+        setSettings(resolvedData)
+        if (resolvedData.logo_url) {
           try {
-            sessionStorage.setItem(SITE_LOGO_STORAGE_KEY, data.logo_url)
+            sessionStorage.setItem(SITE_LOGO_STORAGE_KEY, resolvedData.logo_url)
           } catch {
             /* ignore quota / private mode */
           }
         }
-        if (data.site_name) {
-          document.title = data.site_name
+        if (resolvedData.site_name) {
+          document.title = resolvedData.site_name
           try {
-            sessionStorage.setItem(SITE_NAME_STORAGE_KEY, data.site_name)
+            sessionStorage.setItem(SITE_NAME_STORAGE_KEY, resolvedData.site_name)
           } catch {
             /* ignore quota / private mode */
           }
         }
-        if (data.favicon_url) {
+        if (resolvedData.favicon_url) {
           let link = document.querySelector("link[rel='icon']")
           if (!link) {
             link = document.createElement('link')
             link.rel = 'icon'
             document.head.appendChild(link)
           }
-          link.href = data.favicon_url
+          link.href = resolvedData.favicon_url
         }
         let meta = document.querySelector('meta[name="description"]')
         if (!meta) {

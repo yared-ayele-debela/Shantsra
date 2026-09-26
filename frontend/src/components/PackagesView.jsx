@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, PackageSearch, Loader2, ArrowDown, SlidersHorizontal } from 'lucide-react';
 import FilterSidebar from './FilterSidebar';
 import PackageCard from './PackageCard';
+import { getApiUrl } from '../lib/api';
 
 export default function PackagesView({ 
   requests, 
@@ -40,7 +41,7 @@ export default function PackagesView({
         let hasMore = true;
 
         while (hasMore && isCurrent) {
-          const response = await fetch(`/api/shipments/open?page=${page}&per_page=50`, {
+          const response = await fetch(getApiUrl(`/api/shipments/open?page=${page}&per_page=50`), {
             headers: { Accept: 'application/json' }
           });
           if (!response.ok) throw new Error(`Unable to load package directory: ${response.status}`);

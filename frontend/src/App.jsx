@@ -18,6 +18,7 @@ import MobileBottomNav from './components/MobileBottomNav';
 import Footer from './components/Footer';
 
 import { DEFAULT_REQUESTS, DEFAULT_PROFILES } from './data/initialData';
+import { getApiUrl, getStorageUrl } from './lib/api';
 
 const DEFAULT_CHATS = [
   {
@@ -92,7 +93,7 @@ export default function App() {
   useEffect(() => {
     async function checkAuthSession() {
       try {
-        const response = await fetch('/api/user', {
+        const response = await fetch(getApiUrl('/api/user'), {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
@@ -134,10 +135,7 @@ export default function App() {
       const rawPhoto = target.photo || target.photo_url || target.avatar || null;
       let photoSrc = '';
       if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
-        photoSrc = rawPhoto.trim();
-        if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
-          photoSrc = `/storage/${photoSrc}`;
-        }
+        photoSrc = getStorageUrl(rawPhoto);
       }
       setSelectedProfileModal({
         ...target,
@@ -150,10 +148,7 @@ export default function App() {
       const rawPhoto = currentUser.photo_url || currentUser.photo || null;
       let photoSrc = '';
       if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
-        photoSrc = rawPhoto.trim();
-        if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
-          photoSrc = `/storage/${photoSrc}`;
-        }
+        photoSrc = getStorageUrl(rawPhoto);
       }
       setSelectedProfileModal({
         ...currentUser,
@@ -173,10 +168,7 @@ export default function App() {
       const rawPhoto = foundProf.photo || foundProf.photo_url || foundProf.avatar || null;
       let photoSrc = '';
       if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
-        photoSrc = rawPhoto.trim();
-        if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
-          photoSrc = `/storage/${photoSrc}`;
-        }
+        photoSrc = getStorageUrl(rawPhoto);
       }
       setSelectedProfileModal({
         ...foundProf,
@@ -220,7 +212,7 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/logout', { method: 'POST' });
+      await fetch(getApiUrl('/api/logout'), { method: 'POST' });
     } catch (err) {
       console.log('Logout API call complete.');
     }
@@ -307,7 +299,7 @@ export default function App() {
       setSelectedPackage(matched);
     } else {
       // Fetch open shipments from API if not found in local requests state
-      fetch('/api/shipments/open')
+      fetch(getApiUrl('/api/shipments/open'))
         .then(res => res.ok ? res.json() : null)
         .then(data => {
           if (data && data.shipments) {

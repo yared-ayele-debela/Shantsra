@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Phone, FileCheck2, Plane, CheckCircle2, XCircle, Star } from 'lucide-react';
+import { getStorageUrl } from '../lib/api';
 
 export default function UserProfileModal({ profile, onClose }) {
   if (!profile) return null;
@@ -14,10 +15,7 @@ export default function UserProfileModal({ profile, onClose }) {
 
   let photoSrc = '';
   if (hasPhoto) {
-    photoSrc = rawPhoto.trim();
-    if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
-      photoSrc = `/storage/${photoSrc}`;
-    }
+    photoSrc = getStorageUrl(rawPhoto);
   }
 
   const verifications = [

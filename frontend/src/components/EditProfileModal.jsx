@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, MapPin, FileCheck2, CheckCircle2, AlertCircle, Save, Upload } from 'lucide-react';
+import { getApiUrl, getStorageUrl } from '../lib/api';
 
 export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdated }) {
-  if (!isOpen || !user) return null;
-
-  const [name, setName] = useState(user.name || '');
-  const [email, setEmail] = useState(user.email || '');
-  const [phone, setPhone] = useState(user.phone || '');
-  const [city, setCity] = useState(user.city || '');
-  const [country, setCountry] = useState(user.country || 'UAE');
-  const [photo, setPhoto] = useState(user.photo_url || user.photo || '');
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [city, setCity] = useState(user?.city || '');
+  const [country, setCountry] = useState(user?.country || 'UAE');
+  const [photo, setPhoto] = useState(user?.photo_url || user?.photo || '');
   const [photoFile, setPhotoFile] = useState(null);
-  const [photoPreview, setPhotoPreview] = useState(user.photo_url || user.photo || '');
-  const [idDocumentType, setIdDocumentType] = useState(user.id_document_type || '');
-  const [idDocumentNumber, setIdDocumentNumber] = useState(user.id_document_number || '');
-  const [marketingOptIn, setMarketingOptIn] = useState(user.marketing_opt_in ?? true);
+  const [photoPreview, setPhotoPreview] = useState(user?.photo_url || user?.photo || '');
+  const [idDocumentType, setIdDocumentType] = useState(user?.id_document_type || '');
+  const [idDocumentNumber, setIdDocumentNumber] = useState(user?.id_document_number || '');
+  const [marketingOptIn, setMarketingOptIn] = useState(user?.marketing_opt_in ?? true);
   const [idDocumentFile, setIdDocumentFile] = useState(null);
 
   const [loading, setLoading] = useState(false);
@@ -82,7 +81,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
         formData.append('id_document_file', idDocumentFile);
       }
 
-      const response = await fetch('/api/user', {
+      const response = await fetch(getApiUrl('/api/user'), {
         method: 'POST', // Laravel handles PATCH via FormData _method=PATCH
         credentials: 'include',
         headers: {
@@ -148,6 +147,8 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
     }
   };
 
+  if (!isOpen || !user) return null;
+
   return (
     <div className="fixed inset-0 z-50 bg-[#1C160F]/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl border border-amber-100 max-w-lg w-full max-h-[90vh] overflow-y-auto flex flex-col">
@@ -188,7 +189,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
             <div className="relative shrink-0">
               {photoPreview ? (
                 <img 
-                  src={photoPreview} 
+                  src={getStorageUrl(photoPreview)} 
                   alt="Profile" 
                   className="w-16 h-16 rounded-full object-cover border-2 border-amber-300 shadow-sm"
                 />

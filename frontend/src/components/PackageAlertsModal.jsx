@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Bell as BellIcon, X as XIcon, MapPin as MapPinIcon, Calendar as CalendarIcon, Mail as MailIcon, CheckCircle2 as CheckIcon } from 'lucide-react';
+import { getApiUrl } from '../lib/api';
 
 export default function PackageAlertsModal({ isOpen, onClose, initialFrom = 'Addis Ababa', initialTo = 'Dubai', onAlertCreated }) {
   const [fromCity, setFromCity] = useState(initialFrom);
@@ -20,7 +21,7 @@ export default function PackageAlertsModal({ isOpen, onClose, initialFrom = 'Add
     setErrorMsg('');
 
     try {
-      const res = await fetch('/api/package-alerts', {
+      const res = await fetch(getApiUrl('/api/package-alerts'), {
         method: 'POST',
         credentials: 'include',
         headers: {

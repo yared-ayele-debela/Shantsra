@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Phone, Handshake, MessageSquare, Star, Share2, Copy, Check } from 'lucide-react';
+import { getStorageUrl } from '../lib/api';
 
 // Social Media Icons (SVGs for clean platform branding)
 const WhatsAppIcon = ({ className = "w-4 h-4" }) => (
@@ -80,11 +81,7 @@ export default function PackageDetailModal({
         {/* Header Hero Image */}
         <div className="relative h-48 bg-slate-100 shrink-0">
           <img 
-            src={
-              (item.img && typeof item.img === 'string' && !item.img.includes('unsplash.com') && !item.img.startsWith('photo-') && (item.img.startsWith('http://') || item.img.startsWith('https://') || item.img.startsWith('/') || item.img.startsWith('data:') || item.img.startsWith('storage/') || item.img.startsWith('shipments/')))
-                ? (item.img.startsWith('storage/') || item.img.startsWith('shipments/') ? `/${item.img}` : item.img)
-                : '/assets/No-Image-Found-400x264.png'
-            } 
+            src={getStorageUrl(item.img) || '/assets/No-Image-Found-400x264.png'} 
             alt={item.title}
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -142,7 +139,7 @@ export default function PackageDetailModal({
             <div className="flex items-center gap-3">
               {senderAvatar ? (
                 <img 
-                  src={senderAvatar} 
+                  src={getStorageUrl(senderAvatar)} 
                   alt={senderName}
                   onError={(event) => { event.currentTarget.style.display = 'none'; }}
                   className="w-10 h-10 rounded-full object-cover border border-amber-100" 

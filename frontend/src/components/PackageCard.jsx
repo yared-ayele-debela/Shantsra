@@ -1,5 +1,6 @@
 import React from 'react';
 import { Weight, Phone, Star, Zap } from 'lucide-react';
+import { getStorageUrl } from '../lib/api';
 
 export default function PackageCard({ 
   item, 
@@ -40,11 +41,7 @@ export default function PackageCard({
       >
         <div className="relative h-28 sm:h-36 overflow-hidden shrink-0">
           <img 
-            src={
-              (item.img && typeof item.img === 'string' && !item.img.includes('unsplash.com') && !item.img.startsWith('photo-') && (item.img.startsWith('http://') || item.img.startsWith('https://') || item.img.startsWith('/') || item.img.startsWith('data:') || item.img.startsWith('storage/') || item.img.startsWith('shipments/')))
-                ? (item.img.startsWith('storage/') || item.img.startsWith('shipments/') ? `/${item.img}` : item.img)
-                : '/assets/No-Image-Found-400x264.png'
-            } 
+            src={getStorageUrl(item.img) || '/assets/No-Image-Found-400x264.png'} 
             alt={item.title} 
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -113,9 +110,9 @@ export default function PackageCard({
           onClick={() => onSelectProfile(senderProfile.name)} 
           className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-amber-50/50 cursor-pointer group/prof"
         >
-          {senderProfile.photo || senderProfile.photo_url || (senderProfile.avatar && !senderProfile.avatar.includes('unsplash.com') && (senderProfile.avatar.startsWith('http') || senderProfile.avatar.startsWith('/storage'))) ? (
+          {senderProfile.photo || senderProfile.photo_url || (senderProfile.avatar && !senderProfile.avatar.includes('unsplash.com') && (senderProfile.avatar.startsWith('http') || senderProfile.avatar.startsWith('/storage') || senderProfile.avatar.startsWith('storage/'))) ? (
             <img 
-              src={senderProfile.photo || senderProfile.photo_url || senderProfile.avatar} 
+              src={getStorageUrl(senderProfile.photo || senderProfile.photo_url || senderProfile.avatar)} 
               alt={senderProfile.name}
               className="w-5 h-5 rounded-full object-cover shrink-0" 
             />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Package, Plus, Upload, AlertCircle, CheckCircle2, Calendar, Phone, MapPin, Weight, User, Zap } from 'lucide-react';
+import { getApiUrl, getStorageUrl } from '../lib/api';
 
 export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage }) {
   const [receiverName, setReceiverName] = useState(() => {
@@ -48,7 +49,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch('/api/package-categories', {
+        const response = await fetch(getApiUrl('/api/package-categories'), {
           headers: { 'Accept': 'application/json' }
         });
         if (response.ok) {
@@ -116,7 +117,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
 
       let response;
       if (editingPackage && editingPackage.id) {
-        response = await fetch(`/api/shipments/${editingPackage.id}`, {
+        response = await fetch(getApiUrl(`/api/shipments/${editingPackage.id}`), {
           method: 'PUT',
           credentials: 'include',
           headers: {
@@ -138,7 +139,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
           })
         });
       } else {
-        response = await fetch('/api/shipments', {
+        response = await fetch(getApiUrl('/api/shipments'), {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -473,11 +474,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
             {imagePreview && (
               <div className="mb-2 inline-block relative w-20 h-20 rounded-xl overflow-hidden border border-amber-200 shadow-2xs group">
                 <img 
-                  src={
-                    (imagePreview && (imagePreview.startsWith('http://') || imagePreview.startsWith('https://') || imagePreview.startsWith('/storage') || imagePreview.startsWith('data:')))
-                      ? imagePreview
-                      : '/assets/No-Image-Found-400x264.png'
-                  } 
+                  src={getStorageUrl(imagePreview) || '/assets/No-Image-Found-400x264.png'} 
                   alt="Package preview"
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/assets/No-Image-Found-400x264.png'; }}
                   className="w-full h-full object-cover" 

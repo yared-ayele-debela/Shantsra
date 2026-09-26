@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, SlidersHorizontal, RotateCcw, Search, Plane, Star, Phone, CheckCircle2, User, Weight, Loader2 } from 'lucide-react';
 import UserProfileModal from './UserProfileModal';
+import { getApiUrl, getStorageUrl } from '../lib/api';
 
 export default function TravelersView({ profiles, onSelectProfile, onContactPhone }) {
   const [realTravelers, setRealTravelers] = useState([]);
@@ -20,7 +21,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
     async function fetchTravelers() {
       setLoading(true);
       try {
-        const response = await fetch('/api/travelers', {
+        const response = await fetch(getApiUrl('/api/travelers'), {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
@@ -45,10 +46,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
               );
               let photoSrc = '';
               if (hasPhoto) {
-                photoSrc = rawPhoto.trim();
-                if (!photoSrc.startsWith('http://') && !photoSrc.startsWith('https://') && !photoSrc.startsWith('/') && !photoSrc.startsWith('data:')) {
-                  photoSrc = `/storage/${photoSrc}`;
-                }
+                photoSrc = getStorageUrl(rawPhoto);
               }
 
               uniqueMap.set(key, {
