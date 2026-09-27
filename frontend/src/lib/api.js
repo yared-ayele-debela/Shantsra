@@ -65,16 +65,41 @@ export function getStorageUrl(path = '') {
 }
 
 /**
+ * Reads the XSRF-TOKEN cookie set by Laravel Sanctum.
+ */
+export function getXsrfToken() {
+  if (typeof document === 'undefined') return '';
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
+/**
+ * Ensures Sanctum CSRF cookie is initialized before stateful requests.
+ */
+export async function initializeCsrf() {
+  try {
+    await fetch(getApiUrl('/sanctum/csrf-cookie'), {
+      credentials: 'include',
+      headers: { 'Accept': 'application/json' }
+    });
+  } catch (e) {
+    console.warn('CSRF initialization fallback:', e.message);
+  }
+}
+
+/**
  * Standard fetch wrapper pre-configured with CORS credentials and Laravel headers.
  */
 export async function apiFetch(endpoint, options = {}) {
   const fullUrl = getApiUrl(endpoint);
+  const xsrfToken = getXsrfToken();
   return fetch(fullUrl, {
     credentials: 'include',
     ...options,
     headers: {
       'Accept': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
+      ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
       ...(options.headers || {})
     }
   });
@@ -107,10 +132,12 @@ export const api = {
   async post(url, body = {}, options = {}) {
     const fullUrl = getApiUrl(url);
     const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+    const xsrfToken = getXsrfToken();
     const headers = {
       'Accept': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
       ...(options.headers || {})
     };
 
@@ -136,10 +163,12 @@ export const api = {
   async put(url, body = {}, options = {}) {
     const fullUrl = getApiUrl(url);
     const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+    const xsrfToken = getXsrfToken();
     const headers = {
       'Accept': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
       ...(options.headers || {})
     };
 
@@ -165,10 +194,12 @@ export const api = {
   async patch(url, body = {}, options = {}) {
     const fullUrl = getApiUrl(url);
     const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+    const xsrfToken = getXsrfToken();
     const headers = {
       'Accept': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
       ...(options.headers || {})
     };
 
@@ -193,12 +224,14 @@ export const api = {
 
   async delete(url, options = {}) {
     const fullUrl = getApiUrl(url);
+    const xsrfToken = getXsrfToken();
     const response = await fetch(fullUrl, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
+        ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
         ...(options.headers || {})
       },
       ...options

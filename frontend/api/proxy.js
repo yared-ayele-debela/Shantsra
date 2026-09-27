@@ -1,4 +1,5 @@
 import http from 'node:http';
+import https from 'node:https';
 import vm from 'node:vm';
 
 export const config = {
@@ -7,7 +8,10 @@ export const config = {
   },
 };
 
-const targetDomain = process.env.BACKEND_HOST || 'yareddebela.byethost22.com';
+const backendUrl = process.env.BACKEND_HOST || 'https://yareddebela.byethost22.com';
+const targetHost = backendUrl.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+const isHttps = !backendUrl.toLowerCase().startsWith('http://');
+
 let cachedCookie = '';
 let cookiePromise = null;
 
@@ -15,14 +19,24 @@ function getByethostCookie() {
   if (cachedCookie) return Promise.resolve(cachedCookie);
   if (cookiePromise) return cookiePromise;
 
-  cookiePromise = new Promise((resolve, reject) => {
-    const req = http.get('http://' + targetDomain + '/aes.js', (res) => {
+  const transport = isHttps ? https : http;
+  const port = isHttps ? 443 : 80;
+
+  cookiePromise = new Promise((resolve) => {
+    const req = transport.get({
+      hostname: targetHost,
+      port,
+      path: '/aes.js',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    }, (res) => {
       let aesJs = '';
       res.on('data', d => aesJs += d);
       res.on('end', () => {
-        http.get({
-          hostname: targetDomain,
-          port: 80,
+        transport.get({
+          hostname: targetHost,
+          port,
           path: '/',
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -34,7 +48,7 @@ function getByethostCookie() {
             const match = html.match(/<script>(.*?)<\/script>/s);
             if (!match) {
               cookiePromise = null;
-              return reject(new Error('ByetHost challenge script not found'));
+              return resolve('');
             }
             try {
               const sandbox = { document: { cookie: '' }, location: { href: '' } };
@@ -44,45 +58,76 @@ function getByethostCookie() {
               resolve(cachedCookie);
             } catch (err) {
               cookiePromise = null;
-              reject(err);
+              resolve('');
             }
           });
-        }).on('error', (err) => {
+        }).on('error', () => {
           cookiePromise = null;
-          reject(err);
+          resolve('');
         });
       });
     });
-    req.on('error', (err) => {
+
+    req.on('error', () => {
       cookiePromise = null;
-      reject(err);
+      resolve('');
     });
   });
 
   return cookiePromise;
 }
 
+function extractXsrfToken(cookieHeader) {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 async function getRawBody(req) {
-  if (req.body) {
+  if (!req.method || ['GET', 'HEAD', 'OPTIONS'].includes(req.method.toUpperCase())) {
+    return Buffer.alloc(0);
+  }
+
+  if (req.body !== undefined && req.body !== null) {
     if (Buffer.isBuffer(req.body)) return req.body;
     if (typeof req.body === 'string') return Buffer.from(req.body);
     return Buffer.from(JSON.stringify(req.body));
   }
-  const chunks = [];
-  for await (const chunk of req) {
-    chunks.push(chunk);
+
+  if (req.readableEnded) {
+    return Buffer.alloc(0);
   }
-  return Buffer.concat(chunks);
+
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    const timeout = setTimeout(() => {
+      resolve(Buffer.concat(chunks));
+    }, 5000);
+
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => {
+      clearTimeout(timeout);
+      resolve(Buffer.concat(chunks));
+    });
+    req.on('error', err => {
+      clearTimeout(timeout);
+      reject(err);
+    });
+  });
 }
 
-function resolveTargetPath(reqUrl) {
+function resolveTargetPath(req) {
+  const reqUrl = req.url || '/';
   const url = new URL(reqUrl, 'http://localhost');
-  if (url.searchParams.has('proxy_path')) {
-    const proxyPath = url.searchParams.get('proxy_path') || '';
+  let proxyPath = url.searchParams.get('proxy_path') || (req.query && req.query.proxy_path);
+
+  if (proxyPath) {
+    if (Array.isArray(proxyPath)) proxyPath = proxyPath.join('/');
     url.searchParams.delete('proxy_path');
     const qs = url.searchParams.toString();
     return '/' + proxyPath.replace(/^\/+/, '') + (qs ? '?' + qs : '');
   }
+
   return reqUrl;
 }
 
@@ -91,24 +136,42 @@ async function sendRequestToBackend(targetPath, method, clientHeaders, bodyBuffe
 
   return new Promise((resolve, reject) => {
     const clientCookie = clientHeaders['cookie'] || '';
-    const combinedCookie = clientCookie ? `${clientCookie}; ${cookie}` : cookie;
+    const combinedCookie = clientCookie
+      ? (cookie ? `${clientCookie}; ${cookie}` : clientCookie)
+      : cookie;
+
+    // Use a stateful origin recognized by Laravel Sanctum so sessions and CSRF cookies are created and validated
+    const statefulOrigin = process.env.SANCTUM_ORIGIN || 'http://localhost:5173';
 
     const reqHeaders = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Host': targetDomain,
-      'Cookie': combinedCookie,
+      'Host': targetHost,
       'Accept': clientHeaders['accept'] || 'application/json, text/plain, */*',
-      'X-Requested-With': clientHeaders['x-requested-with'] || 'XMLHttpRequest'
+      'X-Requested-With': clientHeaders['x-requested-with'] || 'XMLHttpRequest',
+      'Origin': statefulOrigin,
+      'Referer': `${statefulOrigin}/`,
     };
 
-    if (clientHeaders['content-type']) reqHeaders['content-type'] = clientHeaders['content-type'];
-    if (clientHeaders['authorization']) reqHeaders['authorization'] = clientHeaders['authorization'];
-    if (clientHeaders['x-xsrf-token']) reqHeaders['x-xsrf-token'] = clientHeaders['x-xsrf-token'];
-    if (bodyBuffer && bodyBuffer.length > 0) reqHeaders['content-length'] = bodyBuffer.length;
+    if (combinedCookie) reqHeaders['Cookie'] = combinedCookie;
+    if (clientHeaders['content-type']) reqHeaders['Content-Type'] = clientHeaders['content-type'];
+    if (clientHeaders['authorization']) reqHeaders['Authorization'] = clientHeaders['authorization'];
 
-    const req = http.request({
-      hostname: targetDomain,
-      port: 80,
+    // Forward client's X-XSRF-TOKEN or extract from Cookie if missing
+    const xsrfToken = clientHeaders['x-xsrf-token'] || extractXsrfToken(clientCookie);
+    if (xsrfToken) {
+      reqHeaders['X-XSRF-TOKEN'] = xsrfToken;
+    }
+
+    if (bodyBuffer && bodyBuffer.length > 0) {
+      reqHeaders['Content-Length'] = bodyBuffer.length;
+    }
+
+    const transport = isHttps ? https : http;
+    const port = isHttps ? 443 : 80;
+
+    const req = transport.request({
+      hostname: targetHost,
+      port,
       path: targetPath,
       method: method || 'GET',
       headers: reqHeaders
@@ -147,16 +210,19 @@ async function sendRequestToBackend(targetPath, method, clientHeaders, bodyBuffe
 }
 
 export default async function handler(req, res) {
+  // CORS configuration allowing credentials
+  const origin = req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || '*');
+
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': '*',
-    });
+    res.writeHead(204);
     return res.end();
   }
 
-  const targetPath = resolveTargetPath(req.url);
+  const targetPath = resolveTargetPath(req);
 
   if (!targetPath || targetPath === '/' || targetPath === '/api/proxy') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -167,12 +233,21 @@ export default async function handler(req, res) {
     const bodyBuffer = await getRawBody(req);
     const backendRes = await sendRequestToBackend(targetPath, req.method, req.headers, bodyBuffer);
 
+    // Forward Set-Cookie headers properly to client without backend host domain restrictions
+    if (backendRes.headers['set-cookie']) {
+      const cookies = Array.isArray(backendRes.headers['set-cookie'])
+        ? backendRes.headers['set-cookie']
+        : [backendRes.headers['set-cookie']];
+
+      const sanitizedCookies = cookies.map(c =>
+        c.replace(/;\s*domain=[^;]+/gi, '')
+      );
+      res.setHeader('Set-Cookie', sanitizedCookies);
+    }
+
     const outHeaders = {};
     if (backendRes.headers['content-type']) {
       outHeaders['Content-Type'] = backendRes.headers['content-type'];
-    }
-    if (backendRes.headers['set-cookie']) {
-      outHeaders['Set-Cookie'] = backendRes.headers['set-cookie'];
     }
     if (backendRes.headers['cache-control']) {
       outHeaders['Cache-Control'] = backendRes.headers['cache-control'];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Lock, Mail, User, Phone, MapPin, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight, PlaneTakeoff } from 'lucide-react';
-import { getApiUrl } from '../lib/api';
+import { getApiUrl, getXsrfToken, initializeCsrf } from '../lib/api';
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAuthSuccess }) {
   const [mode, setMode] = useState(initialMode); // 'login' | 'register' | 'forgot'
@@ -49,24 +49,23 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
 
     try {
       // 1. Initialize Sanctum CSRF Cookie
-      try {
-        await fetch(getApiUrl('/sanctum/csrf-cookie'), { 
-          credentials: 'include',
-          headers: { 'Accept': 'application/json' }
-        });
-      } catch (e) {
-        console.log('CSRF Cookie initialization fallback.');
+      await initializeCsrf();
+
+      // 2. Perform Login POST with session credentials and CSRF token
+      const xsrfToken = getXsrfToken();
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      };
+      if (xsrfToken) {
+        headers['X-XSRF-TOKEN'] = xsrfToken;
       }
 
-      // 2. Perform Login POST with session credentials
       const response = await fetch(getApiUrl('/api/login'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
+        headers,
         body: JSON.stringify({
           email: loginEmail,
           password: loginPassword,
@@ -120,24 +119,23 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
 
     try {
       // 1. Initialize Sanctum CSRF Cookie
-      try {
-        await fetch(getApiUrl('/sanctum/csrf-cookie'), { 
-          credentials: 'include',
-          headers: { 'Accept': 'application/json' }
-        });
-      } catch (e) {
-        console.log('CSRF Cookie initialization fallback.');
+      await initializeCsrf();
+
+      // 2. Perform Register POST with session credentials and CSRF token
+      const xsrfToken = getXsrfToken();
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      };
+      if (xsrfToken) {
+        headers['X-XSRF-TOKEN'] = xsrfToken;
       }
 
-      // 2. Perform Register POST with session credentials
       const response = await fetch(getApiUrl('/api/register'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
+        headers,
         body: JSON.stringify({
           name: regName,
           email: regEmail,
