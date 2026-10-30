@@ -7,7 +7,7 @@ import {
 import PackageCard from './PackageCard';
 import BannerStrip from './BannerStrip';
 import { CATEGORIES } from '../data/initialData';
-import { api, getApiUrl, getStorageUrl } from '../lib/api';
+import { getApiUrl, getStorageUrl } from '../lib/api';
 
 const DEFAULT_TRAVELERS = [
   {
@@ -82,7 +82,6 @@ export default function HomeView({
   const [urgentShipments, setUrgentShipments] = useState([]);
   const [realTravelers, setRealTravelers] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
-  const [heroBanner, setHeroBanner] = useState(null);
   const shipmentObserver = useRef(null);
   const shipmentRequest = useRef(null);
 
@@ -104,31 +103,6 @@ export default function HomeView({
       }
     }
     fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchHeroBanner() {
-      try {
-        const { data } = await api.get('/api/banners?placement=hero');
-        const banner = Array.isArray(data.banners)
-          ? data.banners.find((item) => item.placement === 'hero' && item.image_url)
-          : null;
-
-        if (!cancelled) {
-          setHeroBanner(banner || null);
-        }
-      } catch (error) {
-        console.warn('Unable to load the homepage hero banner:', error);
-      }
-    }
-
-    fetchHeroBanner();
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
   // Fetch real travels data from GET /api/travelers
@@ -438,76 +412,47 @@ export default function HomeView({
   return (
     <div className="space-y-12">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#EEF3F0] py-6 sm:py-10">
-        <div className="relative min-h-[500px] w-full overflow-hidden border-y border-[#D2DDD8] bg-[#DDEBE4] shadow-[0_8px_28px_rgba(13,51,38,0.2)] sm:min-h-[460px] lg:min-h-[420px]">
-          {heroBanner && (
-            <>
-              <img
-                src={getStorageUrl(heroBanner.image_url)}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover object-center"
-                width="1024"
-                height="434"
-                fetchPriority="high"
-              />
-              <a
-                href={heroBanner.cta_link || '/signup'}
-                className="absolute inset-0 z-0"
-                aria-label={heroBanner.title || 'Open promotion'}
-              />
-            </>
-          )}
-
-          <div className="relative z-10 flex min-h-[500px] max-w-3xl flex-col justify-center p-6 sm:min-h-[560px] sm:p-10 lg:min-h-[620px] lg:p-14">
-            <span className={`mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${
-              heroBanner
-                ? 'border-[#0D3326]/30 bg-white/85 text-[#0D3326] backdrop-blur-sm'
-                : 'border-[#B89358]/40 bg-white text-[#0D3326]'
-            }`}>
-              <Sparkles className="h-3.5 w-3.5 text-[#B89358]" />
+      <section className="relative overflow-hidden border-y border-[#D2DDD8] bg-[#EEF3F0] px-5 py-8 shadow-[0_6px_22px_rgba(13,51,38,0.08)] sm:px-8 sm:py-12 lg:px-12">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.35fr_0.65fr] lg:items-center">
+          <div>
+            <span className="mb-3 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#20C073]">
+              <Sparkles className="h-3.5 w-3.5" />
               Trusted delivery network
             </span>
-            <h1 className="max-w-xl font-display text-4xl font-bold leading-[1.03] tracking-[-0.04em] text-[#0D3326] sm:text-5xl lg:text-6xl">
-              Send with confidence.
-              <span className="block text-[#20C073]">Arrive with ease.</span>
+            <h1 className="max-w-2xl font-display text-4xl font-bold leading-[1.05] tracking-[-0.04em] text-[#0D3326] sm:text-5xl">
+              Send packages safely between
+              <span className="block text-[#20C073]">Addis Ababa and Dubai.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-sm leading-relaxed text-[#2E423A] sm:text-base">
-              Connect with verified travelers to move packages safely between Addis Ababa and Dubai.
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#2E423A] sm:text-base">
+              Connect with verified travelers and deliver with confidence.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={onOpenPostModal}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0D3326] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#144937]"
               >
-                <PackagePlus className="h-4 w-4" /> Start a delivery
+                <PackagePlus className="h-4 w-4" /> Post a delivery request
               </button>
               <a href="#requests-section" className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#0D3326] px-5 py-3 text-sm font-bold text-[#0D3326] transition-colors hover:bg-[#E5F0EB]">
-                Explore requests <ArrowRight className="h-4 w-4" />
+                Browse requests <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </div>
 
-          {!heroBanner && (
-            <div className="absolute inset-0">
-              <>
-                <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#20C073]/20 blur-2xl" />
-                <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-[#B89358]/20 blur-2xl" />
-                <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 sm:inset-x-14">
-                  <div className="relative rounded-[28px] border border-white/80 bg-white/55 p-5 shadow-[0_20px_40px_rgba(13,51,38,0.12)] backdrop-blur-sm sm:p-7">
-                    <div className="flex items-center justify-between">
-                      <p className="font-display text-xl font-bold text-[#0D3326] sm:text-2xl">Addis Ababa</p>
-                      <ArrowRight className="h-5 w-5 text-[#B89358]" />
-                      <p className="font-display text-xl font-bold text-[#0D3326] sm:text-2xl">Dubai</p>
-                    </div>
-                    <div className="mt-5 flex items-center justify-between border-t border-[#D2DDD8] pt-4">
-                      <span className="text-xs font-semibold text-[#647B72]">Verified travelers</span>
-                      <span className="text-xs font-semibold text-[#0D3326]">Secure handover</span>
-                    </div>
-                  </div>
-                </div>
-              </>
+          <div className="grid grid-cols-3 gap-2 rounded-2xl border border-[#D2DDD8] bg-white p-3 shadow-[0_8px_24px_rgba(13,51,38,0.08)] sm:gap-3 sm:p-5">
+            <div className="rounded-xl bg-[#E5F0EB] p-3 text-center sm:p-4">
+              <p className="font-display text-2xl font-bold text-[#0D3326]">20+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-[#647B72] sm:text-xs">Active requests</p>
             </div>
-          )}
+            <div className="rounded-xl bg-[#E5F0EB] p-3 text-center sm:p-4">
+              <p className="font-display text-2xl font-bold text-[#0D3326]">10+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-[#647B72] sm:text-xs">Verified travelers</p>
+            </div>
+            <div className="rounded-xl bg-[#E5F0EB] p-3 text-center sm:p-4">
+              <CheckCircle2 className="mx-auto h-6 w-6 text-[#20C073]" />
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-[#647B72] sm:text-xs">Secure handovers</p>
+            </div>
+          </div>
         </div>
       </section>
 
