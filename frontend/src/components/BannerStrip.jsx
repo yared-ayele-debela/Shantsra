@@ -41,7 +41,7 @@ export default function BannerStrip({ placement, single = false }) {
 
   return (
     <aside aria-label="Offers and announcements" className="mx-auto w-full max-w-7xl px-0 pb-5 sm:px-5 lg:px-0">
-      <div className={`grid grid-cols-1 gap-4 ${placement === 'home' ? 'sm:grid-cols-2' : ''}`}>
+      <div className={`grid grid-cols-1 gap-4 ${['home', 'travelers', 'packages'].includes(placement) ? 'sm:grid-cols-2' : ''}`}>
         {visibleBanners.map((banner) => (
           <article
             key={banner.id}
