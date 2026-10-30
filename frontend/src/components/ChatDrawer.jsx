@@ -59,7 +59,7 @@ export default function ChatDrawer({ isOpen, onClose, chats, setChats, activeCha
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C160F]/40 backdrop-blur-xs flex justify-end">
+    <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-xs flex justify-end">
       <div className="absolute inset-0 -z-10" onClick={onClose}></div>
       <div className="h-full w-full sm:w-[480px] bg-white shadow-2xl flex flex-col transition-all">
         {/* Header */}

@@ -126,9 +126,9 @@ export default function Header({
             ) : (
               <button 
                 onClick={() => onOpenAuthModal('login')}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#0D3326] bg-white border border-[#0D3326] rounded-[10px] px-3 py-2 hover:bg-[#EEF3F0] transition-colors"
+                className="flex items-center gap-1.5 text-xs font-bold text-white bg-[#0D3326] border border-[#0D3326] rounded-[10px] px-3 py-2 hover:bg-[#144937] transition-colors"
               >
-                <User className="w-3.5 h-3.5 text-[#14532D]" />
+                <User className="w-3.5 h-3.5 text-white" />
                 <span>Sign In</span>
               </button>
             )}

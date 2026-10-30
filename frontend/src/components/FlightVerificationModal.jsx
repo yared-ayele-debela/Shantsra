@@ -22,7 +22,7 @@ export default function FlightVerificationModal({ isOpen, onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C160F]/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl border border-amber-100 max-w-sm w-full p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

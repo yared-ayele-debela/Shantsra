@@ -150,7 +150,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
   if (!isOpen || !user) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C160F]/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl border border-amber-100 max-w-lg w-full max-h-[90vh] overflow-y-auto flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-amber-100 bg-amber-50/40 shrink-0">

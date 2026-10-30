@@ -46,7 +46,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C160F]/65 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl border border-amber-100 max-w-md w-full overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
         
         {/* Header */}

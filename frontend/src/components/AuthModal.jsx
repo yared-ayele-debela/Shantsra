@@ -216,7 +216,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C160F]/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl border border-amber-100 max-w-md w-full overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
         
         {/* Header */}
@@ -331,7 +331,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#1C160F] hover:bg-amber-600 hover:text-[#1C160F] text-white py-3 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-[#1C160F] hover:bg-[#144937] hover:text-white text-white py-3 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? 'Signing in...' : (
                   <>
@@ -492,7 +492,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#1C160F] hover:bg-amber-600 hover:text-[#1C160F] text-white py-3 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2 cursor-pointer"
+                className="w-full bg-[#1C160F] hover:bg-[#144937] hover:text-white text-white py-3 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2 cursor-pointer"
               >
                 {loading ? 'Creating Account...' : (
                   <>
@@ -540,7 +540,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#1C160F] hover:bg-amber-600 hover:text-[#1C160F] text-white py-3 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-[#1C160F] hover:bg-[#144937] hover:text-white text-white py-3 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? 'Sending Link...' : 'Send Password Reset Link'}
               </button>

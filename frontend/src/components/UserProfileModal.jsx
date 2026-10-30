@@ -25,7 +25,7 @@ export default function UserProfileModal({ profile, onClose }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C160F]/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl border border-amber-100 max-w-lg w-full max-h-[85vh] overflow-y-auto flex flex-col">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-amber-100 shrink-0">

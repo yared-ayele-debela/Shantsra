@@ -76,7 +76,7 @@ export default function PackageDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-amber-100 flex flex-col max-h-[90vh]">
         {/* Header Hero Image */}
         <div className="relative h-48 bg-slate-100 shrink-0">

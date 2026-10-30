@@ -59,7 +59,7 @@ export default function PackageAlertsModal({ isOpen, onClose, initialFrom = 'Add
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-amber-100 relative animate-in fade-in zoom-in duration-200">
         <button 
           onClick={onClose}
