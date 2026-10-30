@@ -439,17 +439,44 @@ export default function HomeView({
     <div className="space-y-12">
       {/* ============ HERO SECTION ============ */}
       <section className="relative overflow-hidden bg-[#EEF3F0] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-        <div className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[24px] border border-[#D2DDD8] bg-[#F8FBF9] shadow-[0_18px_50px_rgba(13,51,38,0.08)] lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="relative z-10 flex flex-col justify-center p-6 sm:p-10 lg:p-14">
-            <span className="mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border border-[#B89358]/40 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0D3326]">
+        <div className="relative mx-auto min-h-[500px] max-w-7xl overflow-hidden rounded-[24px] border border-[#D2DDD8] bg-[#DDEBE4] shadow-[0_18px_50px_rgba(13,51,38,0.08)] sm:min-h-[560px] lg:min-h-[620px]">
+          {heroBanner && (
+            <>
+              <img
+                src={getStorageUrl(heroBanner.image_url)}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                width="1024"
+                height="434"
+                fetchPriority="high"
+              />
+              <a
+                href={heroBanner.cta_link || '/signup'}
+                className="absolute inset-0 z-0"
+                aria-label={heroBanner.title || 'Open promotion'}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0D3326]/90 via-[#0D3326]/60 to-[#0D3326]/20" />
+            </>
+          )}
+
+          <div className="relative z-10 flex min-h-[500px] max-w-3xl flex-col justify-center p-6 sm:min-h-[560px] sm:p-10 lg:min-h-[620px] lg:p-14">
+            <span className={`mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${
+              heroBanner
+                ? 'border-white/30 bg-white/15 text-white backdrop-blur-sm'
+                : 'border-[#B89358]/40 bg-white text-[#0D3326]'
+            }`}>
               <Sparkles className="h-3.5 w-3.5 text-[#B89358]" />
               Trusted delivery network
             </span>
-            <h1 className="max-w-xl font-display text-4xl font-bold leading-[1.03] tracking-[-0.04em] text-[#0D3326] sm:text-5xl lg:text-6xl">
+            <h1 className={`max-w-xl font-display text-4xl font-bold leading-[1.03] tracking-[-0.04em] sm:text-5xl lg:text-6xl ${
+              heroBanner ? 'text-white' : 'text-[#0D3326]'
+            }`}>
               Send with confidence.
-              <span className="block text-[#20C073]">Arrive with ease.</span>
+              <span className={`block ${heroBanner ? 'text-[#B8F3D5]' : 'text-[#20C073]'}`}>Arrive with ease.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-sm leading-relaxed text-[#647B72] sm:text-base">
+            <p className={`mt-5 max-w-lg text-sm leading-relaxed sm:text-base ${
+              heroBanner ? 'text-white/85' : 'text-[#647B72]'
+            }`}>
               Connect with verified travelers to move packages safely between Addis Ababa and Dubai.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -465,22 +492,8 @@ export default function HomeView({
             </div>
           </div>
 
-          <div className="relative min-h-[300px] overflow-hidden bg-[#DDEBE4] sm:min-h-[380px] lg:min-h-[460px]">
-            {heroBanner ? (
-              <a href={heroBanner.cta_link || '/signup'} className="absolute inset-0 block" aria-label={heroBanner.title || 'Open promotion'}>
-                <img
-                  src={getStorageUrl(heroBanner.image_url)}
-                  alt={heroBanner.description || heroBanner.title || 'Featured delivery promotion'}
-                  className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-[1.02]"
-                  width="1024"
-                  height="434"
-                  fetchPriority="high"
-                />
-                <span className="absolute right-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold text-[#0D3326] shadow-sm">
-                  Featured offer
-                </span>
-              </a>
-            ) : (
+          {!heroBanner && (
+            <div className="absolute inset-0">
               <>
                 <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#20C073]/20 blur-2xl" />
                 <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-[#B89358]/20 blur-2xl" />
@@ -498,12 +511,17 @@ export default function HomeView({
                   </div>
                 </div>
               </>
-            )}
-            <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-1.5">
-              <span className="h-2 w-6 rounded-full bg-[#0D3326]" />
-              <span className="h-2 w-2 rounded-full bg-[#A7C0B5]" />
-              <span className="h-2 w-2 rounded-full bg-[#A7C0B5]" />
             </div>
+          )}
+          {heroBanner && (
+            <span className="absolute right-5 top-5 z-10 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold text-[#0D3326] shadow-sm">
+              Featured offer
+            </span>
+          )}
+          <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5">
+            <span className={`h-2 w-6 rounded-full ${heroBanner ? 'bg-white' : 'bg-[#0D3326]'}`} />
+            <span className={`h-2 w-2 rounded-full ${heroBanner ? 'bg-white/50' : 'bg-[#A7C0B5]'}`} />
+            <span className={`h-2 w-2 rounded-full ${heroBanner ? 'bg-white/50' : 'bg-[#A7C0B5]'}`} />
           </div>
         </div>
       </section>
