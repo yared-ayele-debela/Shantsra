@@ -7,7 +7,7 @@ import {
 import PackageCard from './PackageCard';
 import BannerStrip from './BannerStrip';
 import { CATEGORIES } from '../data/initialData';
-import { getApiUrl, getStorageUrl } from '../lib/api';
+import { api, getApiUrl, getStorageUrl } from '../lib/api';
 
 const DEFAULT_TRAVELERS = [
   {
@@ -82,6 +82,7 @@ export default function HomeView({
   const [urgentShipments, setUrgentShipments] = useState([]);
   const [realTravelers, setRealTravelers] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
+  const [heroBanner, setHeroBanner] = useState(null);
   const shipmentObserver = useRef(null);
   const shipmentRequest = useRef(null);
 
@@ -103,6 +104,31 @@ export default function HomeView({
       }
     }
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchHeroBanner() {
+      try {
+        const { data } = await api.get('/api/banners?placement=home');
+        const banner = Array.isArray(data.banners)
+          ? data.banners.find((item) => item.image_url)
+          : null;
+
+        if (!cancelled) {
+          setHeroBanner(banner || null);
+        }
+      } catch (error) {
+        console.warn('Unable to load the homepage hero banner:', error);
+      }
+    }
+
+    fetchHeroBanner();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Fetch real travels data from GET /api/travelers
@@ -412,82 +438,71 @@ export default function HomeView({
   return (
     <div className="space-y-12">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative overflow-hidden bg-[#FBF7F0] py-20 sm:py-28 text-[#1C2B22] border-b border-[#E8DFD0]">
-        <div className="relative max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-12 gap-16 items-center">
-          <div className="lg:col-span-7 text-center lg:text-left">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase text-[#14532D] border border-[#E8DFD0] px-3.5 py-1.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-[#B89358]" />
-              Verified Traveler Delivery · Addis Ababa ⇄ Dubai
+      <section className="relative overflow-hidden bg-[#EEF3F0] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[24px] border border-[#D2DDD8] bg-[#F8FBF9] shadow-[0_18px_50px_rgba(13,51,38,0.08)] lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="relative z-10 flex flex-col justify-center p-6 sm:p-10 lg:p-14">
+            <span className="mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border border-[#B89358]/40 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0D3326]">
+              <Sparkles className="h-3.5 w-3.5 text-[#B89358]" />
+              Trusted delivery network
             </span>
-            
-            <h1 className="font-display mt-6 text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-[-0.04em] leading-[1.05] text-[#1C2B22]">
-              Move what matters with<br className="hidden sm:inline" />
-              <span> verified travelers.</span>
+            <h1 className="max-w-xl font-display text-4xl font-bold leading-[1.03] tracking-[-0.04em] text-[#0D3326] sm:text-5xl lg:text-6xl">
+              Send with confidence.
+              <span className="block text-[#20C073]">Arrive with ease.</span>
             </h1>
-
-            <p className="mt-6 text-[#6B6B6B] text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Connect with verified travelers for package delivery between Ethiopia and the UAE.
+            <p className="mt-5 max-w-lg text-sm leading-relaxed text-[#647B72] sm:text-base">
+              Connect with verified travelers to move packages safely between Addis Ababa and Dubai.
             </p>
-
-            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4">
-              <button 
-                onClick={onOpenPostModal} 
-                className="bg-[#14532D] hover:bg-[#0F3F22] text-white font-semibold px-6 py-3.5 rounded-[10px] transition-all flex items-center justify-center gap-2 w-full sm:w-auto"
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={onOpenPostModal}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0D3326] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#144937]"
               >
-                <PackagePlus className="w-5 h-5" /> Post a Delivery Request
+                <PackagePlus className="h-4 w-4" /> Start a delivery
               </button>
-              <a 
-                href="#requests-section" 
-                className="bg-transparent hover:bg-[#E6EFE9] border border-[#14532D] text-[#14532D] font-semibold px-6 py-3.5 rounded-[10px] transition-all flex items-center justify-center gap-2 w-full sm:w-auto text-center"
-              >
-                <Search className="w-5 h-5" /> Browse Delivery Requests
+              <a href="#requests-section" className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#0D3326] px-5 py-3 text-sm font-bold text-[#0D3326] transition-colors hover:bg-[#E5F0EB]">
+                Explore requests <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </div>
 
-          {/* ACTIVE AIR CORRIDOR GRAPHIC */}
-          <div className="lg:col-span-5 bg-white rounded-[14px] border border-[#E8DFD0] p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-[#B89358]" />
-                <span className="text-sm font-semibold tracking-wide uppercase text-[#1C2B22]">
-                  Delivery Corridor
+          <div className="relative min-h-[300px] overflow-hidden bg-[#DDEBE4] sm:min-h-[380px] lg:min-h-[460px]">
+            {heroBanner ? (
+              <a href={heroBanner.cta_link || '/signup'} className="absolute inset-0 block" aria-label={heroBanner.title || 'Open promotion'}>
+                <img
+                  src={getStorageUrl(heroBanner.image_url)}
+                  alt={heroBanner.description || heroBanner.title || 'Featured delivery promotion'}
+                  className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-[1.02]"
+                  width="1024"
+                  height="434"
+                  fetchPriority="high"
+                />
+                <span className="absolute right-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold text-[#0D3326] shadow-sm">
+                  Featured offer
                 </span>
-              </div>
-              <span className="text-xs bg-[#E6EFE9] text-[#14532D] px-2 py-0.5 rounded-full font-medium border border-[#E8DFD0]">
-                Addis Ababa ⇄ Dubai
-              </span>
-            </div>
-
-            <div className="relative w-full h-[180px] bg-[#FBF7F0] rounded-[10px] overflow-hidden border border-[#E8DFD0] flex items-center justify-center">
-              <svg className="w-full h-[120px] px-6 z-10" viewBox="0 0 320 120" fill="none">
-                {/* Addis Node */}
-                <circle cx="50" cy="85" r="12" fill="#B89358" opacity="0.2" />
-                <circle cx="50" cy="85" r="4" fill="#B89358" />
-                <text x="50" y="112" fontFamily="'Inter', sans-serif" fontWeight="600" fontSize="9" fill="#1C2B22" textAnchor="middle">ADDIS ABABA</text>
-
-                {/* Dubai Node */}
-                <circle cx="270" cy="35" r="12" fill="#B89358" opacity="0.2" />
-                <circle cx="270" cy="35" r="4" fill="#B89358" />
-                <text x="270" y="15" fontFamily="'Inter', sans-serif" fontWeight="600" fontSize="9" fill="#1C2B22" textAnchor="middle">DUBAI</text>
-
-                {/* Flight Path Curve */}
-                <path d="M 50 85 Q 160 25 270 35" fill="none" stroke="#B89358" strokeWidth="2" strokeDasharray="5 6" />
-
-                {/* Live Flight Traveler Indicator */}
-                <circle cx="160" cy="42.5" r="3" fill="#B89358" />
-              </svg>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-4 text-center text-xs">
-              <div className="bg-white rounded-[10px] p-2.5 border border-[#D2DDD8]">
-              <p className="text-[#6B6B6B]">Open Delivery Requests</p>
-                <p className="text-lg font-extrabold font-display text-[#0D3326] mt-0.5">{allRequestsList.length}</p>
-              </div>
-              <div className="bg-white rounded-[10px] p-2.5 border border-[#D2DDD8]">
-              <p className="text-[#6B6B6B]">Verified Travelers</p>
-                <p className="text-lg font-extrabold font-display text-[#20C073] mt-0.5">{travelersList.length}+</p>
-              </div>
+              </a>
+            ) : (
+              <>
+                <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#20C073]/20 blur-2xl" />
+                <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-[#B89358]/20 blur-2xl" />
+                <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 sm:inset-x-14">
+                  <div className="relative rounded-[28px] border border-white/80 bg-white/55 p-5 shadow-[0_20px_40px_rgba(13,51,38,0.12)] backdrop-blur-sm sm:p-7">
+                    <div className="flex items-center justify-between">
+                      <p className="font-display text-xl font-bold text-[#0D3326] sm:text-2xl">Addis Ababa</p>
+                      <ArrowRight className="h-5 w-5 text-[#B89358]" />
+                      <p className="font-display text-xl font-bold text-[#0D3326] sm:text-2xl">Dubai</p>
+                    </div>
+                    <div className="mt-5 flex items-center justify-between border-t border-[#D2DDD8] pt-4">
+                      <span className="text-xs font-semibold text-[#647B72]">Verified travelers</span>
+                      <span className="text-xs font-semibold text-[#0D3326]">Secure handover</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-1.5">
+              <span className="h-2 w-6 rounded-full bg-[#0D3326]" />
+              <span className="h-2 w-2 rounded-full bg-[#A7C0B5]" />
+              <span className="h-2 w-2 rounded-full bg-[#A7C0B5]" />
             </div>
           </div>
         </div>
