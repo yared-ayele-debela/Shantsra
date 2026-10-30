@@ -439,7 +439,7 @@ export default function HomeView({
     <div className="space-y-12">
       {/* ============ HERO SECTION ============ */}
       <section className="relative overflow-hidden bg-[#EEF3F0] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-        <div className="relative mx-auto min-h-[500px] max-w-7xl overflow-hidden rounded-[24px] border border-[#D2DDD8] bg-[#DDEBE4] shadow-[0_18px_50px_rgba(13,51,38,0.08)] sm:min-h-[560px] lg:min-h-[620px]">
+        <div className="relative mx-auto min-h-[500px] max-w-7xl overflow-hidden rounded-[24px] border border-[#D2DDD8] bg-[#DDEBE4] shadow-[0_18px_50px_rgba(13,51,38,0.08)] sm:min-h-[460px] lg:min-h-[420px]">
           {heroBanner && (
             <>
               <img
