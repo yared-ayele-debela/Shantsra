@@ -461,21 +461,17 @@ export default function HomeView({
           <div className="relative z-10 flex min-h-[500px] max-w-3xl flex-col justify-center p-6 sm:min-h-[560px] sm:p-10 lg:min-h-[620px] lg:p-14">
             <span className={`mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${
               heroBanner
-                ? 'border-white/30 bg-white/15 text-white backdrop-blur-sm'
+                ? 'border-[#0D3326]/30 bg-white/85 text-[#0D3326] backdrop-blur-sm'
                 : 'border-[#B89358]/40 bg-white text-[#0D3326]'
             }`}>
               <Sparkles className="h-3.5 w-3.5 text-[#B89358]" />
               Trusted delivery network
             </span>
-            <h1 className={`max-w-xl font-display text-4xl font-bold leading-[1.03] tracking-[-0.04em] sm:text-5xl lg:text-6xl ${
-              heroBanner ? 'text-white' : 'text-[#0D3326]'
-            }`}>
+            <h1 className="max-w-xl font-display text-4xl font-bold leading-[1.03] tracking-[-0.04em] text-[#0D3326] sm:text-5xl lg:text-6xl">
               Send with confidence.
-              <span className={`block ${heroBanner ? 'text-[#B8F3D5]' : 'text-[#20C073]'}`}>Arrive with ease.</span>
+              <span className="block text-[#20C073]">Arrive with ease.</span>
             </h1>
-            <p className={`mt-5 max-w-lg text-sm leading-relaxed sm:text-base ${
-              heroBanner ? 'text-white/85' : 'text-[#647B72]'
-            }`}>
+            <p className="mt-5 max-w-lg text-sm leading-relaxed text-[#2E423A] sm:text-base">
               Connect with verified travelers to move packages safely between Addis Ababa and Dubai.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -511,11 +507,6 @@ export default function HomeView({
                 </div>
               </>
             </div>
-          )}
-          {heroBanner && (
-            <span className="absolute right-5 top-5 z-10 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold text-[#0D3326] shadow-sm">
-              Featured offer
-            </span>
           )}
         </div>
       </section>
