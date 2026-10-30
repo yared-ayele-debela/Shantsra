@@ -1,0 +1,44 @@
+name: Deploy Laravel API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-api.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_mysql, bcmath, xml, ctype, fileinfo
+
+      - name: Install dependencies
+        working-directory: backend
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./backend/
+          server-dir: /laravel_api/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .env
+            tests/**
+            storage/logs/**
+            storage/framework/sessions/**
+            storage/framework/cache/**
+            storage/framework/views/**
+            bootstrap/cache/*.php
