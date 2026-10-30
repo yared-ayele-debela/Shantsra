@@ -518,11 +518,6 @@ export default function HomeView({
               Featured offer
             </span>
           )}
-          <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5">
-            <span className={`h-2 w-6 rounded-full ${heroBanner ? 'bg-white' : 'bg-[#0D3326]'}`} />
-            <span className={`h-2 w-2 rounded-full ${heroBanner ? 'bg-white/50' : 'bg-[#A7C0B5]'}`} />
-            <span className={`h-2 w-2 rounded-full ${heroBanner ? 'bg-white/50' : 'bg-[#A7C0B5]'}`} />
-          </div>
         </div>
       </section>
 
