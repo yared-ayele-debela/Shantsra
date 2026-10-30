@@ -455,7 +455,7 @@ export default function HomeView({
                 className="absolute inset-0 z-0"
                 aria-label={heroBanner.title || 'Open promotion'}
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0D3326]/90 via-[#0D3326]/60 to-[#0D3326]/20" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0D3326]/75 via-[#0D3326]/30 to-transparent" />
             </>
           )}
 
