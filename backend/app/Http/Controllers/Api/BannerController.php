@@ -15,7 +15,14 @@ class BannerController extends Controller
 
         $banners = Banner::query()
             ->currentlyVisible()
-            ->when($placement, fn ($query) => $query->whereIn('placement', [$placement, 'all']))
+            ->when($placement, function ($query) use ($placement): void {
+                if ($placement === 'hero') {
+                    $query->where('placement', 'hero');
+                    return;
+                }
+
+                $query->whereIn('placement', [$placement, 'all']);
+            })
             ->orderBy('sort_order')
             ->orderByDesc('created_at')
             ->get()

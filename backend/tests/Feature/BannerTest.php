@@ -44,6 +44,28 @@ class BannerTest extends TestCase
             ->assertJsonCount(2, 'banners');
     }
 
+    public function test_public_hero_endpoint_returns_only_hero_banners(): void
+    {
+        Banner::create([
+            'title' => 'Homepage hero',
+            'placement' => 'hero',
+            'image_path' => 'banners/hero.jpg',
+            'is_active' => true,
+        ]);
+        Banner::create([
+            'title' => 'All pages banner',
+            'placement' => 'all',
+            'image_path' => 'banners/all-pages.jpg',
+            'is_active' => true,
+        ]);
+
+        $this->getJson('/api/banners?placement=hero')
+            ->assertOk()
+            ->assertJsonPath('banners.0.title', 'Homepage hero')
+            ->assertJsonPath('banners.0.placement', 'hero')
+            ->assertJsonCount(1, 'banners');
+    }
+
     public function test_banner_management_requires_admin_authentication(): void
     {
         $this->get('/admin/banners')
