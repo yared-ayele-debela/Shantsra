@@ -5,7 +5,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => array_filter(array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173')))),
+    'allowed_origins' => [env('FRONTEND_URL', 'https://shantasra.com')],
 
     'allowed_origins_patterns' => [],
 
