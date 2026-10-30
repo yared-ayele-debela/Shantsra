@@ -1,4 +1,4 @@
-name: Deploy React Frontend Page
+name: Deploy React Frontend
 
 on:
   push:
@@ -29,16 +29,19 @@ jobs:
         env:
           VITE_API_URL: https://api.shantasra.com
 
+      - name: Test FTP reachability
+        run: |
+          nc -zv -w 10 ${{ secrets.FTP_SERVER }} 21 || echo "PORT 21 NOT REACHABLE FROM GITHUB"
+          curl -v --max-time 20 ftp://${{ secrets.FTP_SERVER }}/ --user "${{ secrets.FTP_USER }}:${{ secrets.FTP_PASSWORD }}" 2>&1 | tail -20 || true
+
       - name: Upload via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
+          port: 21
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
+          protocol: ftp
+          timeout: 120000
           local-dir: ./frontend/dist/
           server-dir: /public_html/
-          exclude: |
-            **/.well-known/**
-            **/cgi-bin/**
-
