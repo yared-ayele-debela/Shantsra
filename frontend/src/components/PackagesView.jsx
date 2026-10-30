@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, PackageSearch, Loader2, ArrowDown, SlidersHorizontal } from 'lucide-react';
 import FilterSidebar from './FilterSidebar';
 import PackageCard from './PackageCard';
+import BannerStrip from './BannerStrip';
 import { getApiUrl } from '../lib/api';
 
 export default function PackagesView({ 
@@ -57,7 +58,7 @@ export default function PackagesView({
         const mapped = shipments.map((shipment) => ({
           id: shipment.id,
           category_id: shipment.category_id,
-          category: shipment.category_name || 'Uncategorized',
+          category: shipment.category_name || 'Other',
           title: shipment.receiver_name
             ? `Shipment for ${shipment.receiver_name}`
             : `Delivery request (${shipment.from_city || 'Addis Ababa'} → ${shipment.to_city || 'Dubai'})`,
@@ -195,15 +196,17 @@ export default function PackagesView({
       {/* Header Banner */}
       <div className="mb-6 sm:mb-8">
         <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1">
-          <Search className="w-3.5 h-3.5" /> Directory Search
+          <Search className="w-3.5 h-3.5" /> Find a package
         </span>
         <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#1C160F]">
-          Package Request Directory
+          Packages that need a traveler
         </h1>
         <p className="text-slate-500 text-xs sm:text-sm mt-1">
-          Refine filters to match lightweight shipment tasks aligning with your travel schedule.
+          Find a package that matches your route, schedule, and available space.
         </p>
       </div>
+
+      <BannerStrip placement="packages" single />
 
       <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
         {/* Mobile Filter Toggle Button */}
@@ -217,7 +220,7 @@ export default function PackagesView({
               <span>Filter Delivery Requests</span>
             </span>
             <span className="text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-extrabold border border-amber-200">
-              {showMobileFilter ? 'Hide Filters ▲' : 'Show Filters ▼'}
+              {showMobileFilter ? 'Hide filters ▲' : 'Show filters ▼'}
             </span>
           </button>
         </div>

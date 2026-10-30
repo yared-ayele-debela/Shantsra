@@ -95,7 +95,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
 
       if (!response.ok) {
         if (data.errors) setFieldErrors(data.errors);
-        setErrorMsg(data.message || 'Failed to update profile.');
+        setErrorMsg(data.message || 'We could not update your profile. Please try again.');
         setLoading(false);
         return;
       }
@@ -115,7 +115,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
         id_document_status: idDocumentFile ? 'pending' : user.id_document_status
       };
 
-      setSuccessMsg('Profile updated successfully!');
+      setSuccessMsg('Your profile was updated.');
       setTimeout(() => {
         onProfileUpdated(updatedUser);
         onClose();
@@ -137,7 +137,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
         marketing_opt_in: marketingOptIn,
         id_document_status: idDocumentType && idDocumentNumber ? 'pending' : user.id_document_status
       };
-      setSuccessMsg('Profile updated successfully!');
+      setSuccessMsg('Your profile was updated.');
       setTimeout(() => {
         onProfileUpdated(mockUpdatedUser);
         onClose();
@@ -390,7 +390,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
                 onChange={(e) => setMarketingOptIn(e.target.checked)}
                 className="accent-amber-600 rounded" 
               />
-              <span>Receive email updates about new delivery requests and traveler availability</span>
+              <span>Receive email updates about new packages and available travelers</span>
             </label>
           </div>
 

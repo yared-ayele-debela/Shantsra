@@ -10,6 +10,7 @@ import RequestDeliveryModal from './RequestDeliveryModal';
 import PackageAlertsModal from './PackageAlertsModal';
 import DealConfirmationModal from './DealConfirmationModal';
 import ReviewModal from './ReviewModal';
+import BannerStrip from './BannerStrip';
 import { getApiUrl, getStorageUrl } from '../lib/api';
 
 export default function DashboardView({ 
@@ -138,7 +139,7 @@ export default function DashboardView({
             route: (s.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
             weight: String(s.weight || '1.0'),
             reward: s.reward || `AED ${(parseFloat(s.weight || 1) * 35).toFixed(0)}`,
-            category: s.category_name || s.category || 'General Cargo',
+            category: s.category_name || s.category || 'Other',
             deadline: s.travel_date_label || (s.travel_date ? `Needed by ${s.travel_date}` : 'Needed soon'),
             img: s.cover_image || s.product_images?.[0] || '/assets/No-Image-Found-400x264.png',
             status: s.status || 'pending',
@@ -407,6 +408,8 @@ export default function DashboardView({
         </div>
       </div>
 
+      <BannerStrip placement="dashboard" />
+
       <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
         {/* Left Column: Real Profile Card & Verifications (4 cols) */}
         <div className="lg:col-span-4 space-y-4 sm:space-y-6 col-span-12">
@@ -658,7 +661,7 @@ export default function DashboardView({
                                 className="flex-1 sm:flex-none px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                               >
                                 <Handshake className="w-3.5 h-3.5" />
-                                <span>Yes, Deal Made</span>
+                                <span>Yes, we agreed</span>
                               </button>
                               <button
                                 onClick={() => handleReactivatePackage(pkg.id, pkg.title)}
@@ -774,7 +777,7 @@ export default function DashboardView({
                                 className="flex-1 sm:flex-none px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs"
                               >
                                 <Handshake className="w-3.5 h-3.5" />
-                                <span>Yes, Deal Made</span>
+                                <span>Yes, we agreed</span>
                               </button>
                               <button
                                 onClick={() => handleReactivatePackage(req.id, req.title)}
@@ -868,7 +871,7 @@ export default function DashboardView({
               ) : (
                 <div className="text-center py-12 bg-amber-50/20 border border-amber-100/60 rounded-2xl p-6">
                   <Package className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                  <p className="font-bold text-sm text-[#1C160F]">No Active Package Requests</p>
+                  <p className="font-bold text-sm text-[#1C160F]">No active packages</p>
                   <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Post a delivery request to connect with travelers flying your route.</p>
                   <button 
                     onClick={onOpenPostModal}
@@ -1008,7 +1011,7 @@ export default function DashboardView({
                     className="w-full py-2.5 bg-[#1C160F] hover:bg-amber-600 hover:text-[#1C160F] text-white text-xs font-extrabold rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>{alertSubmitting ? 'Creating Route Alert...' : 'Subscribe to Package Route Alerts'}</span>
+                    <span>{alertSubmitting ? 'Creating alert...' : 'Get package route alerts'}</span>
                   </button>
                 </form>
               </div>
@@ -1135,7 +1138,7 @@ export default function DashboardView({
                                 desc: notif.shipment.description || `Package from ${notif.shipment.from_city} to ${notif.shipment.to_city}`,
                                 weight: String(notif.shipment.weight),
                                 reward: `AED ${(notif.shipment.weight * 35).toFixed(0)}`,
-                                category: 'General Cargo',
+                                category: 'Other',
                                 status: 'pending',
                               })}
                               className="px-3 py-1.5 bg-[#1C160F] hover:bg-amber-600 hover:text-[#1C160F] text-white text-[11px] font-bold rounded-xl transition-all"

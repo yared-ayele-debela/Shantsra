@@ -40,6 +40,10 @@
         <i class="bi bi-megaphone"></i>
         <span>Campaigns</span>
     </a>
+    <a href="{{ route('admin.banners.index') }}" class="admin-nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+        <i class="bi bi-images"></i>
+        <span>Frontend Banners</span>
+    </a>
     <a href="{{ route('admin.reviews.index') }}" class="admin-nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
         <i class="bi bi-star"></i>
         <span>Reviews</span>

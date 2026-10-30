@@ -38,14 +38,14 @@ export default function ReviewModal({ item, partner, onClose, onSuccess }) {
         comment: comment || null,
       });
 
-      setSuccessMsg(response.data.message || 'Thank you! Review submitted successfully.');
+      setSuccessMsg(response.data.message || 'Thank you! Your review was saved.');
       setTimeout(() => {
         if (onSuccess) onSuccess(response.data.review);
         if (onClose) onClose();
       }, 1500);
     } catch (err) {
       console.error('Review submission error:', err);
-      setError(err.response?.data?.message || 'Failed to submit review. Please try again.');
+      setError(err.response?.data?.message || 'We could not save your review. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -174,7 +174,7 @@ export default function ReviewModal({ item, partner, onClose, onSuccess }) {
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>Submit Review</span>
+                  <span>Save review</span>
                 </>
               )}
             </button>

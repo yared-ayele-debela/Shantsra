@@ -161,12 +161,12 @@ export default function ChatDrawer({ isOpen, onClose, chats, setChats, activeCha
                 </form>
                 <div className="mt-2 text-center">
                   <a 
-                    href={`https://wa.me/251911223344?text=${encodeURIComponent('Hello, I would like to inquire about delivery arrangements.')}`} 
+                    href={`https://wa.me/251911223344?text=${encodeURIComponent('Hello, I would like to discuss this delivery.')}`}
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="text-[10px] text-emerald-700 font-bold hover:underline inline-flex items-center gap-1"
                   >
-                    <Phone className="w-3 h-3 text-emerald-600" /> Continue via WhatsApp direct link
+                    <Phone className="w-3 h-3 text-emerald-600" /> Continue on WhatsApp
                   </a>
                 </div>
               </div>

@@ -157,7 +157,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
 
       if (response && !response.ok && data.errors) {
         setFieldErrors(data.errors);
-        setErrorMsg(data.message || 'Failed to submit shipment request. Please check inputs.');
+        setErrorMsg(data.message || 'We could not save your request. Please check the details and try again.');
         setLoading(false);
         return;
       }
@@ -177,7 +177,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
 
       const finalPackageImg = imagePreview || created.cover_image || created.product_images?.[0] || editingPackage?.img || '/assets/No-Image-Found-400x264.png';
       const selectedCategory = dbCategories.find(category => String(category.id) === String(categoryId));
-      const categoryName = created.category_name || selectedCategory?.name || editingPackage?.category || 'Uncategorized';
+      const categoryName = created.category_name || selectedCategory?.name || editingPackage?.category || 'Other';
 
       const mappedPackage = {
         id: editingPackage ? editingPackage.id : (created?.id || `ship_${Date.now()}`),
@@ -187,7 +187,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
         route: (fromCity || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
         weight: String(weight || '1.0'),
         reward: `AED ${(parseFloat(weight || 1) * 35).toFixed(0)}`,
-        category: categoryName || 'General Cargo',
+        category: categoryName || 'Other',
         category_id: created?.category_id || categoryId || editingPackage?.category_id || null,
         deadline: travelDate ? `Needed by ${travelDate}` : 'Needed soon',
         img: finalPackageImg,
@@ -203,7 +203,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
         travel_date: travelDate || ''
       };
 
-      setSuccessMsg(editingPackage ? 'Package shipment request updated successfully!' : 'Package shipment request posted successfully!');
+      setSuccessMsg(editingPackage ? 'Your package request was updated.' : 'Your package request was posted.');
       setTimeout(() => {
         onSubmit(mappedPackage);
         onClose();
@@ -233,7 +233,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
         travel_date: travelDate
       };
 
-      setSuccessMsg(editingPackage ? 'Package shipment request updated successfully!' : 'Package shipment request posted successfully!');
+      setSuccessMsg(editingPackage ? 'Your package request was updated.' : 'Your package request was posted.');
       setTimeout(() => {
         onSubmit(mockReq);
         onClose();
@@ -253,7 +253,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
               <Package className="w-4 h-4" />
             </span>
             <h3 className="font-display text-base font-bold text-[#1C160F]">
-              {editingPackage ? 'Edit Delivery Request' : 'Add Delivery Request'}
+              {editingPackage ? 'Edit package request' : 'Post a package request'}
             </h3>
           </div>
           <button 
@@ -392,7 +392,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
 
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                Requested Delivery Date *
+                Delivery date *
               </label>
               <div className="relative flex items-center">
                 <Calendar className="w-4 h-4 text-slate-400 absolute left-3" />
@@ -429,7 +429,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
           {/* Package Description */}
           <div>
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-              Package Description &amp; Handover Instructions
+              Package details and handover notes
             </label>
             <textarea 
               rows="2.5"
@@ -454,7 +454,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
               </span>
               <div>
                 <span className="text-xs font-bold text-[#1C160F] block">Mark as Priority Delivery</span>
-                <span className="text-[10px] text-slate-500 block">Highlights your request to travelers who may be able to assist sooner</span>
+                <span className="text-[10px] text-slate-500 block">Helps travelers understand and respond to your request</span>
               </div>
             </div>
             <input 
@@ -528,7 +528,7 @@ export default function RequestDeliveryModal({ onClose, onSubmit, editingPackage
               <span>
                 {editingPackage 
                   ? (loading ? 'Saving...' : 'Save Changes') 
-                  : (loading ? 'Submitting...' : 'Post Package Request')}
+                  : (loading ? 'Saving...' : 'Post request')}
               </span>
             </button>
           </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlaneTakeoff, MessageSquare, PlusCircle, User, LogOut } from 'lucide-react';
+import { PlusCircle, User, LogOut } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import { useSiteSettings, SITE_LOGO_STORAGE_KEY } from '../context/SiteSettingsContext.jsx';
 
@@ -17,7 +17,7 @@ export default function Header({
   const siteName = settings?.site_name || 'Souq & Sheba';
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-amber-100/40">
+    <header className="sticky top-0 z-40 bg-white border-b border-[#E5E5E3]">
       <div className="max-w-7xl mx-auto px-3.5 sm:px-5 lg:px-8 h-[68px] sm:h-[72px] flex items-center justify-between gap-3">
         {/* Brand Logo - Displays ONLY logo on mobile view */}
         <button 
@@ -31,8 +31,8 @@ export default function Header({
               className="h-10 w-auto max-[360px]:h-8 object-contain max-w-[120px] sm:max-w-none group-hover:scale-105 transition-transform" 
             />
           ) : (
-            <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-emerald-800 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-              <PlaneTakeoff className="w-5 h-5 text-white" />
+            <span className="font-display text-lg font-semibold tracking-tight text-[#0A0A0A]">
+              {siteName}
             </span>
           )}
 
@@ -59,26 +59,26 @@ export default function Header({
         <nav className="hidden lg:flex items-center gap-8 text-sm font-semibold text-slate-600">
           <button 
             onClick={() => setCurrentView('home')} 
-            className={`hover:text-amber-600 transition-colors ${currentView === 'home' ? 'font-bold text-amber-600' : ''}`}
+            className={`hover:text-[#14532D] transition-colors ${currentView === 'home' ? 'font-bold text-[#14532D]' : ''}`}
           >
             Home
           </button>
           <button 
             onClick={() => setCurrentView('packages')} 
-            className={`hover:text-amber-600 transition-colors ${currentView === 'packages' ? 'font-bold text-amber-600' : ''}`}
+            className={`hover:text-[#14532D] transition-colors ${currentView === 'packages' ? 'font-bold text-[#14532D]' : ''}`}
           >
              Packages
           </button>
           <button 
             onClick={() => setCurrentView('travelers')} 
-            className={`hover:text-amber-600 transition-colors ${currentView === 'travelers' ? 'font-bold text-amber-600' : ''}`}
+            className={`hover:text-[#14532D] transition-colors ${currentView === 'travelers' ? 'font-bold text-[#14532D]' : ''}`}
           >
             Find Travelers
           </button>
           {currentUser && (
             <button 
               onClick={() => setCurrentView('dashboard')} 
-              className={`hover:text-amber-600 transition-colors ${currentView === 'dashboard' ? 'font-bold text-amber-600' : ''}`}
+              className={`hover:text-[#14532D] transition-colors ${currentView === 'dashboard' ? 'font-bold text-[#14532D]' : ''}`}
             >
               My Dashboard
             </button>
@@ -89,17 +89,17 @@ export default function Header({
         <div className="flex items-center gap-2 sm:gap-3">
           
           {/* GROUP 1: Utilities Capsule */}
-          <div className="bg-white/80 border border-amber-200/60 rounded-2xl p-1 shadow-2xs flex items-center gap-1">
+          <div className="bg-white border border-[#E5E5E3] rounded-[10px] p-1 flex items-center gap-1">
             <LanguageSelector />
           </div>
 
           {/* GROUP 2: Account & Primary CTA */}
           <div className="flex items-center gap-2">
             {currentUser ? (
-              <div className="flex items-center bg-white/80 border border-amber-200/60 rounded-2xl p-1 shadow-2xs">
+              <div className="flex items-center bg-white border border-[#E5E5E3] rounded-[10px] p-1">
                 <button 
                   onClick={() => setCurrentView('dashboard')}
-                  className="flex items-center gap-2 px-2.5 py-1.5 hover:bg-amber-50 rounded-xl transition-colors text-xs font-bold text-[#1C160F]"
+                  className="flex items-center gap-2 px-2.5 py-1.5 hover:bg-[#F5F5F4] rounded-[10px] transition-colors text-xs font-bold text-[#0A0A0A]"
                 >
                   {currentUser.photo_url || currentUser.photo ? (
                     <img 
@@ -108,16 +108,16 @@ export default function Header({
                       className="w-6 h-6 rounded-full object-cover border border-amber-300 shadow-2xs shrink-0" 
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-emerald-700 text-white flex items-center justify-center font-extrabold text-[10px] shadow-2xs shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center font-extrabold text-[10px] shrink-0">
                       {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                   )}
                   <span className="hidden md:inline">{currentUser.name ? currentUser.name.split(' ')[0] : 'User'}</span>
                 </button>
-                <div className="h-4 w-px bg-amber-200/60 mx-0.5"></div>
+                <div className="h-4 w-px bg-[#E5E5E3] mx-0.5"></div>
                 <button
                   onClick={onLogout}
-                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                  className="p-1.5 text-slate-400 hover:text-[#D92D20] hover:bg-[#F5F5F4] rounded-[10px] transition-colors"
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -126,16 +126,16 @@ export default function Header({
             ) : (
               <button 
                 onClick={() => onOpenAuthModal('login')}
-                className="flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-white/80 border border-amber-200/60 rounded-2xl px-3 py-2 hover:bg-amber-50 transition-colors shadow-2xs"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#0A0A0A] bg-white border border-[#0A0A0A] rounded-[10px] px-3 py-2 hover:bg-[#F5F5F4] transition-colors"
               >
-                <User className="w-3.5 h-3.5 text-amber-600" />
+                <User className="w-3.5 h-3.5 text-[#14532D]" />
                 <span>Sign In</span>
               </button>
             )}
 
             <button 
               onClick={onOpenRequestModal}
-              className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-white bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] px-4 py-2.5 rounded-2xl transition-all shadow-2xs"
+              className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-white bg-[#0A0A0A] hover:bg-[#2A2A2A] px-4 py-2.5 rounded-[10px] transition-all"
             >
               <PlusCircle className="w-3.5 h-3.5" />
               <span>Post a Request</span>

@@ -217,22 +217,22 @@ export default function App() {
       console.log('Logout API call complete.');
     }
     setCurrentUser(null);
-    showToast('Logged out successfully.');
+    showToast('You have signed out.');
   };
 
   const handlePostNewRequest = (newReq) => {
     setRequests(prev => [newReq, ...prev]);
-    showToast(`Package request "${newReq.title}" posted successfully!`);
+    showToast(`Your package request "${newReq.title}" was posted.`);
   };
 
   const handleUpdatePackage = (updatedReq) => {
     setRequests(prev => prev.map(req => req.id === updatedReq.id ? updatedReq : req));
-    showToast(`Package request "${updatedReq.title}" updated successfully!`);
+    showToast(`Your package request "${updatedReq.title}" was updated.`);
   };
 
   const handleDeletePackage = (packageId) => {
     setRequests(prev => prev.filter(req => req.id !== packageId));
-    showToast('Package request deleted successfully.');
+    showToast('Your package request was removed.');
   };
 
   const handleOfferToCarry = (item) => {
@@ -312,7 +312,7 @@ export default function App() {
                 route: (found.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
                 weight: String(found.weight || '1.0'),
                 reward: found.reward || `AED ${(parseFloat(found.weight || 1) * 35).toFixed(0)}`,
-                category: found.category || 'General Cargo',
+                category: found.category || 'Other',
                 deadline: found.travel_date ? `Needed by ${found.travel_date}` : 'Needed soon',
                 img: found.cover_image || found.product_images?.[0] || 'photo-1447933601403-0c6688de566e',
                 status: found.status || 'pending',

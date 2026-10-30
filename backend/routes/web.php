@@ -2,18 +2,20 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\EmailCampaignController;
+use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\EmailCampaignController;
 use App\Http\Controllers\Admin\PackageCategoryController;
-use App\Http\Controllers\Admin\SubscriptionPlanController;
-use App\Http\Controllers\MarketingSubscriptionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ShipmentController;
-use App\Http\Controllers\Admin\AdminNotificationController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
+use App\Http\Controllers\Admin\TestingToolsController;
 use App\Http\Controllers\Admin\TravelController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
+use App\Http\Controllers\MarketingSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/unsubscribe/{token}', [MarketingSubscriptionController::class, 'unsubscribe'])->name('marketing.unsubscribe');
@@ -28,6 +30,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'destroy'])->name('logout');
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('banners', BannerController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::get('/tools/health', [TestingToolsController::class, 'health'])->name('tools.health');
+        Route::post('/tools/{command}', [TestingToolsController::class, 'run'])
+            ->whereIn('command', ['optimize-clear', 'cache-clear', 'config-clear', 'route-clear', 'storage-link', 'view-clear'])
+            ->name('tools.run');
         Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
 

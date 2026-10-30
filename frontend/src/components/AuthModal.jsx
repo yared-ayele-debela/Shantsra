@@ -77,12 +77,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
 
       if (!response.ok) {
         if (data.errors) setFieldErrors(data.errors);
-        setErrorMsg(data.message || 'Login failed. Please check your credentials.');
+        setErrorMsg(data.message || 'We could not sign you in. Please check your email and password.');
         setLoading(false);
         return;
       }
 
-      setSuccessMsg('Login successful!');
+      setSuccessMsg('Welcome back!');
       setTimeout(() => {
         onAuthSuccess(data.user || { name: loginEmail.split('@')[0], email: loginEmail, role: 'sender' });
         onClose();
@@ -94,7 +94,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
         email: loginEmail,
         role: 'sender'
       };
-      setSuccessMsg('Logged in successfully!');
+      setSuccessMsg('Welcome back!');
       setTimeout(() => {
         onAuthSuccess(mockUser);
         onClose();
@@ -152,12 +152,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
 
       if (!response.ok) {
         if (data.errors) setFieldErrors(data.errors);
-        setErrorMsg(data.message || 'Registration failed. Please check your inputs.');
+        setErrorMsg(data.message || 'We could not create your account. Please check your details.');
         setLoading(false);
         return;
       }
 
-      setSuccessMsg('Account created successfully!');
+      setSuccessMsg('Your account is ready!');
       setTimeout(() => {
         onAuthSuccess(data.user || { name: regName, email: regEmail, role: regRole });
         onClose();
@@ -169,7 +169,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
         email: regEmail,
         role: regRole
       };
-      setSuccessMsg('Account created successfully!');
+      setSuccessMsg('Your account is ready!');
       setTimeout(() => {
         onAuthSuccess(mockUser);
         onClose();
@@ -201,7 +201,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
 
       if (!response.ok) {
         if (data.errors) setFieldErrors(data.errors);
-        setErrorMsg(data.message || 'Failed to send reset link.');
+        setErrorMsg(data.message || 'We could not send the reset link. Please try again.');
         setLoading(false);
         return;
       }
@@ -235,13 +235,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
           <h3 className="font-display text-xl font-extrabold">
             {mode === 'login' && 'Welcome Back'}
             {mode === 'register' && 'Create Your Account'}
-            {mode === 'forgot' && 'Reset Password'}
+            {mode === 'forgot' && 'Reset your password'}
           </h3>
           
           <p className="text-xs text-slate-300 mt-1">
-            {mode === 'login' && 'Sign in to access your delivery dashboard and active chats.'}
-            {mode === 'register' && 'Join Souq & Sheba peer-to-peer delivery network.'}
-            {mode === 'forgot' && 'Enter your registered email address to receive reset instructions.'}
+            {mode === 'login' && 'Sign in to manage your packages and messages.'}
+            {mode === 'register' && 'Create an account to send packages or travel with them.'}
+            {mode === 'forgot' && 'Enter your email and we will send you a reset link.'}
           </p>
         </div>
 
@@ -292,7 +292,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
                     onClick={() => switchMode('forgot')}
                     className="text-[10px] font-bold text-amber-600 hover:underline"
                   >
-                    Forgot Password?
+                    Forgot password?
                   </button>
                 </div>
                 <div className="relative flex items-center">
@@ -335,7 +335,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
               >
                 {loading ? 'Signing in...' : (
                   <>
-                    <span>Sign In Securely</span>
+                    <span>Sign in</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -343,13 +343,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
 
               {/* Redirect to Register Link */}
               <div className="text-center pt-3 border-t border-amber-50 text-xs text-slate-500">
-                Don't have an account?{' '}
+                New to PeerBridge?{' '}
                 <button 
                   type="button" 
                   onClick={() => switchMode('register')}
                   className="font-bold text-amber-600 hover:underline cursor-pointer ml-1"
                 >
-                  Create Account / Register
+                  Create an account
                 </button>
               </div>
             </form>

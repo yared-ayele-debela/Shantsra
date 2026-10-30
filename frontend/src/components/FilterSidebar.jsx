@@ -70,7 +70,7 @@ export default function FilterSidebar({
           Flight Route Corridor
         </label>
         <div className="grid grid-cols-1 gap-2">
-          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ALL' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
+          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ALL' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'}`}>
             <span className="text-xs font-semibold text-slate-700">All Routes</span>
             <input 
               type="radio" 
@@ -81,7 +81,7 @@ export default function FilterSidebar({
               className="accent-amber-600 h-4 w-4" 
             />
           </label>
-          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ADD_TO_DXB' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
+          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'ADD_TO_DXB' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'}`}>
             <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
               Addis (ADD) ➔ Dubai (DXB)
             </span>
@@ -94,7 +94,7 @@ export default function FilterSidebar({
               className="accent-amber-600 h-4 w-4" 
             />
           </label>
-          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'DXB_TO_ADD' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'}`}>
+          <label className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${filterRoute === 'DXB_TO_ADD' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'}`}>
             <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
               Dubai (DXB) ➔ Addis (ADD)
             </span>
@@ -146,7 +146,7 @@ export default function FilterSidebar({
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             Max Package Weight
           </label>
-          <span className="font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded">
+          <span className="font-bold text-[#14532D] bg-[#E6EFE9] border border-[#E8DFD0] px-2 py-0.5 rounded">
             {filterMaxWeight.toFixed(1)} kg
           </span>
         </div>
@@ -170,7 +170,7 @@ export default function FilterSidebar({
       <label className="flex items-center justify-between gap-3 border border-red-100 rounded-xl p-3 cursor-pointer hover:bg-red-50/40 transition-colors">
         <span>
           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Urgency</span>
-          <span className="block mt-0.5 text-xs font-semibold text-slate-700">Urgent requests only</span>
+          <span className="block mt-0.5 text-xs font-semibold text-slate-700">Show urgent requests only</span>
         </span>
         <input
           type="checkbox"
@@ -192,11 +192,11 @@ export default function FilterSidebar({
             value={filterMinReward || ''} 
             onChange={(e) => setFilterMinReward(e.target.value ? parseFloat(e.target.value) : 0)}
             placeholder="e.g. 100" 
-            className="w-full border border-amber-200/80 rounded-xl pl-9 pr-3 py-2 text-xs outline-none focus:border-amber-500 transition-colors" 
+            className="w-full border border-[#E8DFD0] rounded-xl pl-9 pr-3 py-2 text-xs outline-none focus:border-[#14532D] bg-[#E6EFE9] transition-colors"
           />
         </div>
         <p className="text-[9px] text-slate-400">
-          Filters out requests with cash rewards below this numeric threshold.
+          Only show requests with a reward above this amount.
         </p>
       </div>
     </aside>

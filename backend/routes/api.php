@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PackageCategoryController;
 use App\Http\Controllers\Api\PackageAlertController;
 use App\Http\Controllers\Api\DealConfirmationController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\BannerController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -27,6 +28,7 @@ Route::get('/shipments/urgent', [OpenShipmentController::class, 'urgent']);
 Route::post('/shipments/{shipment}/inquire', [ShipmentController::class, 'inquire']);
 Route::get('/package-categories', [PackageCategoryController::class, 'index']);
 Route::get('/site-settings', [SiteSettingController::class, 'show']);
+Route::get('/banners', [BannerController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);

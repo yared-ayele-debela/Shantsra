@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, SlidersHorizontal, RotateCcw, Search, Plane, Star, Phone, CheckCircle2, User, Weight, Loader2 } from 'lucide-react';
 import UserProfileModal from './UserProfileModal';
+import BannerStrip from './BannerStrip';
 import { getApiUrl, getStorageUrl } from '../lib/api';
 
 export default function TravelersView({ profiles, onSelectProfile, onContactPhone }) {
@@ -39,9 +40,9 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
             if (!uniqueMap.has(key)) {
               const rawPhoto = t.photo || t.photo_url || null;
               const hasPhoto = Boolean(
-                rawPhoto && 
-                typeof rawPhoto === 'string' && 
-                rawPhoto.trim().length > 0 && 
+                rawPhoto &&
+                typeof rawPhoto === 'string' &&
+                rawPhoto.trim().length > 0 &&
                 !rawPhoto.toLowerCase().includes('unsplash.com')
               );
               let photoSrc = '';
@@ -59,7 +60,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                 route: (t.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
                 from_city: t.from_city || 'Addis Ababa',
                 to_city: t.to_city || 'Dubai',
-                flightDate: t.date || 'Upcoming Flight',
+                flightDate: t.date || 'Upcoming trip',
                 airline: 'Verified Flight',
                 available_weight: (float => isNaN(float) ? 10 : float)(parseFloat(t.available_weight || 10)),
                 price: t.price || '$15 / kg',
@@ -88,11 +89,11 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
       const routeMatch = filterRoute === 'ALL' || t.route === filterRoute;
       const itemWeight = parseFloat(t.available_weight ?? 10);
       const weightMatch = isNaN(itemWeight) ? true : itemWeight >= filterMinWeight;
-      
+
       const q = searchQuery.toLowerCase().trim();
-      const searchMatch = !q || 
-        (t.name || '').toLowerCase().includes(q) || 
-        (t.city || '').toLowerCase().includes(q) || 
+      const searchMatch = !q ||
+        (t.name || '').toLowerCase().includes(q) ||
+        (t.city || '').toLowerCase().includes(q) ||
         (t.airline || '').toLowerCase().includes(q) ||
         (t.from_city || '').toLowerCase().includes(q) ||
         (t.to_city || '').toLowerCase().includes(q);
@@ -132,29 +133,31 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
       {/* Header Banner */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1">
-          <Users className="w-3.5 h-3.5" /> Verified Traveler Directory
+          <Users className="w-3.5 h-3.5" /> Trusted travelers
         </span>
         <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#1C160F]">
-          Verified Travelers Directory
+          Find a trusted traveler
         </h1>
         <p className="text-slate-500 text-xs sm:text-sm mt-1">
-          Browse verified travelers with planned journeys between Addis Ababa and Dubai. Select a profile to review travel and verification details.
+          Browse verified travelers heading between Addis Ababa and Dubai. Open a profile to view their trip details.
         </p>
       </div>
+
+      <BannerStrip placement="travelers" single />
 
       <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
         {/* Mobile Filter Toggle Button */}
         <div className="lg:hidden col-span-12">
-          <button 
+          <button
             onClick={() => setShowMobileFilter(!showMobileFilter)}
             className="w-full bg-white border border-amber-200 text-[#1C160F] font-bold text-xs py-3 px-4 rounded-2xl flex items-center justify-between shadow-xs mb-2 cursor-pointer"
           >
             <span className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-amber-600" />
-              <span>Filter Travelers</span>
+              <span>Filter travelers</span>
             </span>
             <span className="text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-extrabold border border-amber-200">
-              {showMobileFilter ? 'Hide Filters ▲' : 'Show Filters ▼'}
+            {showMobileFilter ? 'Hide filters ▲' : 'Show filters ▼'}
             </span>
           </button>
         </div>
@@ -164,9 +167,9 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
           <aside className="bg-white rounded-2xl border border-amber-100 p-4 sm:p-6 shadow-sm space-y-5 sm:space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none">
             <div className="flex items-center justify-between border-b border-amber-50 pb-3">
               <h3 className="font-display font-bold text-sm sm:text-base text-[#1C160F] flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-amber-600" /> Filter Travelers
+                <SlidersHorizontal className="w-4 h-4 text-amber-600" /> Filter travelers
               </h3>
-              <button 
+              <button
                 onClick={handleResetFilters}
                 className="text-xs font-semibold text-slate-400 hover:text-amber-600 flex items-center gap-1 transition-colors"
               >
@@ -177,15 +180,15 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
             {/* Search Input */}
             <div className="space-y-1.5">
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Search Traveler / City
+                Search by name or city
               </label>
               <div className="relative">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by traveler name or city" 
-                  className="w-full text-xs border border-amber-200/80 rounded-xl pl-9 pr-4 py-2.5 outline-none focus:border-amber-500 bg-amber-50/10 placeholder:text-slate-400 text-[#1C160F]" 
+                  placeholder="Search by name or city"
+                  className="w-full text-xs border border-[#E8DFD0] rounded-xl pl-9 pr-4 py-2.5 outline-none focus:border-[#14532D] bg-[#E6EFE9] placeholder:text-slate-400 text-[#1C2B22]"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               </div>
@@ -197,20 +200,20 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                 Flight Corridor
               </label>
               <div className="flex flex-col gap-2">
-                <label 
-                  onClick={() => setFilterRoute('ALL')} 
+                <label
+                  onClick={() => setFilterRoute('ALL')}
                   className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                    filterRoute === 'ALL' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
+                    filterRoute === 'ALL' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'
                   }`}
                 >
                   <span className="text-xs font-semibold text-slate-700">All Routes</span>
                   <input type="radio" checked={filterRoute === 'ALL'} readOnly className="accent-amber-600" />
                 </label>
-                
-                <label 
-                  onClick={() => setFilterRoute('ADD_TO_DXB')} 
+
+                <label
+                  onClick={() => setFilterRoute('ADD_TO_DXB')}
                   className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                    filterRoute === 'ADD_TO_DXB' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
+                    filterRoute === 'ADD_TO_DXB' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'
                   }`}
                 >
                   <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
@@ -219,10 +222,10 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                   <input type="radio" checked={filterRoute === 'ADD_TO_DXB'} readOnly className="accent-amber-600" />
                 </label>
 
-                <label 
-                  onClick={() => setFilterRoute('DXB_TO_ADD')} 
+                <label
+                  onClick={() => setFilterRoute('DXB_TO_ADD')}
                   className={`border rounded-xl p-2.5 sm:p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                    filterRoute === 'DXB_TO_ADD' ? 'border-amber-500 bg-amber-50/40' : 'border-amber-100 hover:bg-amber-50/20'
+                    filterRoute === 'DXB_TO_ADD' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'
                   }`}
                 >
                   <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
@@ -239,18 +242,18 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   Min Available Capacity
                 </label>
-                <span className="font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded">
+                <span className="font-bold text-[#14532D] bg-[#E6EFE9] border border-[#E8DFD0] px-2 py-0.5 rounded">
                   {filterMinWeight} kg
                 </span>
               </div>
-              <input 
-                type="range" 
-                min="0" 
-                max="20" 
-                step="1" 
+              <input
+                type="range"
+                min="0"
+                max="20"
+                step="1"
                 value={filterMinWeight}
                 onChange={(e) => setFilterMinWeight(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 h-1.5 bg-slate-100 rounded-lg cursor-pointer" 
+                className="w-full accent-amber-500 h-1.5 bg-slate-100 rounded-lg cursor-pointer"
               />
               <div className="flex justify-between text-[9px] text-slate-400 font-semibold">
                 <span>0 kg</span>
@@ -277,14 +280,14 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {filteredTravelers.map((traveler) => {
                 const whatsappMessage = encodeURIComponent(
-                  `Hi ${traveler.name}, I found your verified flight (${traveler.flightDate}) on Souq & Sheba and would like to inquire about package delivery.`
+                  `Hi ${traveler.name}, I found your verified trip (${traveler.flightDate}) on Souq & Sheba and would like to discuss sending a package.`
                 );
 
                 return (
-                  <div 
+                  <div
                     key={traveler.id || traveler.name}
                     onClick={() => handleOpenUserDetail(traveler)}
-                    className="bg-white border border-amber-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 sm:space-y-4 flex flex-col justify-between group"
+                    className="bg-white border border-[#E8DFD0] rounded-[14px] p-4 sm:p-5 shadow-[0_4px_18px_rgba(28,43,34,0.06)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,43,34,0.12)] hover:border-[#14532D] transition-all cursor-pointer space-y-3 sm:space-y-4 flex flex-col justify-between group"
                   >
                     {/* Top User Header */}
                     <div className="space-y-2 sm:space-y-3">
@@ -292,13 +295,13 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                         <div className="flex items-center gap-2">
                           <div className="relative shrink-0">
                             {traveler.isRealPhoto ? (
-                              <img 
-                                src={traveler.photo} 
-                                alt={traveler.name} 
-                                className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-amber-200 group-hover:border-amber-500 transition-colors" 
+                              <img
+                                src={traveler.photo}
+                                alt={traveler.name}
+                                className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-[#E8DFD0] group-hover:border-[#14532D] transition-colors"
                               />
                             ) : (
-                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-xs sm:text-base flex items-center justify-center border-2 border-amber-200 group-hover:border-amber-500 transition-colors shadow-2xs">
+                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-[#14532D] text-white font-extrabold text-xs sm:text-base flex items-center justify-center border-2 border-[#E8DFD0] group-hover:border-[#14532D] transition-colors">
                                 {traveler.name ? traveler.name.trim().charAt(0).toUpperCase() : 'T'}
                               </div>
                             )}
@@ -308,7 +311,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                           </div>
 
                           <div className="min-w-0">
-                            <h3 className="font-display font-bold text-xs sm:text-sm text-[#1C160F] group-hover:text-amber-600 transition-colors truncate">
+                            <h3 className="font-display font-bold text-xs sm:text-sm text-[#1C2B22] group-hover:text-[#14532D] transition-colors truncate">
                               {traveler.name}
                             </h3>
                             <p className="text-[8px] sm:text-[10px] text-slate-500 truncate">
@@ -317,59 +320,62 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                           </div>
                         </div>
 
-                        <span className="flex items-center text-amber-600 font-bold text-[9px] sm:text-[11px] bg-amber-50 border border-amber-100 px-1.5 sm:px-2 py-0.5 rounded-lg shrink-0">
+                        <span className="flex items-center text-[#14532D] font-bold text-[9px] sm:text-[11px] bg-[#E6EFE9] border border-[#E8DFD0] px-1.5 sm:px-2 py-0.5 rounded-lg shrink-0">
                           <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-500 text-amber-500 mr-0.5" />
                           <span>{traveler.rating}</span>
                         </span>
                       </div>
 
                       {/* Flight Corridor Pill */}
-                      <div className="bg-amber-50/60 border border-amber-200/60 rounded-xl p-2 sm:p-3 space-y-0.5 sm:space-y-1">
-                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#1C160F]">
+                      <div className="bg-[#E6EFE9] border border-[#E8DFD0] rounded-[10px] p-2 sm:p-3 space-y-0.5 sm:space-y-1">
+                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#1C2B22]">
                           <span className="flex items-center gap-1 truncate">
-                            <Plane className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600 shrink-0" />
+                            <Plane className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#14532D] shrink-0" />
                             <span className="truncate">{traveler.from_city?.slice(0, 5) || 'ADD'} ➔ {traveler.to_city?.slice(0, 5) || 'DXB'}</span>
                           </span>
                         </div>
-                        <p className="text-[8px] sm:text-[10px] text-amber-800 font-semibold truncate">{traveler.flightDate}</p>
+                        <p className="text-[8px] sm:text-[10px] text-[#14532D] font-semibold truncate">{traveler.flightDate}</p>
                       </div>
 
                       {/* Luggage Capacity & Pricing */}
                       <div className="grid grid-cols-2 gap-1.5 sm:gap-2 pt-0.5">
-                        <div className="border border-amber-100 rounded-xl p-1.5 sm:p-2 bg-slate-50/50">
+                        <div className="border border-[#E8DFD0] rounded-[10px] p-1.5 sm:p-2 bg-[#FBF7F0]">
                           <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Capacity</span>
-                          <p className="text-[10px] sm:text-xs font-bold text-amber-700 mt-0.5 flex items-center gap-0.5 truncate">
-                            <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-600 shrink-0" /> {traveler.available_weight}kg
+                          <p className="text-[10px] sm:text-xs font-bold text-[#14532D] mt-0.5 flex items-center gap-0.5 truncate">
+                          <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#14532D] shrink-0" /> {traveler.available_weight}kg
                           </p>
                         </div>
-                        <div className="border border-amber-100 rounded-xl p-1.5 sm:p-2 bg-slate-50/50">
+                        <div className="border border-[#E8DFD0] rounded-[10px] p-1.5 sm:p-2 bg-[#FBF7F0]">
                           <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Rate</span>
-                          <p className="text-[10px] sm:text-xs font-bold text-emerald-700 mt-0.5 truncate">{traveler.price}</p>
+                          <p className="text-[10px] sm:text-xs font-bold text-[#14532D] mt-0.5 truncate">{traveler.price}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Bottom Action Footer */}
-                    <div className="pt-2 sm:pt-3 border-t border-amber-50 flex items-center justify-between gap-1 sm:gap-2">
-                      <button 
+                    <div className="pt-2 sm:pt-3 border-t border-[#E8DFD0] flex items-center justify-between gap-1 sm:gap-2">
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenUserDetail(traveler);
                         }}
-                        className="text-[10px] sm:text-xs font-bold text-slate-700 hover:text-amber-600 flex items-center gap-1 transition-colors"
+                        className="text-[10px] sm:text-xs font-bold text-slate-700 hover:text-[#14532D] flex items-center gap-1 transition-colors"
                       >
-                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600" />
+                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#14532D]" />
                         <span className="hidden sm:inline">Profile</span>
                       </button>
 
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           if (onContactPhone) onContactPhone(traveler);
                         }}
-                        className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl transition-all shadow-xs cursor-pointer"
+                        aria-label="Show traveler phone"
+                        title="Show traveler phone"
+                        className="flex items-center gap-1 bg-[#14532D] hover:bg-[#0F3F22] text-white text-[10px] sm:text-xs font-semibold px-3 py-2 rounded-[10px] transition-all cursor-pointer"
                       >
-                        <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Show Phone
+                        <Phone className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>Contact</span>
                       </button>
                     </div>
                   </div>
@@ -383,9 +389,9 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
               <p className="text-slate-500 text-sm max-w-sm mx-auto">
                 No verified travelers match the selected route or capacity filters.
               </p>
-              <button 
+              <button
                 onClick={handleResetFilters}
-                className="mt-4 bg-amber-50 text-amber-800 text-xs font-bold px-4 py-2 rounded-xl hover:bg-amber-100 transition-colors"
+                className="mt-4 bg-[#E6EFE9] text-[#14532D] text-xs font-bold px-4 py-2 rounded-xl hover:bg-[#D5E6DA] transition-colors"
               >
                 Reset Filters
               </button>
@@ -396,7 +402,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
 
       {/* User Detail Profile Modal */}
       {modalTraveler && selectedProfileObj && (
-        <UserProfileModal 
+        <UserProfileModal
           profile={selectedProfileObj}
           onClose={() => setModalTraveler(null)}
         />

@@ -29,7 +29,7 @@ export default function UserProfileModal({ profile, onClose }) {
       <div className="bg-white rounded-2xl shadow-2xl border border-amber-100 max-w-lg w-full max-h-[85vh] overflow-y-auto flex flex-col">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-amber-100 shrink-0">
-          <h3 className="font-display text-base font-bold text-[#1C160F]">Member Profile</h3>
+          <h3 className="font-display text-base font-bold text-[#1C160F]">Traveler profile</h3>
           <button 
             onClick={onClose}
             className="w-8 h-8 rounded-full hover:bg-amber-50 flex items-center justify-center text-slate-500 hover:text-[#1C160F] transition-colors"
@@ -69,7 +69,7 @@ export default function UserProfileModal({ profile, onClose }) {
           {/* Bio */}
           <div className="space-y-1">
             <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">About</h5>
-            <p className="text-xs text-slate-500 leading-relaxed">{profile.bio || 'No bio provided.'}</p>
+            <p className="text-xs text-slate-500 leading-relaxed">{profile.bio || 'No introduction provided yet.'}</p>
           </div>
 
           {/* Travel Schedule */}
@@ -77,7 +77,7 @@ export default function UserProfileModal({ profile, onClose }) {
             <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Travel Schedule</h5>
             {profile.upcomingTrip ? (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                <p className="text-[9px] font-bold text-amber-800 uppercase tracking-wider mb-2">Upcoming travel itinerary</p>
+                <p className="text-[9px] font-bold text-amber-800 uppercase tracking-wider mb-2">Upcoming trip</p>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs font-bold text-[#1C160F]">{profile.upcomingTrip.route}</p>
@@ -90,7 +90,7 @@ export default function UserProfileModal({ profile, onClose }) {
               </div>
             ) : (
               <p className="text-xs text-slate-400 italic bg-slate-50/50 rounded-xl p-3 border border-slate-100 text-center">
-                No upcoming verified flight trips scheduled.
+                No upcoming trips have been added yet.
               </p>
             )}
           </div>
@@ -125,7 +125,7 @@ export default function UserProfileModal({ profile, onClose }) {
 
           {/* Community Feedback */}
           <div className="space-y-2">
-            <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Member Reviews</h5>
+            <h5 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Reviews</h5>
             <div className="space-y-2">
               {profile.reviews && profile.reviews.length > 0 ? (
                 profile.reviews.map((r, idx) => (
@@ -143,7 +143,7 @@ export default function UserProfileModal({ profile, onClose }) {
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-slate-400 italic text-center py-4">No member reviews have been received yet.</p>
+                <p className="text-xs text-slate-400 italic text-center py-4">No reviews yet.</p>
               )}
             </div>
           </div>

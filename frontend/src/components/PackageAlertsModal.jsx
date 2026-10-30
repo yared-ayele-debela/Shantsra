@@ -49,7 +49,7 @@ export default function PackageAlertsModal({ isOpen, onClose, initialFrom = 'Add
           onClose();
         }, 2000);
       } else {
-        setErrorMsg(data.message || 'Failed to create package alert.');
+        setErrorMsg(data.message || 'We could not create the alert. Please try again.');
       }
     } catch (err) {
       setErrorMsg('Network error. Please try again.');
@@ -124,7 +124,7 @@ export default function PackageAlertsModal({ isOpen, onClose, initialFrom = 'Add
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                <CalendarIcon className="w-3.5 h-3.5 text-slate-400" /> Start Date (Optional)
+                <CalendarIcon className="w-3.5 h-3.5 text-slate-400" /> Start date (optional)
               </label>
               <input 
                 type="date" 
@@ -135,7 +135,7 @@ export default function PackageAlertsModal({ isOpen, onClose, initialFrom = 'Add
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                <CalendarIcon className="w-3.5 h-3.5 text-slate-400" /> End Date (Optional)
+                <CalendarIcon className="w-3.5 h-3.5 text-slate-400" /> End date (optional)
               </label>
               <input 
                 type="date" 

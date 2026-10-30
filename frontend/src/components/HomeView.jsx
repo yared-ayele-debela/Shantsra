@@ -5,6 +5,7 @@ import {
   ShieldAlert, CheckCircle2, ArrowRight, Weight, Zap 
 } from 'lucide-react';
 import PackageCard from './PackageCard';
+import BannerStrip from './BannerStrip';
 import { CATEGORIES } from '../data/initialData';
 import { getApiUrl, getStorageUrl } from '../lib/api';
 
@@ -144,10 +145,10 @@ export default function HomeView({
                   isRealPhoto: hasPhoto,
                   rating: String(t.rating || '5.0'),
                   route: (t.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
-                  flightDate: t.date || 'Upcoming Flight',
-                  airline: 'Verified Airline Flight',
+                  flightDate: t.date || 'Upcoming trip',
+                  airline: 'Verified flight',
                   maxWeight: String(t.available_weight || '10.0'),
-                  allowedCategories: ['General Cargo', 'Documents', 'Coffee & Gifts'],
+                  allowedCategories: ['Other', 'Documents', 'Coffee & Gifts'],
                   phone: t.phone || '251911223344'
                 });
               }
@@ -203,7 +204,7 @@ export default function HomeView({
         route: (s.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
         weight: String(s.weight || '1.0'),
         reward: `AED ${(parseFloat(s.weight || 1) * 35).toFixed(0)}`,
-        category: s.category_name || s.category || 'General Cargo',
+        category: s.category_name || s.category || 'Other',
         category_id: s.category_id ?? null,
         deadline: s.travel_date_label || 'Date to be confirmed',
         img: s.cover_image || '/assets/No-Image-Found-400x264.png',
@@ -279,7 +280,7 @@ export default function HomeView({
               route: (s.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
               weight: String(s.weight || '1.0'),
               reward: s.reward || `AED ${(parseFloat(s.weight || 1) * 45).toFixed(0)}`,
-              category: s.category_name || s.category || 'General Cargo',
+              category: s.category_name || s.category || 'Other',
               category_id: s.category_id ?? null,
               deadline: s.travel_date_label || 'Priority timing requested',
               img: s.cover_image || (s.product_images && s.product_images[0]) || '/assets/No-Image-Found-400x264.png',
@@ -411,39 +412,33 @@ export default function HomeView({
   return (
     <div className="space-y-12">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative overflow-hidden bg-[#1C160F] py-16 sm:py-24 text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950 via-[#1C160F] to-[#1C160F] opacity-95"></div>
-        <div className="absolute -top-24 -right-24 w-[450px] h-[450px] bg-amber-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-32 -left-24 w-[420px] h-[420px] bg-emerald-500/10 rounded-full blur-3xl"></div>
-
-        <div className="relative max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-12 gap-12 items-center">
+      <section className="relative overflow-hidden bg-[#FBF7F0] py-20 sm:py-28 text-[#1C2B22] border-b border-[#E8DFD0]">
+        <div className="relative max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-12 gap-16 items-center">
           <div className="lg:col-span-7 text-center lg:text-left">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase text-amber-300 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase text-[#14532D] border border-[#E8DFD0] px-3.5 py-1.5 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
               Verified Traveler Delivery · Addis Ababa ⇄ Dubai
             </span>
             
-            <h1 className="font-display mt-5 text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white">
-              Deliver across borders with<br className="hidden sm:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-emerald-300">
-                trusted travelers.
-              </span>
+            <h1 className="font-display mt-6 text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-[-0.04em] leading-[1.05] text-[#1C2B22]">
+              Move what matters with<br className="hidden sm:inline" />
+              <span> verified travelers.</span>
             </h1>
 
-            <p className="mt-4 sm:mt-6 text-slate-300 text-sm sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Connect with verified travelers for package delivery between Ethiopia and the UAE. Travelers can offset travel costs by carrying approved items on their planned route.
+            <p className="mt-6 text-[#6B6B6B] text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Connect with verified travelers for package delivery between Ethiopia and the UAE.
             </p>
 
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4">
               <button 
                 onClick={onOpenPostModal} 
-                className="bg-amber-500 hover:bg-amber-400 text-[#1C160F] font-bold px-6 py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 w-full sm:w-auto"
+                className="bg-[#14532D] hover:bg-[#0F3F22] text-white font-semibold px-6 py-3.5 rounded-[10px] transition-all flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <PackagePlus className="w-5 h-5" /> Post a Delivery Request
               </button>
               <a 
                 href="#requests-section" 
-                className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-semibold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto text-center"
+                className="bg-transparent hover:bg-[#E6EFE9] border border-[#14532D] text-[#14532D] font-semibold px-6 py-3.5 rounded-[10px] transition-all flex items-center justify-center gap-2 w-full sm:w-auto text-center"
               >
                 <Search className="w-5 h-5" /> Browse Delivery Requests
               </a>
@@ -451,64 +446,54 @@ export default function HomeView({
           </div>
 
           {/* ACTIVE AIR CORRIDOR GRAPHIC */}
-          <div className="lg:col-span-5 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-6 shadow-2xl">
+          <div className="lg:col-span-5 bg-white rounded-[14px] border border-[#E8DFD0] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-amber-400" />
-                <span className="text-sm font-semibold tracking-wide uppercase text-slate-200">
+                <Compass className="w-5 h-5 text-[#D9A441]" />
+                <span className="text-sm font-semibold tracking-wide uppercase text-[#1C2B22]">
                   Delivery Corridor
                 </span>
               </div>
-              <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium">
+              <span className="text-xs bg-[#E6EFE9] text-[#14532D] px-2 py-0.5 rounded-full font-medium border border-[#E8DFD0]">
                 Addis Ababa ⇄ Dubai
               </span>
             </div>
 
-            <div className="relative w-full h-[180px] bg-slate-900/40 rounded-xl overflow-hidden border border-white/5 flex items-center justify-center">
+            <div className="relative w-full h-[180px] bg-[#FBF7F0] rounded-[10px] overflow-hidden border border-[#E8DFD0] flex items-center justify-center">
               <svg className="w-full h-[120px] px-6 z-10" viewBox="0 0 320 120" fill="none">
-                <defs>
-                  <linearGradient id="flight-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#1F8F55" stopOpacity="0.2" />
-                    <stop offset="50%" stopColor="#DBAE3E" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#C6952A" stopOpacity="0.2" />
-                  </linearGradient>
-                </defs>
-
                 {/* Addis Node */}
-                <circle cx="50" cy="85" r="16" fill="#1F8F55" opacity="0.2" />
-                <circle cx="50" cy="85" r="5" fill="#1F8F55" />
-                <circle cx="50" cy="85" r="10" stroke="#1F8F55" strokeWidth="1.5" className="animate-ping origin-center" />
-                <text x="50" y="112" fontFamily="'Manrope', sans-serif" fontWeight="bold" fontSize="9" fill="#ffffff" textAnchor="middle">ADD (Addis)</text>
+                <circle cx="50" cy="85" r="12" fill="#D9A441" opacity="0.2" />
+                <circle cx="50" cy="85" r="4" fill="#D9A441" />
+                <text x="50" y="112" fontFamily="'Inter', sans-serif" fontWeight="600" fontSize="9" fill="#1C2B22" textAnchor="middle">ADDIS ABABA</text>
 
                 {/* Dubai Node */}
-                <circle cx="270" cy="35" r="16" fill="#C6952A" opacity="0.2" />
-                <circle cx="270" cy="35" r="5" fill="#C6952A" />
-                <circle cx="270" cy="35" r="10" stroke="#C6952A" strokeWidth="1.5" className="animate-ping origin-center" />
-                <text x="270" y="15" fontFamily="'Manrope', sans-serif" fontWeight="bold" fontSize="9" fill="#ffffff" textAnchor="middle">DXB (Dubai)</text>
+                <circle cx="270" cy="35" r="12" fill="#D9A441" opacity="0.2" />
+                <circle cx="270" cy="35" r="4" fill="#D9A441" />
+                <text x="270" y="15" fontFamily="'Inter', sans-serif" fontWeight="600" fontSize="9" fill="#1C2B22" textAnchor="middle">DUBAI</text>
 
                 {/* Flight Path Curve */}
-                <path d="M 50 85 Q 160 25 270 35" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" strokeDasharray="4 4" />
-                <path d="M 50 85 Q 160 25 270 35" fill="none" stroke="url(#flight-gradient)" strokeWidth="2.5" />
+                <path d="M 50 85 Q 160 25 270 35" fill="none" stroke="#D9A441" strokeWidth="2" strokeDasharray="5 6" />
 
                 {/* Live Flight Traveler Indicator */}
-                <circle cx="160" cy="42.5" r="4" fill="#DBAE3E" className="animate-ping" />
-                <circle cx="160" cy="42.5" r="3" fill="#ffffff" />
+                <circle cx="160" cy="42.5" r="3" fill="#D9A441" />
               </svg>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-center text-xs">
-              <div className="bg-white/5 rounded-lg p-2.5 border border-white/5">
-              <p className="text-slate-400">Open Delivery Requests</p>
-                <p className="text-lg font-extrabold font-display text-amber-300 mt-0.5">{allRequestsList.length}</p>
+              <div className="bg-white rounded-[10px] p-2.5 border border-[#E5E5E3]">
+              <p className="text-[#6B6B6B]">Open Delivery Requests</p>
+                <p className="text-lg font-extrabold font-display text-[#0A0A0A] mt-0.5">{allRequestsList.length}</p>
               </div>
-              <div className="bg-white/5 rounded-lg p-2.5 border border-white/5">
-              <p className="text-slate-400">Verified Travelers</p>
-                <p className="text-lg font-extrabold font-display text-emerald-300 mt-0.5">{travelersList.length}+</p>
+              <div className="bg-white rounded-[10px] p-2.5 border border-[#E5E5E3]">
+              <p className="text-[#6B6B6B]">Verified Travelers</p>
+                <p className="text-lg font-extrabold font-display text-[#2F5BFF] mt-0.5">{travelersList.length}+</p>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      <BannerStrip placement="home" />
 
       {/* ============ ROW 1: FEATURED OPPORTUNITIES ============ */}
       {featuredRequests.length > 0 && (
@@ -557,7 +542,7 @@ export default function HomeView({
               Package delivery requests
             </h2>
             <p className="text-slate-500 text-xs sm:text-sm mt-1">
-              Browse open package requests from senders and arrange handovers directly.
+              Browse packages from senders and arrange a safe handover.
             </p>
           </div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider shrink-0">
@@ -653,10 +638,10 @@ export default function HomeView({
               className="py-8 text-center text-xs font-semibold text-slate-400"
             >
               {isLoadingMoreShipments
-                ? 'Loading more delivery requests…'
+                ? 'Loading more packages…'
                 : hasMoreShipments
-                  ? 'Scroll to load more delivery requests'
-                  : 'All open delivery requests are loaded'}
+                  ? 'Scroll to see more packages'
+                  : 'You have reached the end'}
             </div>
           </>
         ) : (
@@ -666,10 +651,10 @@ export default function HomeView({
               <PackageSearch className="w-8 h-8 text-amber-500" />
             </div>
             <h3 className="font-display text-lg font-bold text-[#1C160F] mb-1">
-              No delivery requests found
+              No packages found
             </h3>
             <p className="text-slate-500 text-sm max-w-sm mx-auto">
-              No open delivery requests currently available. Check back soon or post a new request if you are a sender.
+              There are no packages available right now. Please check again soon or post your own request.
             </p>
           </div>
         )}
@@ -680,26 +665,26 @@ export default function HomeView({
         <div className="flex items-end justify-between mb-6">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1.5 mb-1">
-              <PlaneTakeoff className="w-3.5 h-3.5" /> Verified Flyers Directory
+              <PlaneTakeoff className="w-3.5 h-3.5" /> Trusted travelers
             </span>
             <h2 className="font-display text-2xl font-extrabold text-[#1C160F]">
-              Available Travelers &amp; Transit Agents
+              Travelers ready to help
             </h2>
             <p className="text-slate-500 text-xs mt-1">
-              Review verified travelers with upcoming flights between Addis Ababa and Dubai.
+              Meet verified travelers flying between Addis Ababa and Dubai.
             </p>
           </div>
           <span className="text-xs text-slate-400 font-semibold hidden sm:flex items-center gap-1">
-            <ArrowRightLeft className="w-3.5 h-3.5" /> Scroll to browse flyers ({travelersList.length})
+            <ArrowRightLeft className="w-3.5 h-3.5" /> Browse travelers ({travelersList.length})
           </span>
         </div>
 
         <div className="flex gap-6 overflow-x-auto scrollbar-none pb-4 -mx-5 px-5 lg:mx-0 lg:px-0">
           {travelersList.map((t) => (
-            <div key={t.id || t.name} className="min-w-[270px] sm:min-w-[300px] max-w-[300px] shrink-0 bg-white rounded-2xl border border-amber-100 p-5 shadow-sm space-y-3 flex flex-col justify-between hover:border-amber-300 transition-all">
+            <div key={t.id || t.name} className="min-w-[270px] sm:min-w-[300px] max-w-[300px] shrink-0 bg-white rounded-[14px] border border-[#E8DFD0] p-5 shadow-[0_4px_18px_rgba(28,43,34,0.06)] space-y-3 flex flex-col justify-between hover:-translate-y-0.5 hover:border-[#14532D] hover:shadow-[0_8px_24px_rgba(28,43,34,0.12)] transition-all">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
+                  <span className="text-[10px] font-bold uppercase text-[#14532D] bg-[#E6EFE9] px-2 py-0.5 rounded border border-[#E8DFD0]">
                     {t.route === 'ADD_TO_DXB' ? 'ADD ➔ DXB' : 'DXB ➔ ADD'}
                   </span>
                   <span className="text-xs font-bold text-amber-600">★ {t.rating}</span>
@@ -713,23 +698,23 @@ export default function HomeView({
                     <img 
                       src={t.photo} 
                       alt={t.name} 
-                      className="w-12 h-12 rounded-full object-cover border border-amber-200 group-hover:border-amber-500 transition-colors shrink-0" 
+                      className="w-12 h-12 rounded-full object-cover border border-[#E8DFD0] group-hover:border-[#14532D] transition-colors shrink-0"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-base flex items-center justify-center border border-amber-200 group-hover:border-amber-500 transition-colors shrink-0 shadow-2xs">
+                    <div className="w-12 h-12 rounded-full bg-[#14532D] text-white font-extrabold text-base flex items-center justify-center border border-[#E8DFD0] group-hover:border-[#14532D] transition-colors shrink-0">
                       {t.name ? t.name.trim().charAt(0).toUpperCase() : 'T'}
                     </div>
                   )}
                   <div>
-                    <h4 className="font-bold text-sm text-[#1C160F] group-hover:text-amber-600 transition-colors">{t.name}</h4>
+                    <h4 className="font-bold text-sm text-[#1C2B22] group-hover:text-[#14532D] transition-colors">{t.name}</h4>
                     <p className="text-[10px] text-slate-400">{t.airline} • {t.flightDate}</p>
                   </div>
                 </div>
 
-                <div className="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl">
+                <div className="text-xs text-slate-600 space-y-1 bg-[#E6EFE9] border border-[#E8DFD0] p-3 rounded-[10px]">
                   <p className="text-[9px] font-bold text-slate-400 uppercase">Luggage Capacity</p>
-                  <p className="font-bold text-[#1C160F] flex items-center gap-1">
-                    <Weight className="w-3.5 h-3.5 text-amber-600" /> Up to {t.maxWeight} kg
+                  <p className="font-bold text-[#1C2B22] flex items-center gap-1">
+                    <Weight className="w-3.5 h-3.5 text-[#14532D]" /> Up to {t.maxWeight} kg
                   </p>
                 </div>
               </div>
@@ -737,9 +722,9 @@ export default function HomeView({
               <div className="flex gap-2 pt-2">
                 <button 
                   onClick={() => onContactPhone && onContactPhone(t)}
-                  className="w-full bg-[#1C160F] hover:bg-amber-500 hover:text-[#1C160F] text-white text-xs font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                  className="bg-[#14532D] hover:bg-[#0F3F22] text-white text-xs font-semibold px-3 py-2 rounded-[10px] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Phone className="w-3.5 h-3.5 text-amber-400" /> Show Phone Number &amp; Contact
+                  <Phone className="w-3.5 h-3.5 text-white" /> Contact
                 </button>
               </div>
             </div>
@@ -751,10 +736,10 @@ export default function HomeView({
       <section id="how-it-works" className="max-w-7xl mx-auto px-5 lg:px-8 mt-12 mb-16">
         <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
           <h2 className="font-display text-3xl font-extrabold text-[#1C160F]">
-            How the Delivery Network Works
+            How it works
           </h2>
           <p className="text-slate-500 text-sm leading-relaxed">
-            Connecting travelers and package senders directly to avoid high courier fees and long transit delays.
+            Send your package with a trusted traveler on a planned trip.
           </p>
         </div>
 
@@ -765,9 +750,9 @@ export default function HomeView({
               1
             </div>
             <div>
-              <h3 className="font-display font-bold text-base text-[#1C160F]">Post a Delivery Request</h3>
+              <h3 className="font-display font-bold text-base text-[#1C160F]">Post your package</h3>
               <p className="text-slate-500 text-xs leading-relaxed mt-1.5">
-                Provide the item details, delivery route, weight, and the reward you are offering for completion.
+                Tell us what you are sending, where it is going, and how much space it needs.
               </p>
             </div>
           </div>
@@ -793,7 +778,7 @@ export default function HomeView({
             <div>
               <h3 className="font-display font-bold text-base text-[#1C160F]">Coordinate and Deliver</h3>
               <p className="text-slate-500 text-xs leading-relaxed mt-1.5">
-                Coordinate a safe handover, inspect the item together, and complete delivery to receive the agreed reward.
+                Arrange a safe handover, check the package together, and complete the delivery.
               </p>
             </div>
           </div>
@@ -825,7 +810,7 @@ export default function HomeView({
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-[#1C160F] mb-1">Verify Identity and Travel Details</h4>
-                  <p className="leading-relaxed">Use secure messaging to confirm the traveler’s itinerary and the sender’s valid government-issued identification before handover.</p>
+                  <p className="leading-relaxed">Use secure messages to confirm the traveler’s trip and the sender’s identification before meeting.</p>
                 </div>
               </div>
             </div>
@@ -842,7 +827,7 @@ export default function HomeView({
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-[#1C160F] mb-1">Coordinate Safe Handover</h4>
-                  <p className="leading-relaxed">For valuable items, arrange handovers in public, well-monitored locations such as airport lobbies, and use secure payment methods where available.</p>
+                  <p className="leading-relaxed">For valuable items, meet in a public place such as an airport lobby and use a secure payment method.</p>
                 </div>
               </div>
             </div>

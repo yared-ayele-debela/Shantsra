@@ -37,7 +37,7 @@ export default function FlightVerificationModal({ isOpen, onClose, onSubmit }) {
         </div>
         
         <p className="text-xs text-slate-500">
-          Input flight ticket information to add a verified itinerary badge to your profile.
+          Add your flight details to show travelers that your trip has been verified.
         </p>
         
         <form onSubmit={handleSubmit} className="space-y-3">

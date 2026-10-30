@@ -32,14 +32,14 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
         notes: notes || null,
       });
 
-      setSuccessMsg(response.data.message || 'Deal confirmed successfully!');
+      setSuccessMsg(response.data.message || 'Your delivery agreement was saved.');
       setTimeout(() => {
         if (onSuccess) onSuccess(response.data.deal);
         if (onClose) onClose();
       }, 1500);
     } catch (err) {
       console.error('Deal confirmation error:', err);
-      setError(err.response?.data?.message || 'Failed to submit deal confirmation. Please try again.');
+      setError(err.response?.data?.message || 'We could not save the agreement. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -56,8 +56,8 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
               <Handshake className="w-5 h-5" />
             </span>
             <div>
-              <h3 className="font-display text-base font-extrabold text-[#1C160F]">Confirm Delivery Deal</h3>
-              <p className="text-[10px] text-slate-500 font-semibold">Verify agreement after member contact</p>
+              <h3 className="font-display text-base font-extrabold text-[#1C160F]">Confirm delivery agreement</h3>
+              <p className="text-[10px] text-slate-500 font-semibold">Record what you agreed after speaking with the sender</p>
             </div>
           </div>
           <button 
@@ -88,7 +88,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
           {/* Context Item Summary */}
           <div className="bg-[#FAF8F5] border border-amber-100/80 rounded-2xl p-3.5 space-y-1">
             <div className="flex justify-between items-center text-[10px] uppercase tracking-wider font-extrabold text-amber-800">
-              <span>Package Request</span>
+              <span>Package</span>
               <span>{item.from_city} ➔ {item.to_city}</span>
             </div>
             <h4 className="font-bold text-xs text-[#1C160F] truncate">{itemTitle}</h4>
@@ -98,7 +98,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
           {/* Deal Outcome Selector */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-[#1C160F]">
-              Did you make a deal with {partnerName}?
+              Did you agree on the delivery with {partnerName}?
             </label>
 
             <div className="grid grid-cols-2 gap-2.5">
@@ -112,7 +112,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
                 }`}
               >
                 <Check className="w-4 h-4" />
-                <span>Yes, Deal Made</span>
+                <span>Yes, we agreed</span>
               </button>
 
               <button
@@ -125,7 +125,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
                 }`}
               >
                 <X className="w-4 h-4" />
-                <span>No Deal Made</span>
+                <span>Not yet</span>
               </button>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
               {/* Price Offer */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                  Agreed Price / Fee ($ USD) <span className="text-slate-400 font-normal">(Optional)</span>
+                  Agreed price or fee ($ USD) <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -157,7 +157,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
               {/* Notes */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                  Notes / Agreed Meeting Spot <span className="text-slate-400 font-normal">(Optional)</span>
+                  Notes or meeting place <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <div className="relative">
                   <div className="absolute top-3 left-3.5 pointer-events-none text-slate-400">
@@ -195,7 +195,7 @@ export default function DealConfirmationModal({ item, partner, onClose, onSucces
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>Submit Confirmation</span>
+                  <span>Save agreement</span>
                 </>
               )}
             </button>

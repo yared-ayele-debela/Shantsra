@@ -270,7 +270,7 @@ export default function PackageDetailModal({
             disabled={!hasPhone}
             className="w-full flex items-center justify-center gap-2 text-xs font-extrabold text-white bg-[#1C160F] rounded-xl py-3.5 hover:bg-amber-500 hover:text-[#1C160F] transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
           >
-            <Phone className="w-4 h-4 text-amber-400" /> {hasPhone ? 'Show Direct Phone Number & Contact Poster' : 'Contact details unavailable'}
+            <Phone className="w-4 h-4 text-amber-400" /> {hasPhone ? 'Contact the sender' : 'Contact details unavailable'}
           </button>
         </div>
       </div>

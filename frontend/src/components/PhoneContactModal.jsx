@@ -67,8 +67,8 @@ export default function PhoneContactModal({ contact, onClose }) {
                 <Phone className="w-4 h-4" />
               </span>
               <div>
-                <h3 className="font-display text-sm font-extrabold text-[#1C160F]">Direct Phone Contact</h3>
-                <p className="text-[9px] text-slate-500 font-semibold">Verified member contact details</p>
+                <h3 className="font-display text-sm font-extrabold text-[#1C160F]">Contact the sender</h3>
+                <p className="text-[9px] text-slate-500 font-semibold">Verified contact details</p>
               </div>
             </div>
             <button 
@@ -96,14 +96,14 @@ export default function PhoneContactModal({ contact, onClose }) {
                     </p>
                   )}
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 mt-0.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Phone Number Verified
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Phone verified
                   </span>
                 </div>
               </div>
 
               {/* Phone Number Display */}
               <div className="bg-white border border-amber-200/80 rounded-xl p-3 text-center space-y-1.5 shadow-2xs">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Direct Phone Number</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Phone number</span>
                 <div className="font-mono font-extrabold text-xl tracking-wider text-[#1C160F] select-all">
                   {displayPhone}
                 </div>
@@ -155,7 +155,7 @@ export default function PhoneContactModal({ contact, onClose }) {
                 className="w-full py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-[#1C160F] text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Handshake className="w-4 h-4 text-[#1C160F]" />
-                <span>Did you make a deal? Confirm Deal</span>
+                <span>Confirm delivery agreement</span>
               </button>
             </div>
 

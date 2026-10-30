@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PackageCategorySeeder::class,
             SubscriptionPlanSeeder::class,
+            BannerSeeder::class,
         ]);
 
         Admin::updateOrCreate(
