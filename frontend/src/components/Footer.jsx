@@ -67,20 +67,20 @@ export default function Footer({
           {/* Contact Details from Settings */}
           <div className="pt-2 space-y-1.5 text-xs text-slate-300 font-normal">
             {contactEmail && (
-              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#D9A441] transition-colors">
-                <Mail className="w-3.5 h-3.5 text-[#D9A441] shrink-0" />
+              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#C2412D] transition-colors">
+                <Mail className="w-3.5 h-3.5 text-[#C2412D] shrink-0" />
                 <a href={`mailto:${contactEmail}`} className="truncate">{contactEmail}</a>
               </div>
             )}
             {contactPhone && (
-              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#D9A441] transition-colors">
-                <Phone className="w-3.5 h-3.5 text-[#D9A441] shrink-0" />
+              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#C2412D] transition-colors">
+                <Phone className="w-3.5 h-3.5 text-[#C2412D] shrink-0" />
                 <a href={`tel:${contactPhone}`}>{contactPhone}</a>
               </div>
             )}
             {address && (
               <div className="flex items-center gap-2 text-slate-400">
-                <MapPin className="w-3.5 h-3.5 text-[#D9A441] shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-[#C2412D] shrink-0" />
                 <span>{address}</span>
               </div>
             )}
@@ -92,22 +92,22 @@ export default function Footer({
           <h4 className="text-white font-medium text-xs uppercase tracking-wider">Explore</h4>
           <ul className="space-y-2 text-xs font-normal">
             <li>
-              <button onClick={() => setCurrentView('packages')} className="text-slate-400 font-normal hover:text-[#D9A441] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('packages')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
                 Find a package
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('travelers')} className="text-slate-400 font-normal hover:text-[#D9A441] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('travelers')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
                 Find a traveler
               </button>
             </li>
             <li>
-              <button onClick={onOpenPostModal} className="text-slate-400 font-normal hover:text-[#D9A441] transition-colors text-left cursor-pointer">
+              <button onClick={onOpenPostModal} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
                 Post your package
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('dashboard')} className="text-slate-400 font-normal hover:text-[#D9A441] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('dashboard')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
                 My dashboard
               </button>
             </li>
@@ -119,17 +119,17 @@ export default function Footer({
           <h4 className="text-white font-medium text-xs uppercase tracking-wider">Help &amp; safety</h4>
           <ul className="space-y-2 text-xs font-normal">
             <li>
-              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#D9A441] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
                 Package guidelines
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#D9A441] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
                 Safe handovers
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#D9A441] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
                 Contact support
               </button>
             </li>

@@ -112,6 +112,42 @@
     </div>
 </div>
 
+<div class="card content-card mb-4 border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-3">
+            <div>
+                <h5 class="mb-1">System tools</h5>
+                <p class="text-muted small mb-0">Check service health or run common Laravel maintenance commands.</p>
+            </div>
+            <button type="button" class="btn btn-outline-success rounded-3 btn-sm fw-semibold system-tool-button"
+                    data-tool-url="{{ route('admin.tools.health') }}" data-tool-method="GET" data-tool-label="Run health check">
+                <i class="bi bi-heart-pulse me-1"></i>Run health check
+            </button>
+        </div>
+
+        <div class="row g-2">
+            @foreach([
+                'optimize-clear' => ['Optimize clear', 'bi-stars'],
+                'cache-clear' => ['Cache clear', 'bi-lightning-charge'],
+                'config-clear' => ['Config clear', 'bi-sliders'],
+                'route-clear' => ['Route clear', 'bi-signpost-split'],
+                'storage-link' => ['Storage link', 'bi-folder-symlink'],
+                'view-clear' => ['View clear', 'bi-file-earmark-code'],
+            ] as $command => [$label, $icon])
+                <div class="col-6 col-md-4 col-xl-2">
+                    <button type="button" class="btn btn-light border rounded-3 w-100 h-100 py-2 system-tool-button"
+                            data-tool-url="{{ route('admin.tools.run', $command) }}" data-tool-method="POST" data-tool-label="{{ $label }}">
+                        <i class="bi {{ $icon }} d-block mb-1 text-primary"></i>
+                        <span class="small fw-semibold">{{ $label }}</span>
+                    </button>
+                </div>
+            @endforeach
+        </div>
+
+        <div id="system-tools-feedback" class="alert d-none mt-3 mb-0 rounded-3" role="status" aria-live="polite"></div>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <div class="col-6 col-xl-3">
         <div class="card stat-card h-100">
@@ -297,6 +333,47 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
     const chartData = @json($chartData);
+
+    document.querySelectorAll('.system-tool-button').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const feedback = document.getElementById('system-tools-feedback');
+            const originalContent = button.innerHTML;
+
+            document.querySelectorAll('.system-tool-button').forEach((toolButton) => {
+                toolButton.disabled = true;
+            });
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Running...';
+            feedback.className = 'alert alert-info mt-3 mb-0 rounded-3';
+            feedback.textContent = `${button.dataset.toolLabel} is running...`;
+
+            try {
+                const response = await fetch(button.dataset.toolUrl, {
+                    method: button.dataset.toolMethod,
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                });
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || result.output || `${button.dataset.toolLabel} failed.`);
+                }
+
+                const details = result.output ? ` ${result.output}` : '';
+                feedback.className = 'alert alert-success mt-3 mb-0 rounded-3';
+                feedback.textContent = `${button.dataset.toolLabel} completed successfully.${details}`;
+            } catch (error) {
+                feedback.className = 'alert alert-danger mt-3 mb-0 rounded-3';
+                feedback.textContent = error.message || `${button.dataset.toolLabel} failed.`;
+            } finally {
+                button.innerHTML = originalContent;
+                document.querySelectorAll('.system-tool-button').forEach((toolButton) => {
+                    toolButton.disabled = false;
+                });
+            }
+        });
+    });
 
     const shipmentStatusCtx = document.getElementById('shipmentStatusChart');
     if (shipmentStatusCtx) {

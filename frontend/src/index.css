@@ -5,8 +5,8 @@
   --color-primary: #14532D;
   --color-primary-hover: #0F3F22;
   --color-primary-tint: #E6EFE9;
-  --color-accent: #D9A441;
-  --color-accent-tint: #F6EAD0;
+  --color-accent: #C2412D;
+  --color-accent-tint: #FDE8E3;
   --color-background: #FBF7F0;
   --color-surface: #FFFFFF;
   --color-text: #1C2B22;
@@ -23,8 +23,9 @@
   --primary: #14532D;
   --primary-hover: #0F3F22;
   --primary-tint: #E6EFE9;
-  --accent: #D9A441;
-  --accent-tint: #F6EAD0;
+  --accent: #C2412D;
+  --accent-strong: #9F2F1F;
+  --accent-tint: #FDE8E3;
   --background: #FBF7F0;
   --white: #FFFFFF;
   --border: #E8DFD0;
@@ -72,7 +73,7 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid rgba(217, 164, 65, 0.45);
+  outline: 3px solid rgba(194, 65, 45, 0.35);
   outline-offset: 2px;
 }
 
@@ -91,11 +92,12 @@ select {
 [class*="text-[#1C160F]"], [class*="text-[#0F2A43]"] { color: var(--text) !important; }
 [class*="border-amber-100"] { border-color: var(--border) !important; }
 [class*="border-amber-200"] { border-color: var(--border) !important; }
-[class*="text-amber-600"], [class*="text-amber-700"], [class*="text-amber-400"], [class*="text-amber-900"] { color: var(--primary) !important; }
-[class*="text-amber-800"] { color: var(--text) !important; }
+[class*="text-amber-600"], [class*="text-amber-700"], [class*="text-amber-400"], [class*="text-amber-900"] { color: var(--accent) !important; }
+[class*="text-amber-800"] { color: var(--accent-strong) !important; }
 [class*="bg-amber-50"] { background-color: var(--accent-tint) !important; }
-[class*="bg-amber-100"], [class*="bg-amber-500"] { background-color: var(--accent-tint) !important; }
-[class*="hover:bg-amber-500"]:hover { background-color: var(--primary-hover) !important; }
+[class*="bg-amber-100"] { background-color: var(--accent-tint) !important; }
+[class*="bg-amber-500"] { background-color: var(--accent) !important; }
+[class*="hover:bg-amber-500"]:hover { background-color: var(--accent-strong) !important; }
 [class*="text-emerald-600"], [class*="text-emerald-700"], [class*="text-emerald-800"] { color: var(--success) !important; }
 [class*="bg-emerald-50"], [class*="bg-emerald-100"] { background-color: var(--primary-tint) !important; }
 [class*="bg-emerald-500"] { background-color: var(--success) !important; }

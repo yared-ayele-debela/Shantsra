@@ -19,7 +19,7 @@ export default function MobileBottomNav({
         onClick={() => setCurrentView('home')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'home' 
-            ? 'text-[#D9A441] font-bold scale-105'
+            ? 'text-[#C2412D] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -32,7 +32,7 @@ export default function MobileBottomNav({
         onClick={() => setCurrentView('packages')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'packages' 
-            ? 'text-[#D9A441] font-bold scale-105'
+            ? 'text-[#C2412D] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -46,10 +46,10 @@ export default function MobileBottomNav({
         className="flex flex-col items-center justify-center -mt-5"
         title="Post a Delivery Request"
       >
-        <div className="w-12 h-12 rounded-full bg-[#D9A441] text-[#1C2B22] flex items-center justify-center shadow-lg shadow-amber-500/20 border-2 border-[#14532D] active:scale-95 transition-transform">
+        <div className="w-12 h-12 rounded-full bg-[#C2412D] text-white flex items-center justify-center shadow-lg shadow-orange-500/20 border-2 border-[#14532D] active:scale-95 transition-transform">
           <PlusCircle className="w-6 h-6 stroke-[2.5px]" />
         </div>
-        <span className="text-[10px] font-bold text-[#D9A441] mt-0.5">Post</span>
+        <span className="text-[10px] font-bold text-[#C2412D] mt-0.5">Post</span>
       </button>
 
       {/* Travelers Tab */}
@@ -57,7 +57,7 @@ export default function MobileBottomNav({
         onClick={() => setCurrentView('travelers')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'travelers' 
-            ? 'text-[#D9A441] font-bold scale-105'
+            ? 'text-[#C2412D] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -70,7 +70,7 @@ export default function MobileBottomNav({
         onClick={() => setCurrentView('dashboard')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'dashboard'
-            ? 'text-[#D9A441] font-bold scale-105'
+            ? 'text-[#C2412D] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >
