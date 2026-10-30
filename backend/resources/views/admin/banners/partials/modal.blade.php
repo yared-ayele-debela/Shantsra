@@ -41,7 +41,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Placement</label>
                         <select name="placement" class="form-select" required>
-                            @foreach(['all' => 'All pages', 'home' => 'Home', 'packages' => 'Packages', 'travelers' => 'Travelers', 'dashboard' => 'Dashboard', 'safety' => 'Safety'] as $value => $label)
+                            @foreach(['all' => 'All pages', 'hero' => 'Homepage hero', 'home' => 'Home banners', 'packages' => 'Packages', 'travelers' => 'Travelers', 'dashboard' => 'Dashboard', 'safety' => 'Safety'] as $value => $label)
                                 <option value="{{ $value }}" @selected(old('placement', $banner?->placement ?? 'all') === $value)>{{ $label }}</option>
                             @endforeach
                         </select>

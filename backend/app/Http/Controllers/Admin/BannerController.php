@@ -57,7 +57,7 @@ class BannerController extends Controller
             'bg_gradient' => ['required', 'string', 'max:500'],
             'cta_text' => ['nullable', 'string', 'max:80'],
             'cta_link' => ['nullable', 'string', 'max:500'],
-            'placement' => ['required', Rule::in(['all', 'home', 'packages', 'travelers', 'dashboard', 'safety'])],
+            'placement' => ['required', Rule::in(['all', 'hero', 'home', 'packages', 'travelers', 'dashboard', 'safety'])],
             'is_active' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0', 'max:9999'],
             'start_date' => ['nullable', 'date'],

@@ -111,9 +111,9 @@ export default function HomeView({
 
     async function fetchHeroBanner() {
       try {
-        const { data } = await api.get('/api/banners?placement=home');
+        const { data } = await api.get('/api/banners?placement=hero');
         const banner = Array.isArray(data.banners)
-          ? data.banners.find((item) => item.image_url)
+          ? data.banners.find((item) => item.placement === 'hero' && item.image_url)
           : null;
 
         if (!cancelled) {
