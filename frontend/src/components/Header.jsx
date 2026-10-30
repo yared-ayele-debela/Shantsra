@@ -17,7 +17,7 @@ export default function Header({
   const siteName = settings?.site_name || 'Souq & Sheba';
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-[#E5E5E3]">
+    <header className="sticky top-0 z-40 bg-white border-b border-[#D2DDD8]">
       <div className="max-w-7xl mx-auto px-3.5 sm:px-5 lg:px-8 h-[68px] sm:h-[72px] flex items-center justify-between gap-3">
         {/* Brand Logo - Displays ONLY logo on mobile view */}
         <button 
@@ -31,7 +31,7 @@ export default function Header({
               className="h-10 w-auto max-[360px]:h-8 object-contain max-w-[120px] sm:max-w-none group-hover:scale-105 transition-transform" 
             />
           ) : (
-            <span className="font-display text-lg font-semibold tracking-tight text-[#0A0A0A]">
+            <span className="font-display text-lg font-semibold tracking-tight text-[#0D3326]">
               {siteName}
             </span>
           )}
@@ -89,17 +89,17 @@ export default function Header({
         <div className="flex items-center gap-2 sm:gap-3">
           
           {/* GROUP 1: Utilities Capsule */}
-          <div className="bg-white border border-[#E5E5E3] rounded-[10px] p-1 flex items-center gap-1">
+          <div className="bg-white border border-[#D2DDD8] rounded-[10px] p-1 flex items-center gap-1">
             <LanguageSelector />
           </div>
 
           {/* GROUP 2: Account & Primary CTA */}
           <div className="flex items-center gap-2">
             {currentUser ? (
-              <div className="flex items-center bg-white border border-[#E5E5E3] rounded-[10px] p-1">
+              <div className="flex items-center bg-white border border-[#D2DDD8] rounded-[10px] p-1">
                 <button 
                   onClick={() => setCurrentView('dashboard')}
-                  className="flex items-center gap-2 px-2.5 py-1.5 hover:bg-[#F5F5F4] rounded-[10px] transition-colors text-xs font-bold text-[#0A0A0A]"
+                  className="flex items-center gap-2 px-2.5 py-1.5 hover:bg-[#EEF3F0] rounded-[10px] transition-colors text-xs font-bold text-[#0D3326]"
                 >
                   {currentUser.photo_url || currentUser.photo ? (
                     <img 
@@ -108,16 +108,16 @@ export default function Header({
                       className="w-6 h-6 rounded-full object-cover border border-amber-300 shadow-2xs shrink-0" 
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center font-extrabold text-[10px] shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[#0D3326] text-white flex items-center justify-center font-extrabold text-[10px] shrink-0">
                       {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                   )}
                   <span className="hidden md:inline">{currentUser.name ? currentUser.name.split(' ')[0] : 'User'}</span>
                 </button>
-                <div className="h-4 w-px bg-[#E5E5E3] mx-0.5"></div>
+                <div className="h-4 w-px bg-[#D2DDD8] mx-0.5"></div>
                 <button
                   onClick={onLogout}
-                  className="p-1.5 text-slate-400 hover:text-[#D92D20] hover:bg-[#F5F5F4] rounded-[10px] transition-colors"
+                  className="p-1.5 text-slate-400 hover:text-[#D92D20] hover:bg-[#EEF3F0] rounded-[10px] transition-colors"
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -126,7 +126,7 @@ export default function Header({
             ) : (
               <button 
                 onClick={() => onOpenAuthModal('login')}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#0A0A0A] bg-white border border-[#0A0A0A] rounded-[10px] px-3 py-2 hover:bg-[#F5F5F4] transition-colors"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#0D3326] bg-white border border-[#0D3326] rounded-[10px] px-3 py-2 hover:bg-[#EEF3F0] transition-colors"
               >
                 <User className="w-3.5 h-3.5 text-[#14532D]" />
                 <span>Sign In</span>
@@ -135,7 +135,7 @@ export default function Header({
 
             <button 
               onClick={onOpenRequestModal}
-              className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-white bg-[#0A0A0A] hover:bg-[#2A2A2A] px-4 py-2.5 rounded-[10px] transition-all"
+              className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-white bg-[#0D3326] hover:bg-[#144937] px-4 py-2.5 rounded-[10px] transition-all"
             >
               <PlusCircle className="w-3.5 h-3.5" />
               <span>Post a Request</span>

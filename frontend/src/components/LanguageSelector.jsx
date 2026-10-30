@@ -87,7 +87,7 @@ export default function LanguageSelector() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 bg-[#F5F5F4] hover:bg-[#E6EFE9] border border-[#E5E5E3] rounded-xl px-2.5 py-1.5 text-xs font-bold text-[#1C160F] transition-all shadow-2xs"
+        className="flex items-center gap-1.5 bg-[#EEF3F0] hover:bg-[#E5F0EB] border border-[#D2DDD8] rounded-xl px-2.5 py-1.5 text-xs font-bold text-[#0D3326] transition-all shadow-2xs"
         title="Select Language / ቋንቋ ይምረጡ"
       >
         <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -97,8 +97,8 @@ export default function LanguageSelector() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white border border-[#E5E5E3] shadow-xl z-50 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-150">
-          <div className="px-3 py-1.5 border-b border-[#E5E5E3]">
+        <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white border border-[#D2DDD8] shadow-xl z-50 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="px-3 py-1.5 border-b border-[#D2DDD8]">
             <p className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">
               Choose your language
             </p>
@@ -111,7 +111,7 @@ export default function LanguageSelector() {
                 className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between transition-colors ${
                   currentLang === lang.code
                     ? 'bg-[#E6EFE9] text-[#14532D] font-bold'
-                    : 'text-slate-700 hover:bg-[#F5F5F4]'
+                    : 'text-slate-700 hover:bg-[#EEF3F0]'
                 }`}
               >
                 <div className="flex items-center gap-2">

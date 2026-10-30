@@ -2,36 +2,50 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #14532D;
-  --color-primary-hover: #0F3F22;
-  --color-primary-tint: #E6EFE9;
-  --color-accent: #C2412D;
-  --color-accent-tint: #FDE8E3;
-  --color-background: #FBF7F0;
+  --color-primary: #0D3326;
+  --color-primary-hover: #144937;
+  --color-primary-tint: #E5F0EB;
+  --color-accent-gold: #B89358;
+  --color-accent-emerald: #20C073;
+  --color-background: #EEF3F0;
   --color-surface: #FFFFFF;
-  --color-text: #1C2B22;
-  --color-text-muted: #5E6B62;
-  --color-success: #2E8B57;
+  --color-text: #0D3326;
+  --color-text-body: #2E423A;
+  --color-text-muted: #647B72;
+  --color-success: #20C073;
   --color-danger: #B42318;
   --color-white: #FFFFFF;
-  --color-border: #E8DFD0;
+  --color-border: #D2DDD8;
   --font-display: 'Fraunces', serif;
   --font-body: 'Inter', sans-serif;
 }
 
 :root {
-  --primary: #14532D;
-  --primary-hover: #0F3F22;
-  --primary-tint: #E6EFE9;
-  --accent: #C2412D;
-  --accent-strong: #9F2F1F;
-  --accent-tint: #FDE8E3;
-  --background: #FBF7F0;
+  --color-primary: #0D3326;
+  --color-primary-hover: #144937;
+  --color-accent-gold: #B89358;
+  --color-accent-emerald: #20C073;
+  --color-bg-base: #EEF3F0;
+  --color-bg-surface: #FFFFFF;
+  --color-border: #D2DDD8;
+  --color-text-main: #0D3326;
+  --color-text-body: #2E423A;
+  --color-text-muted: #647B72;
+  --primary: #0D3326;
+  --primary-hover: #144937;
+  --primary-tint: #E5F0EB;
+  --accent-gold: #B89358;
+  --accent-emerald: #20C073;
+  --accent: var(--accent-gold);
+  --accent-strong: #8F6C3D;
+  --accent-tint: #F4ECDE;
+  --background: #EEF3F0;
   --white: #FFFFFF;
-  --border: #E8DFD0;
-  --text: #1C2B22;
-  --text-muted: #5E6B62;
-  --success: #2E8B57;
+  --border: #D2DDD8;
+  --text: #0D3326;
+  --text-body: #2E423A;
+  --text-muted: #647B72;
+  --success: #20C073;
   --danger: #B42318;
   --radius-card: 14px;
   --radius-control: 10px;
@@ -73,7 +87,7 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid rgba(194, 65, 45, 0.35);
+  outline: 3px solid rgba(184, 147, 88, 0.45);
   outline-offset: 2px;
 }
 
@@ -88,19 +102,25 @@ select {
 
 /* Keep legacy utility classes visually aligned while components are migrated. */
 [class*="bg-[#FAF8F5]"] { background-color: var(--background) !important; }
-[class*="bg-[#1C160F]"], [class*="bg-[#0F2A43]"] { background-color: var(--primary) !important; }
-[class*="text-[#1C160F]"], [class*="text-[#0F2A43]"] { color: var(--text) !important; }
+[class*="bg-[#1C160F]"], [class*="bg-[#0F2A43]"], [class*="bg-[#14532D]"] { background-color: var(--primary) !important; }
+[class*="text-[#1C160F]"], [class*="text-[#0F2A43]"], [class*="text-[#1C2B22]"], [class*="text-[#14532D]"] { color: var(--text) !important; }
+[class*="bg-[#0F3F22]"] { background-color: var(--primary-hover) !important; }
+[class*="bg-[#E6EFE9]"] { background-color: var(--primary-tint) !important; }
+[class*="bg-[#FBF7F0]"], [class*="bg-[#FAF8F5]"] { background-color: var(--background) !important; }
+[class*="border-[#E8DFD0]"] { border-color: var(--border) !important; }
+[class*="text-[#5E6B62]"], [class*="text-[#6B6B6B]"] { color: var(--text-muted) !important; }
+[class*="border-[#14532D]"] { border-color: var(--primary) !important; }
 [class*="border-amber-100"] { border-color: var(--border) !important; }
 [class*="border-amber-200"] { border-color: var(--border) !important; }
-[class*="text-amber-600"], [class*="text-amber-700"], [class*="text-amber-400"], [class*="text-amber-900"] { color: var(--accent) !important; }
+[class*="text-amber-600"], [class*="text-amber-700"], [class*="text-amber-400"], [class*="text-amber-900"] { color: var(--accent-gold) !important; }
 [class*="text-amber-800"] { color: var(--accent-strong) !important; }
 [class*="bg-amber-50"] { background-color: var(--accent-tint) !important; }
 [class*="bg-amber-100"] { background-color: var(--accent-tint) !important; }
-[class*="bg-amber-500"] { background-color: var(--accent) !important; }
+[class*="bg-amber-500"] { background-color: var(--accent-gold) !important; }
 [class*="hover:bg-amber-500"]:hover { background-color: var(--accent-strong) !important; }
-[class*="text-emerald-600"], [class*="text-emerald-700"], [class*="text-emerald-800"] { color: var(--success) !important; }
+[class*="text-emerald-600"], [class*="text-emerald-700"], [class*="text-emerald-800"] { color: var(--accent-emerald) !important; }
 [class*="bg-emerald-50"], [class*="bg-emerald-100"] { background-color: var(--primary-tint) !important; }
-[class*="bg-emerald-500"] { background-color: var(--success) !important; }
+[class*="bg-emerald-500"] { background-color: var(--accent-emerald) !important; }
 [class*="border-emerald-"] { border-color: var(--border) !important; }
 [class*="bg-red-600"] { background-color: var(--danger) !important; }
 [class*="text-red-600"] { color: var(--danger) !important; }

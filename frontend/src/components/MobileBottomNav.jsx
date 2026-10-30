@@ -12,14 +12,14 @@ export default function MobileBottomNav({
   return (
     <nav 
       aria-label="Mobile Navigation Bar"
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/10 text-slate-300 px-2 py-1.5 shadow-[0_-8px_30px_rgba(10,10,10,0.18)] flex items-center justify-around"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0D3326]/95 backdrop-blur-md border-t border-white/10 text-slate-300 px-2 py-1.5 shadow-[0_-8px_30px_rgba(13,51,38,0.18)] flex items-center justify-around"
     >
       {/* Home Tab */}
       <button
         onClick={() => setCurrentView('home')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'home' 
-            ? 'text-[#C2412D] font-bold scale-105'
+            ? 'text-[#B89358] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -32,7 +32,7 @@ export default function MobileBottomNav({
         onClick={() => setCurrentView('packages')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'packages' 
-            ? 'text-[#C2412D] font-bold scale-105'
+            ? 'text-[#B89358] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -46,10 +46,10 @@ export default function MobileBottomNav({
         className="flex flex-col items-center justify-center -mt-5"
         title="Post a Delivery Request"
       >
-        <div className="w-12 h-12 rounded-full bg-[#C2412D] text-white flex items-center justify-center shadow-lg shadow-orange-500/20 border-2 border-[#14532D] active:scale-95 transition-transform">
+        <div className="w-12 h-12 rounded-full bg-[#B89358] text-white flex items-center justify-center shadow-lg shadow-amber-700/20 border-2 border-[#0D3326] active:scale-95 transition-transform">
           <PlusCircle className="w-6 h-6 stroke-[2.5px]" />
         </div>
-        <span className="text-[10px] font-bold text-[#C2412D] mt-0.5">Post</span>
+        <span className="text-[10px] font-bold text-[#B89358] mt-0.5">Post</span>
       </button>
 
       {/* Travelers Tab */}
@@ -57,7 +57,7 @@ export default function MobileBottomNav({
         onClick={() => setCurrentView('travelers')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'travelers' 
-            ? 'text-[#C2412D] font-bold scale-105'
+            ? 'text-[#B89358] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -70,7 +70,7 @@ export default function MobileBottomNav({
         onClick={() => setCurrentView('dashboard')}
         className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 transition-all ${
           currentView === 'dashboard'
-            ? 'text-[#C2412D] font-bold scale-105'
+            ? 'text-[#B89358] font-bold scale-105'
             : 'text-slate-400 hover:text-slate-200'
         }`}
       >

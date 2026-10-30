@@ -44,7 +44,7 @@ export default function Footer({
               />
             ) : (
               <span className="w-9 h-9 rounded-[10px] bg-white flex items-center justify-center">
-                <PlaneTakeoff className="w-5 h-5 text-[#0A0A0A]" />
+                <PlaneTakeoff className="w-5 h-5 text-[#0D3326]" />
               </span>
             )}
             <span className="font-display text-lg font-semibold text-white">
@@ -67,20 +67,20 @@ export default function Footer({
           {/* Contact Details from Settings */}
           <div className="pt-2 space-y-1.5 text-xs text-slate-300 font-normal">
             {contactEmail && (
-              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#C2412D] transition-colors">
-                <Mail className="w-3.5 h-3.5 text-[#C2412D] shrink-0" />
+              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#B89358] transition-colors">
+                <Mail className="w-3.5 h-3.5 text-[#B89358] shrink-0" />
                 <a href={`mailto:${contactEmail}`} className="truncate">{contactEmail}</a>
               </div>
             )}
             {contactPhone && (
-              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#C2412D] transition-colors">
-                <Phone className="w-3.5 h-3.5 text-[#C2412D] shrink-0" />
+              <div className="flex items-center gap-2 text-slate-400 font-normal hover:text-[#B89358] transition-colors">
+                <Phone className="w-3.5 h-3.5 text-[#B89358] shrink-0" />
                 <a href={`tel:${contactPhone}`}>{contactPhone}</a>
               </div>
             )}
             {address && (
               <div className="flex items-center gap-2 text-slate-400">
-                <MapPin className="w-3.5 h-3.5 text-[#C2412D] shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-[#B89358] shrink-0" />
                 <span>{address}</span>
               </div>
             )}
@@ -92,22 +92,22 @@ export default function Footer({
           <h4 className="text-white font-medium text-xs uppercase tracking-wider">Explore</h4>
           <ul className="space-y-2 text-xs font-normal">
             <li>
-              <button onClick={() => setCurrentView('packages')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('packages')} className="text-slate-400 font-normal hover:text-[#B89358] transition-colors text-left cursor-pointer">
                 Find a package
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('travelers')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('travelers')} className="text-slate-400 font-normal hover:text-[#B89358] transition-colors text-left cursor-pointer">
                 Find a traveler
               </button>
             </li>
             <li>
-              <button onClick={onOpenPostModal} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
+              <button onClick={onOpenPostModal} className="text-slate-400 font-normal hover:text-[#B89358] transition-colors text-left cursor-pointer">
                 Post your package
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('dashboard')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('dashboard')} className="text-slate-400 font-normal hover:text-[#B89358] transition-colors text-left cursor-pointer">
                 My dashboard
               </button>
             </li>
@@ -119,17 +119,17 @@ export default function Footer({
           <h4 className="text-white font-medium text-xs uppercase tracking-wider">Help &amp; safety</h4>
           <ul className="space-y-2 text-xs font-normal">
             <li>
-              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#B89358] transition-colors text-left cursor-pointer">
                 Package guidelines
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#B89358] transition-colors text-left cursor-pointer">
                 Safe handovers
               </button>
             </li>
             <li>
-              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#C2412D] transition-colors text-left cursor-pointer">
+              <button onClick={() => setCurrentView('safety')} className="text-slate-400 font-normal hover:text-[#B89358] transition-colors text-left cursor-pointer">
                 Contact support
               </button>
             </li>
@@ -153,7 +153,7 @@ export default function Footer({
               />
               <button 
                 type="submit"
-                className="bg-white hover:bg-[#F5F5F4] transition-colors rounded-[10px] px-3.5 font-medium text-[#0A0A0A] text-xs shrink-0 flex items-center gap-1 cursor-pointer"
+                className="bg-white hover:bg-[#EEF3F0] transition-colors rounded-[10px] px-3.5 font-medium text-[#0D3326] text-xs shrink-0 flex items-center gap-1 cursor-pointer"
               >
                 <span>Subscribe</span>
                 <Send className="w-3 h-3" />

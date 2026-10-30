@@ -416,7 +416,7 @@ export default function HomeView({
         <div className="relative max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-12 gap-16 items-center">
           <div className="lg:col-span-7 text-center lg:text-left">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase text-[#14532D] border border-[#E8DFD0] px-3.5 py-1.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-[#C2412D]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#B89358]" />
               Verified Traveler Delivery · Addis Ababa ⇄ Dubai
             </span>
             
@@ -449,7 +449,7 @@ export default function HomeView({
           <div className="lg:col-span-5 bg-white rounded-[14px] border border-[#E8DFD0] p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-[#C2412D]" />
+                <Compass className="w-5 h-5 text-[#B89358]" />
                 <span className="text-sm font-semibold tracking-wide uppercase text-[#1C2B22]">
                   Delivery Corridor
                 </span>
@@ -462,31 +462,31 @@ export default function HomeView({
             <div className="relative w-full h-[180px] bg-[#FBF7F0] rounded-[10px] overflow-hidden border border-[#E8DFD0] flex items-center justify-center">
               <svg className="w-full h-[120px] px-6 z-10" viewBox="0 0 320 120" fill="none">
                 {/* Addis Node */}
-                <circle cx="50" cy="85" r="12" fill="#C2412D" opacity="0.2" />
-                <circle cx="50" cy="85" r="4" fill="#C2412D" />
+                <circle cx="50" cy="85" r="12" fill="#B89358" opacity="0.2" />
+                <circle cx="50" cy="85" r="4" fill="#B89358" />
                 <text x="50" y="112" fontFamily="'Inter', sans-serif" fontWeight="600" fontSize="9" fill="#1C2B22" textAnchor="middle">ADDIS ABABA</text>
 
                 {/* Dubai Node */}
-                <circle cx="270" cy="35" r="12" fill="#C2412D" opacity="0.2" />
-                <circle cx="270" cy="35" r="4" fill="#C2412D" />
+                <circle cx="270" cy="35" r="12" fill="#B89358" opacity="0.2" />
+                <circle cx="270" cy="35" r="4" fill="#B89358" />
                 <text x="270" y="15" fontFamily="'Inter', sans-serif" fontWeight="600" fontSize="9" fill="#1C2B22" textAnchor="middle">DUBAI</text>
 
                 {/* Flight Path Curve */}
-                <path d="M 50 85 Q 160 25 270 35" fill="none" stroke="#C2412D" strokeWidth="2" strokeDasharray="5 6" />
+                <path d="M 50 85 Q 160 25 270 35" fill="none" stroke="#B89358" strokeWidth="2" strokeDasharray="5 6" />
 
                 {/* Live Flight Traveler Indicator */}
-                <circle cx="160" cy="42.5" r="3" fill="#C2412D" />
+                <circle cx="160" cy="42.5" r="3" fill="#B89358" />
               </svg>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-center text-xs">
-              <div className="bg-white rounded-[10px] p-2.5 border border-[#E5E5E3]">
+              <div className="bg-white rounded-[10px] p-2.5 border border-[#D2DDD8]">
               <p className="text-[#6B6B6B]">Open Delivery Requests</p>
-                <p className="text-lg font-extrabold font-display text-[#0A0A0A] mt-0.5">{allRequestsList.length}</p>
+                <p className="text-lg font-extrabold font-display text-[#0D3326] mt-0.5">{allRequestsList.length}</p>
               </div>
-              <div className="bg-white rounded-[10px] p-2.5 border border-[#E5E5E3]">
+              <div className="bg-white rounded-[10px] p-2.5 border border-[#D2DDD8]">
               <p className="text-[#6B6B6B]">Verified Travelers</p>
-                <p className="text-lg font-extrabold font-display text-[#2F5BFF] mt-0.5">{travelersList.length}+</p>
+                <p className="text-lg font-extrabold font-display text-[#20C073] mt-0.5">{travelersList.length}+</p>
               </div>
             </div>
           </div>

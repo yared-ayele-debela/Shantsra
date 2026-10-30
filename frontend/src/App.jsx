@@ -327,13 +327,13 @@ export default function App() {
   }, [requests]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1C160F] pb-16 lg:pb-0">
+    <div className="min-h-screen flex flex-col bg-[#EEF3F0] text-[#0D3326] pb-16 lg:pb-0">
       {/* App Initialization Loading Overlay */}
       <AppLoadingOverlay isLoading={isAppLoading} />
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-[#1C160F] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-amber-400/20 text-xs font-bold animate-bounce">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-[#0D3326] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-[#B89358]/30 text-xs font-bold animate-bounce">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
           <span>{toastMessage}</span>
         </div>
@@ -416,14 +416,14 @@ export default function App() {
                 <User className="w-10 h-10 text-amber-600" />
               </div>
               <div className="space-y-2">
-                <h2 className="font-display text-2xl font-extrabold text-[#1C160F]">Authentication Required</h2>
+                <h2 className="font-display text-2xl font-extrabold text-[#0D3326]">Authentication Required</h2>
                 <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">
                   Please sign in or create an account to view your personal delivery dashboard, track active shipments, and verify flight tickets.
                 </p>
               </div>
               <button 
                 onClick={() => handleOpenAuth('login')}
-                className="inline-flex items-center gap-2 bg-[#1C160F] hover:bg-amber-600 text-white hover:text-[#1C160F] font-bold px-6 py-3.5 rounded-xl transition-all shadow-md text-xs cursor-pointer"
+                className="inline-flex items-center gap-2 bg-[#0D3326] hover:bg-[#144937] text-white font-bold px-6 py-3.5 rounded-xl transition-all shadow-md text-xs cursor-pointer"
               >
                 <User className="w-4 h-4 text-amber-400" />
                 <span>Sign In to Access Dashboard</span>
