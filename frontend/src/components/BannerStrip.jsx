@@ -40,24 +40,27 @@ export default function BannerStrip({ placement, single = false }) {
   }
 
   return (
-    <aside aria-label="Offers and announcements" class="mx-auto w-full max-w-7xl px-0 pb-5 sm:px-5 lg:px-0">
+    <aside aria-label="Offers and announcements" className="mx-auto w-full max-w-7xl px-0 pb-5 sm:px-5 lg:px-0">
       <div className={`grid gap-4 ${single ? 'grid-cols-1' : 'sm:grid-cols-2'}`}>
         {visibleBanners.map((banner) => (
           <article
             key={banner.id}
-            className="group relative isolate flex min-h-[260px] flex-col overflow-hidden rounded-[14px] border border-[#E8DFD0] bg-[#E6EFE9] text-[#1C2B22] shadow-[0_4px_18px_rgba(28,43,34,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#14532D]/40 hover:shadow-[0_8px_24px_rgba(20,83,45,0.12)]"
-            style={{
-              backgroundImage: banner.image_url
-                ? `url("${getStorageUrl(banner.image_url)}")`
-                : banner.bg_gradient,
-              backgroundPosition: 'center',
-              backgroundSize: 'cover',
-            }}
+            className="group relative flex min-h-[260px] flex-col overflow-hidden rounded-[14px] border border-[#E8DFD0] bg-white text-[#1C2B22] shadow-[0_4px_18px_rgba(28,43,34,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#14532D]/40 hover:shadow-[0_8px_24px_rgba(20,83,45,0.12)]"
           >
             {banner.image_url && (
-              <div className="absolute inset-0 -z-10 bg-[#FBF7F0]/55 transition-colors duration-300 group-hover:bg-[#FBF7F0]/45" />
+              <div className="relative h-40 shrink-0 overflow-hidden bg-[#F7F8F5] sm:h-48">
+                <img
+                  src={getStorageUrl(banner.image_url)}
+                  alt={banner.title || 'Promotion'}
+                  className="h-full w-full object-contain object-center transition-transform duration-500 group-hover:scale-[1.03]"
+                  loading="lazy"
+                />
+              </div>
             )}
-            <div className="relative z-10 flex flex-1 flex-col justify-between p-5 sm:p-6">
+            <div
+              className="flex flex-1 flex-col justify-between p-5 sm:p-6"
+              style={!banner.image_url ? { background: banner.bg_gradient } : undefined}
+            >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   {banner.badge && (
