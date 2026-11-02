@@ -320,6 +320,30 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                           <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                           {traveler.rating}
                         </span>
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenUserDetail(traveler);
+                            }}
+                            className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-slate-600 hover:text-[#0D3326] transition-colors"
+                          >
+                            <User className="w-3 h-3 text-[#0D3326]" />
+                            <span>Profile</span>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onContactPhone) onContactPhone(traveler);
+                            }}
+                            aria-label="Show traveler phone"
+                            title="Show traveler phone"
+                            className="inline-flex items-center gap-1 bg-[#0D3326] hover:bg-[#144937] text-white text-[9px] sm:text-[10px] font-semibold px-2 py-1 rounded-lg transition-all cursor-pointer"
+                          >
+                            <Phone className="w-3 h-3" aria-hidden="true" />
+                            <span>Contact</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -335,32 +359,6 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                       </div>
                     </div>
 
-                    {/* Profile actions */}
-                    <div className="w-24 sm:w-32 shrink-0 border-l border-slate-200 pl-3 sm:pl-5 flex flex-col items-stretch justify-center gap-2 sm:gap-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenUserDetail(traveler);
-                        }}
-                        className="text-[10px] sm:text-xs font-bold text-slate-600 hover:text-[#0D3326] flex items-center gap-1 transition-colors"
-                      >
-                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D3326]" />
-                        <span>Profile</span>
-                      </button>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (onContactPhone) onContactPhone(traveler);
-                        }}
-                        aria-label="Show traveler phone"
-                        title="Show traveler phone"
-                        className="flex items-center justify-center gap-1 bg-[#0D3326] hover:bg-[#144937] text-white text-[10px] sm:text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
-                      >
-                        <Phone className="w-3.5 h-3.5" aria-hidden="true" />
-                        <span>Contact</span>
-                      </button>
-                    </div>
                   </div>
                 );
               })}
