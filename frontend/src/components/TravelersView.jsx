@@ -13,6 +13,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
   const [filterRoute, setFilterRoute] = useState('ALL');
   const [filterMinWeight, setFilterMinWeight] = useState(0);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [showDesktopFilter, setShowDesktopFilter] = useState(true);
 
   // Selected traveler for modal
   const [modalTraveler, setModalTraveler] = useState(null);
@@ -150,6 +151,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
         <div className="lg:hidden col-span-12">
           <button
             onClick={() => setShowMobileFilter(!showMobileFilter)}
+            aria-expanded={showMobileFilter}
             className="w-full bg-white border border-amber-200 text-[#1C160F] font-bold text-xs py-3 px-4 rounded-2xl flex items-center justify-between shadow-xs mb-2 cursor-pointer"
           >
             <span className="flex items-center gap-2">
@@ -163,7 +165,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
         </div>
 
         {/* LEFT SIDE FILTER SIDEBAR (4 cols) */}
-        <div className={`${showMobileFilter ? 'block' : 'hidden'} lg:block lg:col-span-4 col-span-12`}>
+        <div className={`${showMobileFilter ? 'block' : 'hidden'} ${showDesktopFilter ? 'lg:block' : 'lg:hidden'} lg:col-span-4 col-span-12`}>
           <aside className="bg-white rounded-2xl border border-amber-100 p-4 sm:p-6 shadow-sm space-y-5 sm:space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none">
             <div className="flex items-center justify-between border-b border-amber-50 pb-3">
               <h3 className="font-display font-bold text-sm sm:text-base text-[#1C160F] flex items-center gap-2">
@@ -265,9 +267,18 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
         </div>
 
         {/* RIGHT SIDE USER CARDS GRID (8 cols, 2 columns on mobile, 3 columns on desktop) */}
-        <section className="lg:col-span-8 space-y-4 sm:space-y-6 col-span-12">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <section className={`${showDesktopFilter ? 'lg:col-span-8' : 'lg:col-span-12'} space-y-4 sm:space-y-6 col-span-12`}>
+          <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
             <span>Showing {filteredTravelers.length} verified traveler{filteredTravelers.length === 1 ? '' : 's'}</span>
+            <button
+              type="button"
+              onClick={() => setShowDesktopFilter(!showDesktopFilter)}
+              aria-expanded={showDesktopFilter}
+              className="hidden lg:inline-flex items-center gap-2 rounded-xl border border-amber-200 bg-white px-3 py-2 text-[10px] font-semibold normal-case tracking-normal text-[#1C160F] transition-colors hover:bg-amber-50"
+            >
+              <SlidersHorizontal className="h-4 w-4 text-amber-600" />
+              {showDesktopFilter ? 'Hide filters' : 'Show filters'}
+            </button>
           </div>
 
           {loading ? (
