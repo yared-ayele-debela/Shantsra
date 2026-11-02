@@ -218,7 +218,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                     filterRoute === 'ADD_TO_DXB' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'
                   }`}
                 >
-                  <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                  <span className="min-w-0 flex-1 text-xs font-semibold leading-snug text-slate-700 flex items-center gap-1.5">
                     Addis Ababa (ADD) ➔ Dubai (DXB)
                   </span>
                   <input type="radio" checked={filterRoute === 'ADD_TO_DXB'} readOnly className="accent-amber-600" />
@@ -230,7 +230,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                     filterRoute === 'DXB_TO_ADD' ? 'border-[#14532D] bg-[#E6EFE9]' : 'border-amber-100 hover:bg-[#E6EFE9]'
                   }`}
                 >
-                  <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                  <span className="min-w-0 flex-1 text-xs font-semibold leading-snug text-slate-700 flex items-center gap-1.5">
                     Dubai (DXB) ➔ Addis Ababa (ADD)
                   </span>
                   <input type="radio" checked={filterRoute === 'DXB_TO_ADD'} readOnly className="accent-amber-600" />
@@ -287,9 +287,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
               <p className="text-xs font-bold text-[#1C160F]">Loading verified travelers...</p>
             </div>
           ) : filteredTravelers.length > 0 ? (
-            /* 2 columns on mobile, 3 columns on desktop */
-            <div className="overflow-x-auto pb-2">
-            <div className="grid grid-flow-col auto-cols-[minmax(360px,1fr)] lg:grid-flow-row lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
               {filteredTravelers.map((traveler) => {
                 const whatsappMessage = encodeURIComponent(
                   `Hi ${traveler.name}, I found your verified trip (${traveler.flightDate}) on Shantasra and would like to discuss sending a package.`
@@ -299,19 +297,19 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                   <div
                     key={traveler.id || traveler.name}
                     onClick={() => handleOpenUserDetail(traveler)}
-                    className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-[0_4px_18px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.1)] hover:border-[#0D3326] transition-all cursor-pointer flex flex-row items-center gap-4 sm:gap-6 group"
+                    className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-[0_4px_18px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.1)] hover:border-[#0D3326] transition-all cursor-pointer flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4 group"
                   >
                     {/* Top User Header */}
-                    <div className="flex items-center gap-3 sm:gap-4 w-44 sm:w-56 shrink-0">
+                    <div className="flex min-w-0 items-center gap-3 sm:w-44 sm:shrink-0">
                       <div className="relative shrink-0">
                         {traveler.isRealPhoto ? (
                           <img
                             src={traveler.photo}
                             alt={traveler.name}
-                            className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover border border-slate-200 shadow-sm"
+                            className="h-14 w-14 rounded-full object-cover border border-slate-200 shadow-sm sm:h-16 sm:w-16"
                           />
                         ) : (
-                          <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-[#0D3326] text-white font-extrabold text-xl sm:text-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0D3326] text-xl font-extrabold text-white border border-slate-200 shadow-sm sm:h-16 sm:w-16">
                             {traveler.name ? traveler.name.trim().charAt(0).toUpperCase() : 'T'}
                           </div>
                         )}
@@ -359,7 +357,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                       </div>
                     </div>
 
-                    <div className="min-w-0 flex-1 space-y-2">
+                    <div className="min-w-0 flex-1 space-y-2 border-t border-slate-100 pt-3 sm:border-t-0 sm:border-l sm:pl-4 sm:pt-0">
                       <div className="flex min-w-0 items-start gap-2 text-xs sm:text-sm font-bold text-slate-800">
                         <Plane className="w-4 h-4 text-[#0D3326] shrink-0" />
                         <span className="min-w-0 break-words">{traveler.from_city || 'Addis Ababa'} <span className="text-slate-400 px-1">to</span> {traveler.to_city || 'Dubai'}</span>
@@ -380,7 +378,6 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                   </div>
                 );
               })}
-            </div>
             </div>
           ) : (
             <div className="text-center py-16 bg-white rounded-2xl border border-amber-100/60 p-8 shadow-sm">
