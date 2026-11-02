@@ -102,6 +102,18 @@ export default defineConfig(({ mode }) => {
       outDir: '../backend/public/frontend-build',
       emptyOutDir: true,
       manifest: 'manifest.json',
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
+              return 'react';
+            }
+            if (id.includes('node_modules/lucide-react')) {
+              return 'icons';
+            }
+          },
+        },
+      },
     },
     server: {
       proxy: {

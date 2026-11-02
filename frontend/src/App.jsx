@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import Header from './components/Header';
-import HomeView from './components/HomeView';
-import PackagesView from './components/PackagesView';
-import TravelersView from './components/TravelersView';
-import DashboardView from './components/DashboardView';
-import SafetyView from './components/SafetyView';
+const HomeView = lazy(() => import('./components/HomeView'));
+const PackagesView = lazy(() => import('./components/PackagesView'));
+const TravelersView = lazy(() => import('./components/TravelersView'));
+const DashboardView = lazy(() => import('./components/DashboardView'));
+const SafetyView = lazy(() => import('./components/SafetyView'));
 
 import PackageDetailModal from './components/PackageDetailModal';
 import UserProfileModal from './components/UserProfileModal';
@@ -375,6 +375,7 @@ export default function App() {
       />
 
       {/* Main Views */}
+      <Suspense fallback={<main className="flex-1 min-h-[50vh] flex items-center justify-center text-sm text-slate-500">Loading PeerBridge Delivery...</main>}>
       <div className="flex-1">
         {currentView === 'home' && (
           <HomeView 
@@ -453,6 +454,7 @@ export default function App() {
           <SafetyView />
         )}
       </div>
+      </Suspense>
 
       {/* Dynamic Site Settings Footer */}
       <Footer 
