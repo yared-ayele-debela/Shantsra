@@ -53,14 +53,19 @@ export default function PackageCard({
             {statusText}
           </span>
           
-          <span
-            className="absolute top-2 right-2 inline-flex h-3 w-3 items-center justify-center sm:top-2.5 sm:right-2.5"
-            title={isUrgent ? 'Urgent delivery' : 'Standard delivery'}
-            aria-label={isUrgent ? 'Urgent delivery' : 'Standard delivery'}
-          >
-            <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${isUrgent ? 'bg-red-500' : 'bg-emerald-500'}`} />
-            <span className={`relative inline-flex h-2 w-2 rounded-full ring-2 ring-white/80 ${isUrgent ? 'bg-red-600' : 'bg-emerald-600'}`} />
-          </span>
+          {isUrgent && (
+            <span
+              className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-0.5 text-[7px] font-extrabold uppercase tracking-wider text-red-700 shadow-sm backdrop-blur sm:top-2 sm:right-2 sm:text-[9px]"
+              title="Urgent delivery"
+              aria-label="Urgent delivery"
+            >
+              <span className="relative inline-flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-red-600 ring-1 ring-white" />
+              </span>
+              Urgent
+            </span>
+          )}
 
           <span className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 text-[8px] sm:text-[10px] font-bold bg-white/90 backdrop-blur text-[#0D3326] px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-xs">
             <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-500" /> {item.weight} kg
