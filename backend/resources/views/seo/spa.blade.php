@@ -17,7 +17,10 @@
     <meta property="og:title" content="{{ $title }}">
     <meta property="og:description" content="{{ $description }}">
     <meta property="og:url" content="{{ $canonical }}">
-    <meta property="og:image" content="{{ asset('favicon.ico') }}">
+    <meta property="og:image" content="{{ $content['ogImage'] ?? config('frontend.og_image') }}">
+    <meta property="og:locale" content="{{ $locale === 'am' ? 'am_ET' : ($locale === 'ar' ? 'ar_AE' : 'en_US') }}">
+    <meta property="og:locale:alternate" content="am_ET">
+    <meta property="og:locale:alternate" content="ar_AE">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $title }}">
     <meta name="twitter:description" content="{{ $description }}">

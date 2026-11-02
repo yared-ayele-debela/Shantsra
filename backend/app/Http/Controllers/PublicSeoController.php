@@ -58,6 +58,7 @@ class PublicSeoController extends Controller
                     'availability' => 'https://schema.org/InStock',
                 ],
             ],
+            'ogImage' => url("/og/packages/{$shipment->id}.svg"),
         ]);
     }
 
@@ -130,7 +131,8 @@ class PublicSeoController extends Controller
                 'url' => $this->packageUrl($shipment),
                 'title' => $this->packageTitle($shipment),
             ])->all(),
-            'relatedRoutes' => $shipments->map(fn (Shipment $shipment) => route('/routes/'.Str::slug($shipment->to_city).'-to-'.Str::slug($shipment->from_city)))->unique()->values()->all(),
+            'relatedRoutes' => $shipments->map(fn (Shipment $shipment) => url('/routes/'.Str::slug($shipment->to_city).'-to-'.Str::slug($shipment->from_city)))->unique()->values()->all(),
+            'ogImage' => url("/og/routes/{$origin}-to-{$destination}.svg"),
         ], $shipments->isNotEmpty() || $prices->isNotEmpty());
     }
 

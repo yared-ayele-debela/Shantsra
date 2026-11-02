@@ -28,6 +28,9 @@ Route::get('/sitemaps/{type}-{page}.xml', [SitemapController::class, 'child'])
     ->whereIn('type', ['static', 'routes', 'packages', 'travelers'])
     ->whereNumber('page')->name('sitemap.child');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+Route::get('/og/packages/{shipmentId}.svg', [\App\Http\Controllers\OgImageController::class, 'package'])
+    ->whereNumber('shipmentId')->name('seo.og.package');
+Route::get('/og/routes/{origin}-to-{destination}.svg', [\App\Http\Controllers\OgImageController::class, 'route'])->name('seo.og.route');
 Route::get('/packages/{shipmentId}-{slug?}', [PublicSeoController::class, 'package'])
     ->whereNumber('shipmentId')->name('seo.package');
 Route::get('/travelers/{travelId}-{slug?}', [PublicSeoController::class, 'traveler'])
