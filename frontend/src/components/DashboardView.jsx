@@ -520,15 +520,15 @@ export default function DashboardView({
           </div>
 
           {/* Quick Route Notification Setup Banner Card */}
-          <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-4 sm:p-5 text-[#1C160F] shadow-sm space-y-3">
+          <div className="rounded-2xl border border-[#D8C39C] bg-[#FFF8E8] p-4 sm:p-5 text-[#0D3326] shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bell className="w-4 h-4 text-[#1C160F]" />
-                <h4 className="font-display font-extrabold text-xs sm:text-sm">Package Route Notification</h4>
+                <Bell className="w-4 h-4 text-[#8F6C3D]" />
+                <h4 className="font-display font-extrabold text-xs sm:text-sm text-[#0D3326]">Package Route Notification</h4>
               </div>
-              <span className="bg-white/40 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">Instant Email</span>
+              <span className="bg-white px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase text-[#8F6C3D]">Instant Email</span>
             </div>
-            <p className="text-xs leading-relaxed font-medium">
+            <p className="text-xs leading-relaxed font-medium text-slate-700">
               Want to get notified when packages are posted from <strong>Addis Ababa</strong> to <strong>Dubai</strong> within a date range?
             </p>
             <button
@@ -536,32 +536,32 @@ export default function DashboardView({
                 setDashboardTab('alerts');
                 setIsAlertModalOpen(true);
               }}
-              className="w-full bg-[#1C160F] hover:bg-amber-950 text-white rounded-xl py-2 px-3 text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full bg-[#0D3326] hover:bg-[#144937] text-white rounded-xl py-2 px-3 text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Bell className="w-3.5 h-3.5 text-amber-400" /> Subscribe to Route Alerts
             </button>
           </div>
 
           {/* Trust Verification Center Action Panel */}
-          <div className="bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-200 p-4 sm:p-6 shadow-sm space-y-3">
+          <div className="bg-white rounded-2xl border border-[#B8D5C7] p-5 sm:p-7 shadow-sm space-y-4">
             <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-amber-800" />
-              <h4 className="font-display font-bold text-xs sm:text-sm text-amber-900">Increase Handover Trust</h4>
+              <ShieldAlert className="w-5 h-5 text-[#8F6C3D]" />
+              <h4 className="font-display font-bold text-sm sm:text-base text-[#0D3326]">Increase Handover Trust</h4>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-sm text-slate-600 leading-relaxed">
               Complete document verification to display a verified shield badge on all your package requests and flight itineraries.
             </p>
             <div className="space-y-2 pt-1">
               <button 
                 onClick={onOpenFlightModal}
-                className="w-full bg-white hover:bg-amber-100/50 text-slate-700 border border-amber-200 rounded-xl py-2 sm:py-2.5 px-3.5 text-xs font-bold flex items-center justify-between transition-all"
+                className="w-full bg-[#F7FBF9] hover:bg-[#E5F0EB] text-slate-700 border border-[#B8D5C7] rounded-xl py-3 sm:py-3.5 px-4 text-sm font-bold flex items-center justify-between transition-all"
               >
                 <span className="flex items-center gap-2"><Plane className="w-3.5 h-3.5 text-amber-600" /> Verify Flight Ticket</span>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
               </button>
               <button 
                 onClick={() => setIsEditProfileOpen(true)}
-                className="w-full bg-white hover:bg-amber-100/50 text-slate-700 border border-amber-200 rounded-xl py-2 sm:py-2.5 px-3.5 text-xs font-bold flex items-center justify-between transition-all"
+                className="w-full bg-[#F7FBF9] hover:bg-[#E5F0EB] text-slate-700 border border-[#B8D5C7] rounded-xl py-3 sm:py-3.5 px-4 text-sm font-bold flex items-center justify-between transition-all"
               >
                 <span className="flex items-center gap-2"><FileCheck2 className="w-3.5 h-3.5 text-emerald-700" /> Upload Passport / Gov ID</span>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
@@ -912,13 +912,13 @@ export default function DashboardView({
           {dashboardTab === 'alerts' && (
             <div className="space-y-6">
               {/* Create Route Alert Form Box */}
-              <div className="bg-gradient-to-br from-amber-50/70 via-white to-amber-50/30 border border-amber-200/80 rounded-2xl p-4 sm:p-6 shadow-2xs space-y-4">
+              <div className="bg-white border border-[#B8D5C7] rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500 text-[#1C160F] flex items-center justify-center font-bold shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-[#0D3326] text-white flex items-center justify-center font-bold shrink-0">
                     <Bell className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-display font-extrabold text-sm sm:text-base text-[#1C160F]">Create Package Route Alert</h3>
+                    <h3 className="font-display font-extrabold text-sm sm:text-base text-[#0D3326]">Create Package Route Alert</h3>
                     <p className="text-[11px] sm:text-xs text-slate-500">
                       e.g., Get an automated email whenever a package is posted from <strong>Addis Ababa</strong> to <strong>Dubai</strong> within your target dates.
                     </p>
@@ -1039,7 +1039,7 @@ export default function DashboardView({
                       <div 
                         key={alert.id} 
                         className={`border rounded-2xl p-4 space-y-2.5 transition-all ${
-                          alert.is_active ? 'bg-white border-amber-200/90 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                        alert.is_active ? 'bg-[#F4FAF7] border-[#B8D5C7] shadow-sm' : 'bg-slate-50 border-slate-200 opacity-60'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -1108,9 +1108,9 @@ export default function DashboardView({
                 {packageNotifications.length > 0 ? (
                   <div className="space-y-2.5">
                     {packageNotifications.map(notif => (
-                      <div key={notif.id} className="bg-amber-50/40 border border-amber-100 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                      <div key={notif.id} className="bg-[#F3F8FC] border border-[#C8D8EA] rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 font-bold mt-0.5">
+                          <div className="w-9 h-9 rounded-xl bg-[#E1EDF7] text-[#24527A] flex items-center justify-center shrink-0 font-bold mt-0.5">
                             📦
                           </div>
                           <div>
@@ -1122,7 +1122,7 @@ export default function DashboardView({
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-slate-600 mt-0.5">{notif.message}</p>
+                            <p className="text-sm text-slate-700 mt-0.5">{notif.message}</p>
                             <p className="text-[10px] text-slate-400 mt-1">
                               Received {new Date(notif.created_at).toLocaleString()}
                             </p>
