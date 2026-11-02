@@ -1,5 +1,5 @@
 import React from 'react';
-import { Weight, Phone, Star, Zap } from 'lucide-react';
+import { Weight, Phone, Star } from 'lucide-react';
 import { getStorageUrl } from '../lib/api';
 
 export default function PackageCard({ 
@@ -53,11 +53,14 @@ export default function PackageCard({
             {statusText}
           </span>
           
-          {isUrgent && (
-            <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 text-[7px] sm:text-[9px] font-extrabold uppercase tracking-wider bg-red-600 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-md flex items-center gap-1">
-              <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-yellow-300 text-yellow-300" /> URGENT
-            </span>
-          )}
+          <span
+            className="absolute top-2 right-2 inline-flex h-3 w-3 items-center justify-center sm:top-2.5 sm:right-2.5"
+            title={isUrgent ? 'Urgent delivery' : 'Standard delivery'}
+            aria-label={isUrgent ? 'Urgent delivery' : 'Standard delivery'}
+          >
+            <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${isUrgent ? 'bg-red-500' : 'bg-emerald-500'}`} />
+            <span className={`relative inline-flex h-2 w-2 rounded-full ring-2 ring-white/80 ${isUrgent ? 'bg-red-600' : 'bg-emerald-600'}`} />
+          </span>
 
           <span className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 text-[8px] sm:text-[10px] font-bold bg-white/90 backdrop-blur text-[#0D3326] px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-xs">
             <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-500" /> {item.weight} kg
