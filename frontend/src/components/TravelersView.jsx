@@ -287,7 +287,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                   <div
                     key={traveler.id || traveler.name}
                     onClick={() => handleOpenUserDetail(traveler)}
-                    className="bg-white border border-[#E8DFD0] rounded-[14px] p-4 sm:p-5 shadow-[0_4px_18px_rgba(28,43,34,0.06)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,43,34,0.12)] hover:border-[#14532D] transition-all cursor-pointer space-y-3 sm:space-y-4 flex flex-col justify-between group"
+                    className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-[0_4px_18px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.1)] hover:border-[#0D3326] transition-all cursor-pointer space-y-3 sm:space-y-4 flex flex-col justify-between group"
                   >
                     {/* Top User Header */}
                     <div className="space-y-2 sm:space-y-3">
@@ -298,20 +298,20 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                               <img
                                 src={traveler.photo}
                                 alt={traveler.name}
-                                className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-[#E8DFD0] group-hover:border-[#14532D] transition-colors"
+                                className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-slate-200 group-hover:border-[#0D3326] transition-colors"
                               />
                             ) : (
-                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-[#14532D] text-white font-extrabold text-xs sm:text-base flex items-center justify-center border-2 border-[#E8DFD0] group-hover:border-[#14532D] transition-colors">
+                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-[#0D3326] text-white font-extrabold text-xs sm:text-base flex items-center justify-center border-2 border-slate-200 group-hover:border-[#0D3326] transition-colors">
                                 {traveler.name ? traveler.name.trim().charAt(0).toUpperCase() : 'T'}
                               </div>
                             )}
-                            <span className="absolute bottom-0 right-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
+                            <span className="absolute bottom-0 right-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#0D3326] text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
                               <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3" />
                             </span>
                           </div>
 
                           <div className="min-w-0">
-                            <h3 className="font-display font-bold text-xs sm:text-sm text-[#1C2B22] group-hover:text-[#14532D] transition-colors truncate">
+                            <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#0D3326] transition-colors truncate">
                               {traveler.name}
                             </h3>
                             <p className="text-[8px] sm:text-[10px] text-slate-500 truncate">
@@ -320,48 +320,48 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                           </div>
                         </div>
 
-                        <span className="flex items-center text-[#14532D] font-bold text-[9px] sm:text-[11px] bg-[#E6EFE9] border border-[#E8DFD0] px-1.5 sm:px-2 py-0.5 rounded-lg shrink-0">
+                        <span className="flex items-center text-slate-700 font-bold text-[9px] sm:text-[11px] bg-slate-50 border border-slate-200 px-1.5 sm:px-2 py-0.5 rounded-lg shrink-0">
                           <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-500 text-amber-500 mr-0.5" />
                           <span>{traveler.rating}</span>
                         </span>
                       </div>
 
                       {/* Flight Corridor Pill */}
-                      <div className="bg-[#E6EFE9] border border-[#E8DFD0] rounded-[10px] p-2 sm:p-3 space-y-0.5 sm:space-y-1">
-                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#1C2B22]">
+                      <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-3 space-y-0.5 sm:space-y-1">
+                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold text-slate-800">
                           <span className="flex items-center gap-1 truncate">
-                            <Plane className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#14532D] shrink-0" />
+                            <Plane className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D3326] shrink-0" />
                             <span className="truncate">{traveler.from_city?.slice(0, 5) || 'ADD'} ➔ {traveler.to_city?.slice(0, 5) || 'DXB'}</span>
                           </span>
                         </div>
-                        <p className="text-[8px] sm:text-[10px] text-[#14532D] font-semibold truncate">{traveler.flightDate}</p>
+                        <p className="text-[8px] sm:text-[10px] text-slate-500 font-semibold truncate">{traveler.flightDate}</p>
                       </div>
 
                       {/* Luggage Capacity & Pricing */}
                       <div className="grid grid-cols-2 gap-1.5 sm:gap-2 pt-0.5">
-                        <div className="border border-[#E8DFD0] rounded-[10px] p-1.5 sm:p-2 bg-[#FBF7F0]">
+                        <div className="border border-slate-200 rounded-xl p-1.5 sm:p-2 bg-white">
                           <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Capacity</span>
-                          <p className="text-[10px] sm:text-xs font-bold text-[#14532D] mt-0.5 flex items-center gap-0.5 truncate">
-                          <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#14532D] shrink-0" /> {traveler.available_weight}kg
+                          <p className="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 flex items-center gap-0.5 truncate">
+                          <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#0D3326] shrink-0" /> {traveler.available_weight}kg
                           </p>
                         </div>
-                        <div className="border border-[#E8DFD0] rounded-[10px] p-1.5 sm:p-2 bg-[#FBF7F0]">
+                        <div className="border border-slate-200 rounded-xl p-1.5 sm:p-2 bg-white">
                           <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Rate</span>
-                          <p className="text-[10px] sm:text-xs font-bold text-[#14532D] mt-0.5 truncate">{traveler.price}</p>
+                          <p className="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 truncate">{traveler.price}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Bottom Action Footer */}
-                    <div className="pt-2 sm:pt-3 border-t border-[#E8DFD0] flex items-center justify-between gap-1 sm:gap-2">
+                    <div className="pt-2 sm:pt-3 border-t border-slate-200 flex items-center justify-between gap-1 sm:gap-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenUserDetail(traveler);
                         }}
-                        className="text-[10px] sm:text-xs font-bold text-slate-700 hover:text-[#14532D] flex items-center gap-1 transition-colors"
+                        className="text-[10px] sm:text-xs font-bold text-slate-600 hover:text-[#0D3326] flex items-center gap-1 transition-colors"
                       >
-                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#14532D]" />
+                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D3326]" />
                         <span className="hidden sm:inline">Profile</span>
                       </button>
 
@@ -372,7 +372,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                         }}
                         aria-label="Show traveler phone"
                         title="Show traveler phone"
-                        className="flex items-center gap-1 bg-[#14532D] hover:bg-[#0F3F22] text-white text-[10px] sm:text-xs font-semibold px-3 py-2 rounded-[10px] transition-all cursor-pointer"
+                        className="flex items-center gap-1 bg-[#0D3326] hover:bg-[#144937] text-white text-[10px] sm:text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
                       >
                         <Phone className="w-3.5 h-3.5" aria-hidden="true" />
                         <span>Contact</span>
