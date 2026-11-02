@@ -41,7 +41,7 @@ class PublicSeoController extends Controller
             return redirect()->to($canonical, 301);
         }
 
-        $description = Str::limit("Send {$shipment->description} from {$shipment->from_city} to {$shipment->to_city} with PeerBridge Delivery.", 155, '');
+        $description = Str::limit($this->safeText("Send {$shipment->description} from {$shipment->from_city} to {$shipment->to_city} with PeerBridge Delivery."), 155, '');
 
         return $this->render('package', $title, $description, $canonical, [
             'h1' => $title,
@@ -52,6 +52,11 @@ class PublicSeoController extends Controller
                 'serviceType' => 'Peer-to-peer package delivery',
                 'areaServed' => [$shipment->from_city, $shipment->to_city],
                 'url' => $canonical,
+                'offers' => [
+                    '@type' => 'Offer',
+                    'url' => $canonical,
+                    'availability' => 'https://schema.org/InStock',
+                ],
             ],
         ]);
     }
@@ -72,6 +77,15 @@ class PublicSeoController extends Controller
         return $this->render('traveler', $title, "View an upcoming PeerBridge traveler trip from {$travel->from_city} to {$travel->to_city}.", $canonical, [
             'h1' => $title,
             'summary' => "Upcoming trip from {$travel->from_city} to {$travel->to_city}.",
+            'jsonLd' => [
+            '@type' => 'Trip',
+            'name' => $title,
+            'itinerary' => [
+                '@type' => 'Place',
+                'name' => "{$travel->from_city} to {$travel->to_city}",
+            ],
+            'url' => $canonical,
+            ],
         ]);
     }
 
@@ -111,7 +125,14 @@ class PublicSeoController extends Controller
         $settings = Cache::remember(
             'seo:site-settings',
             now()->addMinutes(10),
-            fn () => WebsiteSetting::query()->first()?->only(['site_name', 'logo_url', 'same_as'])
+            fn () => WebsiteSetting::query()->first()?->only([
+                'site_name',
+                'social_facebook',
+                'social_twitter',
+                'social_instagram',
+                'social_linkedin',
+                'social_youtube',
+            ])
         );
         $siteName = $settings['site_name'] ?? 'PeerBridge Delivery';
         $canonical ??= url()->current();
@@ -121,12 +142,45 @@ class PublicSeoController extends Controller
             'description' => $description,
             'url' => $canonical,
         ];
+        $content['breadcrumb'] = [
+            ['name' => 'Home', 'url' => url('/')],
+            ['name' => $title, 'url' => $canonical],
+        ];
 
         $structuredData = json_encode([
             '@context' => 'https://schema.org',
             '@graph' => [
-                ['@type' => 'Organization', 'name' => $siteName, 'url' => config('frontend.url')],
-                ['@type' => 'WebSite', 'name' => $siteName, 'url' => config('frontend.url')],
+                [
+                    '@type' => 'Organization',
+                    'name' => $siteName,
+                    'url' => config('frontend.url'),
+                    'sameAs' => array_values(array_filter([
+                        $settings['social_facebook'] ?? null,
+                        $settings['social_twitter'] ?? null,
+                        $settings['social_instagram'] ?? null,
+                        $settings['social_linkedin'] ?? null,
+                        $settings['social_youtube'] ?? null,
+                    ])),
+                ],
+                [
+                    '@type' => 'WebSite',
+                    'name' => $siteName,
+                    'url' => config('frontend.url'),
+                    'potentialAction' => [
+                        '@type' => 'SearchAction',
+                        'target' => config('frontend.url').'/packages?search={search_term_string}',
+                        'query-input' => 'required name=search_term_string',
+                    ],
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    'itemListElement' => collect($content['breadcrumb'])->values()->map(fn (array $item, int $index) => [
+                        '@type' => 'ListItem',
+                        'position' => $index + 1,
+                        'name' => $item['name'],
+                        'item' => $item['url'],
+                    ])->all(),
+                ],
                 $content['jsonLd'],
             ],
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -144,11 +198,19 @@ class PublicSeoController extends Controller
 
     private function packageTitle(Shipment $shipment): string
     {
-        return Str::limit($shipment->description ?: "Package from {$shipment->from_city} to {$shipment->to_city}", 55, '');
+        return Str::limit($this->safeText($shipment->description ?: "Package from {$shipment->from_city} to {$shipment->to_city}"), 55, '');
     }
 
     private function packageUrl(Shipment $shipment): string
     {
         return url("/packages/{$shipment->id}-".Str::slug($this->packageTitle($shipment)));
+    }
+
+    private function safeText(string $text): string
+    {
+        return trim((string) preg_replace([
+            '/[\w.+-]+@[\w-]+\.[\w.-]+/i',
+            '/(?:\+?\d[\d\s().-]{7,}\d)/',
+        ], '[private contact removed]', $text));
     }
 }
