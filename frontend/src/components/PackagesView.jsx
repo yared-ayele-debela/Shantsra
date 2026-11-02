@@ -20,6 +20,7 @@ export default function PackagesView({
   const [filterSearchText, setFilterSearchText] = useState('');
   const [activeSort, setActiveSort] = useState('latest');
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [showDesktopFilter, setShowDesktopFilter] = useState(true);
   const [apiRequests, setApiRequests] = useState([]);
   const [hasLoadedDirectory, setHasLoadedDirectory] = useState(false);
 
@@ -213,6 +214,7 @@ export default function PackagesView({
         <div className="lg:hidden col-span-12">
           <button 
             onClick={() => setShowMobileFilter(!showMobileFilter)}
+            aria-expanded={showMobileFilter}
             className="w-full bg-white border border-amber-200 text-[#1C160F] font-bold text-xs py-3 px-4 rounded-2xl flex items-center justify-between shadow-xs mb-2 cursor-pointer"
           >
             <span className="flex items-center gap-2">
@@ -226,7 +228,7 @@ export default function PackagesView({
         </div>
 
         {/* FILTER SIDEBAR (4 cols) */}
-        <div className={`${showMobileFilter ? 'block' : 'hidden'} lg:block lg:col-span-3 col-span-12`}>
+        <div className={`${showMobileFilter ? 'block' : 'hidden'} ${showDesktopFilter ? 'lg:block' : 'lg:hidden'} lg:col-span-3 col-span-12`}>
           <FilterSidebar 
             filterRoute={filterRoute}
             setFilterRoute={setFilterRoute}
@@ -243,7 +245,7 @@ export default function PackagesView({
         </div>
 
         {/* CARD GRID FEED (8 cols) */}
-        <section className="lg:col-span-9 space-y-4 sm:space-y-5 col-span-12">
+        <section className={`${showDesktopFilter ? 'lg:col-span-9' : 'lg:col-span-12'} space-y-4 sm:space-y-5 col-span-12`}>
           {/* Search & Sort Top Toolbar */}
           <div className="bg-white border border-amber-100 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             {/* Text Search */}
@@ -271,6 +273,16 @@ export default function PackagesView({
                 <option value="weight_asc">Weight: Lightest first</option>
               </select>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setShowDesktopFilter(!showDesktopFilter)}
+              aria-expanded={showDesktopFilter}
+              className="hidden lg:inline-flex items-center justify-center gap-2 rounded-xl border border-amber-200 bg-white px-3 py-2 text-xs font-semibold text-[#1C160F] transition-colors hover:bg-amber-50"
+            >
+              <SlidersHorizontal className="h-4 w-4 text-amber-600" />
+              {showDesktopFilter ? 'Hide filters' : 'Show filters'}
+            </button>
           </div>
 
           {/* Results Meta */}
