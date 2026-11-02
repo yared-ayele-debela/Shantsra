@@ -165,7 +165,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
         </div>
 
         {/* LEFT SIDE FILTER SIDEBAR (4 cols) */}
-        <div className={`${showMobileFilter ? 'block' : 'hidden'} ${showDesktopFilter ? 'lg:block' : 'lg:hidden'} lg:col-span-4 col-span-12`}>
+        <div className={`${showMobileFilter ? 'block' : 'hidden'} ${showDesktopFilter ? 'lg:block' : 'lg:hidden'} lg:col-span-3 col-span-12`}>
           <aside className="bg-white rounded-2xl border border-amber-100 p-4 sm:p-6 shadow-sm space-y-5 sm:space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none">
             <div className="flex items-center justify-between border-b border-amber-50 pb-3">
               <h3 className="font-display font-bold text-sm sm:text-base text-[#1C160F] flex items-center gap-2">
@@ -267,7 +267,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
         </div>
 
         {/* RIGHT SIDE USER CARDS GRID (8 cols, 2 columns on mobile, 3 columns on desktop) */}
-        <section className={`${showDesktopFilter ? 'lg:col-span-8' : 'lg:col-span-12'} space-y-4 sm:space-y-6 col-span-12`}>
+        <section className={`${showDesktopFilter ? 'lg:col-span-9' : 'lg:col-span-12'} space-y-4 sm:space-y-6 col-span-12`}>
           <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
             <span>Showing {filteredTravelers.length} verified traveler{filteredTravelers.length === 1 ? '' : 's'}</span>
             <button
@@ -289,7 +289,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
           ) : filteredTravelers.length > 0 ? (
             /* 2 columns on mobile, 3 columns on desktop */
             <div className="overflow-x-auto pb-2">
-            <div className="grid grid-flow-col auto-cols-[minmax(520px,1fr)] lg:grid-flow-row lg:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-flow-col auto-cols-[minmax(360px,1fr)] lg:grid-flow-row lg:grid-cols-3 gap-3 sm:gap-4">
               {filteredTravelers.map((traveler) => {
                 const whatsappMessage = encodeURIComponent(
                   `Hi ${traveler.name}, I found your verified trip (${traveler.flightDate}) on Souq & Sheba and would like to discuss sending a package.`
