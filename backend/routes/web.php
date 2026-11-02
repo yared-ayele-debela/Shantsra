@@ -16,11 +16,22 @@ use App\Http\Controllers\Admin\TravelController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Controllers\MarketingSubscriptionController;
+use App\Http\Controllers\PublicSeoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/unsubscribe/{token}', [MarketingSubscriptionController::class, 'unsubscribe'])->name('marketing.unsubscribe');
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', [PublicSeoController::class, 'home'])->name('home');
+Route::get('/packages/{shipmentId}-{slug?}', [PublicSeoController::class, 'package'])
+    ->whereNumber('shipmentId')->name('seo.package');
+Route::get('/travelers/{travelId}-{slug?}', [PublicSeoController::class, 'traveler'])
+    ->whereNumber('travelId')->name('seo.traveler');
+Route::get('/routes/{origin}-to-{destination}', [PublicSeoController::class, 'routeLanding'])->name('seo.route');
+Route::get('/how-it-works', [PublicSeoController::class, 'staticPage'])->defaults('type', 'how-it-works')->name('seo.how-it-works');
+Route::get('/faq', [PublicSeoController::class, 'staticPage'])->defaults('type', 'faq')->name('seo.faq');
+Route::get('/about', [PublicSeoController::class, 'staticPage'])->defaults('type', 'about')->name('seo.about');
+Route::get('/contact', [PublicSeoController::class, 'staticPage'])->defaults('type', 'contact')->name('seo.contact');
+Route::get('/safety', [PublicSeoController::class, 'staticPage'])->defaults('type', 'safety')->name('seo.safety');
 Route::view('/{path}', 'welcome')
     ->where('path', '^(?!admin(?:/|$)|api(?:/|$)|unsubscribe(?:/|$)).+')
     ->name('spa');

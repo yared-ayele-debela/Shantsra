@@ -17,6 +17,7 @@ import PhoneContactModal from './components/PhoneContactModal';
 import AppLoadingOverlay from './components/AppLoadingOverlay';
 import MobileBottomNav from './components/MobileBottomNav';
 import Footer from './components/Footer';
+import SeoHead from './components/SeoHead';
 
 import { DEFAULT_REQUESTS, DEFAULT_PROFILES } from './data/initialData';
 import { getApiUrl, getStorageUrl } from './lib/api';
@@ -343,6 +344,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#EEF3F0] text-[#0D3326] pb-16 lg:pb-0">
+      <SeoHead />
       {/* App Initialization Loading Overlay */}
       <AppLoadingOverlay isLoading={isAppLoading} />
 

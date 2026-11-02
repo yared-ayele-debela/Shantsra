@@ -98,6 +98,11 @@ export default defineConfig(({ mode }) => {
         }
       }
     ],
+    build: {
+      outDir: '../backend/public/frontend-build',
+      emptyOutDir: true,
+      manifest: 'manifest.json',
+    },
     server: {
       proxy: {
         '/api': {
