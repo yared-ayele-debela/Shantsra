@@ -130,7 +130,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
   } : null;
 
   return (
-    <main className="max-w-7xl mx-auto px-3.5 sm:px-5 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
+    <main className="w-full px-3.5 sm:px-6 lg:px-10 py-5 sm:py-8 space-y-6 sm:space-y-8">
       {/* Header Banner */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1">
@@ -144,7 +144,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
         </p>
       </div>
 
-      <BannerStrip placement="travelers" />
+      <BannerStrip placement="travelers" fullWidth />
 
       <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
         {/* Mobile Filter Toggle Button */}
