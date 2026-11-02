@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @if (config('frontend.gsc_verification'))
+        <meta name="google-site-verification" content="{{ config('frontend.gsc_verification') }}">
+    @endif
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,6 +45,10 @@
         <script type="module" src="{{ asset(config('frontend.asset_path').'/'.$entry['file']) }}"></script>
     @else
         <script type="module" src="{{ config('frontend.url') }}/src/main.jsx"></script>
+    @endif
+    @if (config('frontend.ga4_measurement_id') && request()->cookie('analytics_consent') === 'granted')
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('frontend.ga4_measurement_id') }}"></script>
+        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ config('frontend.ga4_measurement_id') }}');</script>
     @endif
 </head>
 <body>
