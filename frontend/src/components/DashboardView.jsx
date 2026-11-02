@@ -551,6 +551,36 @@ export default function DashboardView({
             <p className="text-sm text-slate-600 leading-relaxed">
               Complete document verification to display a verified shield badge on all your package requests and flight itineraries.
             </p>
+            <div className={`flex items-center justify-between gap-3 rounded-xl border p-3 ${
+              activeUser.id_document_status === 'approved'
+                ? 'border-emerald-200 bg-emerald-50'
+                : activeUser.id_document_status === 'rejected'
+                  ? 'border-rose-200 bg-rose-50'
+                  : 'border-amber-200 bg-amber-50'
+            }`}>
+              <div className="flex min-w-0 items-center gap-2.5">
+                <FileCheck2 className={`h-5 w-5 shrink-0 ${
+                  activeUser.id_document_status === 'approved' ? 'text-emerald-700' : 'text-amber-700'
+                }`} />
+                <div className="min-w-0">
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-slate-700">Identity document</p>
+                  <p className="truncate text-sm font-bold text-[#0D3326]">
+                    {activeUser.id_document_type
+                      ? activeUser.id_document_type.replaceAll('_', ' ')
+                      : 'Government photo ID'}
+                  </p>
+                </div>
+              </div>
+              <span className={`shrink-0 rounded-lg px-2 py-1 text-[10px] font-extrabold uppercase ${
+                activeUser.id_document_status === 'approved'
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : activeUser.id_document_status === 'rejected'
+                    ? 'bg-rose-100 text-rose-800'
+                    : 'bg-amber-100 text-amber-800'
+              }`}>
+                {activeUser.id_document_status || 'Not uploaded'}
+              </span>
+            </div>
             <div className="space-y-2 pt-1">
               <button 
                 onClick={onOpenFlightModal}
