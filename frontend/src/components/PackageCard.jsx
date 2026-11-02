@@ -39,7 +39,7 @@ export default function PackageCard({
         onClick={() => onSelectPackage(item)} 
         className="cursor-pointer flex flex-col flex-1"
       >
-        <div className="relative h-24 sm:h-36 overflow-hidden shrink-0">
+        <div className="relative h-20 sm:h-28 overflow-hidden shrink-0">
           <img 
             src={getStorageUrl(item.img) || '/assets/No-Image-Found-400x264.png'} 
             alt={item.title} 
@@ -64,7 +64,7 @@ export default function PackageCard({
           </span>
         </div>
 
-        <div className="p-2.5 sm:p-5 pb-0 flex flex-col flex-1">
+        <div className="p-2.5 sm:p-3.5 pb-0 flex flex-col flex-1">
           <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <span className="text-[9px] sm:text-xs font-semibold tracking-wide flex items-center gap-1 text-[#0D3326]">
               {item.route === 'ADD_TO_DXB' ? 'ADD ➔ DXB' : 'DXB ➔ ADD'}
@@ -74,7 +74,7 @@ export default function PackageCard({
           <h3 className="text-xs sm:text-base font-semibold text-[#0D3326] leading-snug line-clamp-2" title={item.title}>
             {item.title}
           </h3>
-          <p className="text-[10px] sm:text-sm text-[#647B72] mt-1 line-clamp-2 leading-snug sm:leading-relaxed flex-1">
+          <p className="text-[10px] sm:text-xs text-[#647B72] mt-1 line-clamp-2 leading-snug flex-1">
             {item.desc}
           </p>
 
@@ -90,7 +90,7 @@ export default function PackageCard({
       </div>
 
       {/* Non-clickable Action Bar */}
-      <div className="p-2.5 sm:p-5 pt-2 sm:pt-3">
+      <div className="p-2.5 sm:p-3.5 pt-2 sm:pt-2.5">
         <div className="flex items-center justify-between gap-1.5 sm:gap-3 border-t border-[#D2DDD8] pt-2 sm:pt-3">
           {/* Profile Info Clickable */}
           <div

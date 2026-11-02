@@ -192,7 +192,7 @@ export default function PackagesView({
   }, [hasMore, isLoadingMore, filteredPackages.length]);
 
   return (
-    <main className="max-w-7xl mx-auto px-3.5 sm:px-5 lg:px-8 py-5 sm:py-8">
+    <main className="w-full px-3.5 sm:px-6 lg:px-10 py-5 sm:py-8">
       {/* Header Banner */}
       <div className="mb-6 sm:mb-8">
         <span className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1">
@@ -206,9 +206,9 @@ export default function PackagesView({
         </p>
       </div>
 
-      <BannerStrip placement="packages" />
+      <BannerStrip placement="packages" fullWidth />
 
-      <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
+      <div className="grid lg:grid-cols-12 gap-4 sm:gap-6 items-start">
         {/* Mobile Filter Toggle Button */}
         <div className="lg:hidden col-span-12">
           <button 
@@ -226,7 +226,7 @@ export default function PackagesView({
         </div>
 
         {/* FILTER SIDEBAR (4 cols) */}
-        <div className={`${showMobileFilter ? 'block' : 'hidden'} lg:block lg:col-span-4 col-span-12`}>
+        <div className={`${showMobileFilter ? 'block' : 'hidden'} lg:block lg:col-span-3 col-span-12`}>
           <FilterSidebar 
             filterRoute={filterRoute}
             setFilterRoute={setFilterRoute}
@@ -243,7 +243,7 @@ export default function PackagesView({
         </div>
 
         {/* CARD GRID FEED (8 cols) */}
-        <section className="lg:col-span-8 space-y-4 sm:space-y-6 col-span-12">
+        <section className="lg:col-span-9 space-y-4 sm:space-y-5 col-span-12">
           {/* Search & Sort Top Toolbar */}
           <div className="bg-white border border-amber-100 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             {/* Text Search */}
@@ -282,7 +282,7 @@ export default function PackagesView({
 
           {/* Grid Feed: 2 columns on mobile, 3 columns on desktop */}
           {displayedPackages.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
               {displayedPackages.map(item => (
                 <PackageCard 
                   key={item.id} 
