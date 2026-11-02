@@ -20,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/unsubscribe/{token}', [MarketingSubscriptionController::class, 'unsubscribe'])->name('marketing.unsubscribe');
 
+Route::view('/', 'welcome')->name('home');
+Route::view('/{path}', 'welcome')
+    ->where('path', '^(?!admin(?:/|$)|api(?:/|$)|unsubscribe(?:/|$)).+')
+    ->name('spa');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest:admin')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'create'])->name('login');

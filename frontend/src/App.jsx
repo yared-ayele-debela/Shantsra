@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import Header from './components/Header';
 import HomeView from './components/HomeView';
@@ -19,6 +20,7 @@ import Footer from './components/Footer';
 
 import { DEFAULT_REQUESTS, DEFAULT_PROFILES } from './data/initialData';
 import { getApiUrl, getStorageUrl } from './lib/api';
+import { packagePath, packageTitle, slugify, viewPath } from './lib/seo';
 
 const DEFAULT_CHATS = [
   {
@@ -52,7 +54,18 @@ const DEFAULT_CHATS = [
 ];
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('home');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const currentView = useMemo(() => {
+    const path = location.pathname.replace(/^\/(?:en|am|ar)(?=\/|$)/, '') || '/';
+    if (path === '/') return 'home';
+    if (path.startsWith('/packages')) return 'packages';
+    if (path.startsWith('/travelers')) return 'travelers';
+    if (path === '/dashboard') return 'dashboard';
+    if (path === '/safety') return 'safety';
+    return 'home';
+  }, [location.pathname]);
+  const setCurrentView = (view) => navigate(viewPath(view));
   const [isAppLoading, setIsAppLoading] = useState(true);
   
   // Persistent state in LocalStorage
@@ -268,44 +281,44 @@ export default function App() {
 
   const handleOpenPackageModal = (pkg) => {
     setSelectedPackage(pkg);
-    if (pkg && typeof window !== 'undefined' && window.history && window.history.replaceState) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('package', pkg.id);
-      window.history.replaceState({}, '', url.toString());
+    if (pkg) {
+      navigate(packagePath(pkg));
     }
   };
 
   const handleClosePackageModal = () => {
     setSelectedPackage(null);
-    if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('package');
-      const newSearch = url.searchParams.toString();
-      const cleanUrl = url.pathname + (newSearch ? `?${newSearch}` : '') + url.hash;
-      window.history.replaceState({}, '', cleanUrl);
-    }
+    navigate(viewPath(currentView === 'packages' ? 'packages' : 'home'));
   };
 
-  // Deep Link Parser: Automatically open shared package modal if URL contains ?package=id
+  // Keep legacy package links working while moving shared links to canonical paths.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const packageId = params.get('package');
-    if (!packageId) return;
+    const pathMatch = window.location.pathname.match(/^\/packages\/([^/-]+)(?:-(.*))?$/);
+    const requestedId = packageId || pathMatch?.[1];
+    if (!requestedId) return;
 
     // Search in current requests list first
-    const matched = requests.find(r => String(r.id) === String(packageId));
+    const matched = requests.find(r => String(r.id) === String(requestedId));
     if (matched) {
       setSelectedPackage(matched);
+      const canonicalPath = packagePath(matched);
+      if (window.location.pathname !== canonicalPath || packageId) {
+        navigate(canonicalPath, { replace: true });
+      } else if (pathMatch?.[2] && pathMatch[2] !== slugify(packageTitle(matched))) {
+        navigate(canonicalPath, { replace: true });
+      }
     } else {
       // Fetch open shipments from API if not found in local requests state
       fetch(getApiUrl('/api/shipments/open'))
         .then(res => res.ok ? res.json() : null)
         .then(data => {
           if (data && data.shipments) {
-            const found = data.shipments.find(s => String(s.id) === String(packageId));
+            const found = data.shipments.find(s => String(s.id) === String(requestedId));
             if (found) {
-              setSelectedPackage({
+              const normalized = {
                 id: found.id,
                 title: found.receiver_name ? `Shipment for ${found.receiver_name}` : `Package (${found.from_city || 'ADD'} ➔ ${found.to_city || 'DXB'})`,
                 desc: found.description || `Cargo transit from ${found.from_city || 'Addis Ababa'} to ${found.to_city || 'Dubai'}.`,
@@ -318,13 +331,15 @@ export default function App() {
                 status: found.status || 'pending',
                 phone: found.receiver_phone || '251911223344',
                 sender: found.sender_display || 'Verified Poster'
-              });
+              };
+              setSelectedPackage(normalized);
+              navigate(packagePath(normalized), { replace: true });
             }
           }
         })
         .catch(() => {});
     }
-  }, [requests]);
+  }, [requests, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#EEF3F0] text-[#0D3326] pb-16 lg:pb-0">
