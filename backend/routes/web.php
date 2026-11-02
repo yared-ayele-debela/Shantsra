@@ -17,11 +17,17 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Controllers\MarketingSubscriptionController;
 use App\Http\Controllers\PublicSeoController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/unsubscribe/{token}', [MarketingSubscriptionController::class, 'unsubscribe'])->name('marketing.unsubscribe');
 
 Route::get('/', [PublicSeoController::class, 'home'])->name('home');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/sitemaps/{type}-{page}.xml', [SitemapController::class, 'child'])
+    ->whereIn('type', ['static', 'routes', 'packages', 'travelers'])
+    ->whereNumber('page')->name('sitemap.child');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 Route::get('/packages/{shipmentId}-{slug?}', [PublicSeoController::class, 'package'])
     ->whereNumber('shipmentId')->name('seo.package');
 Route::get('/travelers/{travelId}-{slug?}', [PublicSeoController::class, 'traveler'])
