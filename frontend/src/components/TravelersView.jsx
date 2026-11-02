@@ -353,10 +353,16 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                         <Plane className="w-4 h-4 text-[#0D3326] shrink-0" />
                         <span className="min-w-0 break-words">{traveler.from_city || 'Addis Ababa'} <span className="text-slate-400 px-1">to</span> {traveler.to_city || 'Dubai'}</span>
                       </div>
-                      <p className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">{traveler.flightDate}</p>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] sm:text-xs text-slate-600">
-                        <span className="whitespace-nowrap"><strong className="text-slate-800">{traveler.available_weight}kg</strong> capacity</span>
-                        <span className="whitespace-nowrap"><strong className="text-slate-800">{traveler.price}</strong></span>
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">
+                        Departure: <span className="text-slate-700">{traveler.flightDate}</span>
+                      </p>
+                      <div className="space-y-1 text-[10px] sm:text-xs text-slate-600">
+                        <p>
+                          Capacity: <strong className="text-slate-800">{traveler.available_weight}kg</strong>
+                        </p>
+                        <p>
+                          Rate: <strong className="text-slate-800">{traveler.price}</strong>
+                        </p>
                       </div>
                     </div>
 
