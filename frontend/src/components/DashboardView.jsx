@@ -367,6 +367,8 @@ export default function DashboardView({
     activeUser.id_document_status === 'pending' ? 'text-amber-800 bg-amber-50 border-amber-200' :
     activeUser.id_document_status === 'rejected' ? 'text-red-700 bg-red-50 border-red-200' :
     'text-slate-400 border-slate-100';
+  const identityDocumentUrl = activeUser.id_document_url || activeUser.id_document_path || '';
+  const identityDocumentIsPdf = /\.pdf(?:$|\?)/i.test(identityDocumentUrl);
 
   return (
     <main className="max-w-7xl mx-auto px-3.5 sm:px-5 lg:px-8 py-5 sm:py-10 space-y-6 sm:space-y-8">
@@ -581,6 +583,34 @@ export default function DashboardView({
                 {activeUser.id_document_status || 'Not uploaded'}
               </span>
             </div>
+            {identityDocumentUrl && (
+              <a
+                href={getStorageUrl(identityDocumentUrl)}
+                target="_blank"
+                rel="noreferrer"
+                className="group block overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition-colors hover:border-[#8F6C3D]"
+                aria-label="View uploaded identity document"
+              >
+                {identityDocumentIsPdf ? (
+                  <div className="flex items-center gap-3 p-4">
+                    <FileCheck2 className="h-8 w-8 text-[#8F6C3D]" />
+                    <div>
+                      <p className="text-sm font-bold text-[#0D3326]">Uploaded identity document</p>
+                      <p className="text-xs text-slate-500">Open PDF document</p>
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={getStorageUrl(identityDocumentUrl)}
+                    alt={`${activeUser.id_document_type || 'Identity'} document preview`}
+                    className="h-36 w-full object-contain bg-slate-100 p-2 transition-transform group-hover:scale-[1.02]"
+                  />
+                )}
+                <span className="block border-t border-slate-200 px-3 py-2 text-center text-[10px] font-bold uppercase tracking-wide text-[#8F6C3D]">
+                  View full document
+                </span>
+              </a>
+            )}
             <div className="space-y-2 pt-1">
               <button 
                 onClick={onOpenFlightModal}
