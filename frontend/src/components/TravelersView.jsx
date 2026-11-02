@@ -326,10 +326,11 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                               e.stopPropagation();
                               handleOpenUserDetail(traveler);
                             }}
-                            className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-slate-600 hover:text-[#0D3326] transition-colors"
+                            aria-label="View traveler profile"
+                            title="View traveler profile"
+                            className="inline-flex items-center justify-center text-slate-600 hover:text-[#0D3326] transition-colors"
                           >
                             <User className="w-3 h-3 text-[#0D3326]" />
-                            <span>Profile</span>
                           </button>
                           <button
                             onClick={(e) => {
