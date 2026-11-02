@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, SlidersHorizontal, RotateCcw, Search, Plane, Star, Phone, CheckCircle2, User, Weight, Loader2 } from 'lucide-react';
+import { Users, SlidersHorizontal, RotateCcw, Search, Plane, Star, Phone, CheckCircle2, User, Loader2 } from 'lucide-react';
 import UserProfileModal from './UserProfileModal';
 import BannerStrip from './BannerStrip';
 import { getApiUrl, getStorageUrl } from '../lib/api';
@@ -288,72 +288,54 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                   <div
                     key={traveler.id || traveler.name}
                     onClick={() => handleOpenUserDetail(traveler)}
-                    className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-[0_4px_18px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.1)] hover:border-[#0D3326] transition-all cursor-pointer flex flex-row items-stretch gap-4 sm:gap-6 group"
+                    className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-[0_4px_18px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.1)] hover:border-[#0D3326] transition-all cursor-pointer flex flex-row items-center gap-4 sm:gap-6 group"
                   >
                     {/* Top User Header */}
-                    <div className="min-w-0 flex-1 space-y-2 sm:space-y-3">
-                      <div className="flex items-start justify-between gap-1">
-                        <div className="flex items-center gap-2">
-                          <div className="relative shrink-0">
-                            {traveler.isRealPhoto ? (
-                              <img
-                                src={traveler.photo}
-                                alt={traveler.name}
-                                className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-slate-200 group-hover:border-[#0D3326] transition-colors"
-                              />
-                            ) : (
-                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-[#0D3326] text-white font-extrabold text-xs sm:text-base flex items-center justify-center border-2 border-slate-200 group-hover:border-[#0D3326] transition-colors">
-                                {traveler.name ? traveler.name.trim().charAt(0).toUpperCase() : 'T'}
-                              </div>
-                            )}
-                            <span className="absolute bottom-0 right-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#0D3326] text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
-                              <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3" />
-                            </span>
+                    <div className="flex items-center gap-3 sm:gap-4 w-44 sm:w-56 shrink-0">
+                      <div className="relative shrink-0">
+                        {traveler.isRealPhoto ? (
+                          <img
+                            src={traveler.photo}
+                            alt={traveler.name}
+                            className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover border border-slate-200 shadow-sm"
+                          />
+                        ) : (
+                          <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-[#0D3326] text-white font-extrabold text-xl sm:text-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                            {traveler.name ? traveler.name.trim().charAt(0).toUpperCase() : 'T'}
                           </div>
-
-                          <div className="min-w-0">
-                            <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#0D3326] transition-colors truncate">
-                              {traveler.name}
-                            </h3>
-                            <p className="text-[8px] sm:text-[10px] text-slate-500 truncate">
-                              {traveler.city || 'Addis Ababa'}
-                            </p>
-                          </div>
-                        </div>
-
-                        <span className="flex items-center text-slate-700 font-bold text-[9px] sm:text-[11px] bg-slate-50 border border-slate-200 px-1.5 sm:px-2 py-0.5 rounded-lg shrink-0">
-                          <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-500 text-amber-500 mr-0.5" />
-                          <span>{traveler.rating}</span>
+                        )}
+                        <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-[#0D3326] text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
+                          <CheckCircle2 className="w-2.5 h-2.5" />
                         </span>
                       </div>
 
-                      {/* Flight Corridor Pill */}
-                      <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-3 space-y-0.5 sm:space-y-1">
-                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold text-slate-800">
-                          <span className="flex items-center gap-1 truncate">
-                            <Plane className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D3326] shrink-0" />
-                            <span className="truncate">{traveler.from_city?.slice(0, 5) || 'ADD'} ➔ {traveler.to_city?.slice(0, 5) || 'DXB'}</span>
-                          </span>
-                        </div>
-                        <p className="text-[8px] sm:text-[10px] text-slate-500 font-semibold truncate">{traveler.flightDate}</p>
-                      </div>
-
-                      {/* Luggage Capacity & Pricing */}
-                      <div className="grid grid-cols-2 gap-1.5 sm:gap-2 pt-0.5">
-                        <div className="border border-slate-200 rounded-xl p-1.5 sm:p-2 bg-white">
-                          <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Capacity</span>
-                          <p className="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 flex items-center gap-0.5 truncate">
-                          <Weight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#0D3326] shrink-0" /> {traveler.available_weight}kg
-                          </p>
-                        </div>
-                        <div className="border border-slate-200 rounded-xl p-1.5 sm:p-2 bg-white">
-                          <span className="text-[7px] sm:text-[8px] font-bold uppercase text-slate-400 tracking-wider">Rate</span>
-                          <p className="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 truncate">{traveler.price}</p>
-                        </div>
+                      <div className="min-w-0">
+                        <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 group-hover:text-[#0D3326] transition-colors truncate">
+                          {traveler.name}
+                        </h3>
+                        <p className="text-[10px] sm:text-xs text-slate-500 truncate">
+                          {traveler.city || 'Addis Ababa'}
+                        </p>
+                        <span className="mt-1 inline-flex items-center gap-1 text-slate-700 font-bold text-[10px] sm:text-xs">
+                          <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                          {traveler.rating}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Bottom Action Footer */}
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800">
+                        <Plane className="w-4 h-4 text-[#0D3326] shrink-0" />
+                        <span className="truncate">{traveler.from_city || 'Addis Ababa'} <span className="text-slate-400 px-1">to</span> {traveler.to_city || 'Dubai'}</span>
+                      </div>
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">{traveler.flightDate}</p>
+                      <div className="flex items-center gap-4 text-[10px] sm:text-xs text-slate-600">
+                        <span><strong className="text-slate-800">{traveler.available_weight}kg</strong> capacity</span>
+                        <span><strong className="text-slate-800">{traveler.price}</strong></span>
+                      </div>
+                    </div>
+
+                    {/* Profile actions */}
                     <div className="w-24 sm:w-32 shrink-0 border-l border-slate-200 pl-3 sm:pl-5 flex flex-col items-stretch justify-center gap-2 sm:gap-3">
                       <button
                         onClick={(e) => {
@@ -363,7 +345,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                         className="text-[10px] sm:text-xs font-bold text-slate-600 hover:text-[#0D3326] flex items-center gap-1 transition-colors"
                       >
                         <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D3326]" />
-                        <span className="hidden sm:inline">Profile</span>
+                        <span>Profile</span>
                       </button>
 
                       <button
