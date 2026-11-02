@@ -1,0 +1,3 @@
+Contact: https://peerbridge.delivery/contact
+Preferred-Languages: en, am, ar
+Canonical: https://peerbridge.delivery/.well-known/security.txt

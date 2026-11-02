@@ -41,12 +41,15 @@ Route::get('/faq', [PublicSeoController::class, 'staticPage'])->defaults('type',
 Route::get('/about', [PublicSeoController::class, 'staticPage'])->defaults('type', 'about')->name('seo.about');
 Route::get('/contact', [PublicSeoController::class, 'staticPage'])->defaults('type', 'contact')->name('seo.contact');
 Route::get('/safety', [PublicSeoController::class, 'staticPage'])->defaults('type', 'safety')->name('seo.safety');
+Route::get('/dashboard', [PublicSeoController::class, 'privatePage'])->defaults('type', 'dashboard')->name('seo.dashboard');
+Route::get('/login', [PublicSeoController::class, 'privatePage'])->defaults('type', 'login')->name('seo.login');
+Route::get('/register', [PublicSeoController::class, 'privatePage'])->defaults('type', 'register')->name('seo.register');
+Route::get('/reset-password', [PublicSeoController::class, 'privatePage'])->defaults('type', 'reset-password')->name('seo.reset-password');
+Route::get('/chat', [PublicSeoController::class, 'privatePage'])->defaults('type', 'chat')->name('seo.chat');
 Route::get('/{locale}/{path?}', [PublicSeoController::class, 'localized'])
     ->whereIn('locale', ['en', 'am', 'ar'])
     ->where('path', '.*')->name('seo.localized');
-Route::view('/{path}', 'welcome')
-    ->where('path', '^(?!admin(?:/|$)|api(?:/|$)|unsubscribe(?:/|$)).+')
-    ->name('spa');
+Route::fallback(fn () => abort(404));
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest:admin')->group(function () {

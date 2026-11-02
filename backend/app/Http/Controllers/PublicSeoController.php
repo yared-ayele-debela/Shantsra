@@ -164,12 +164,38 @@ class PublicSeoController extends Controller
         ];
         [$title, $description] = $pages[$locale];
         $path = trim((string) $path, '/');
+        abort_unless($path === '' || array_key_exists($path, [
+            'packages' => true,
+            'travelers' => true,
+            'how-it-works' => true,
+            'faq' => true,
+            'about' => true,
+            'contact' => true,
+            'safety' => true,
+        ]), 404);
         $canonical = url("/{$locale}".($path ? "/{$path}" : ''));
 
         return $this->render('localized', $title, $description, $canonical, [
             'h1' => $title,
             'summary' => $description,
         ], true, $locale);
+    }
+
+    public function privatePage(string $type): View
+    {
+        $titles = [
+            'dashboard' => 'Dashboard | PeerBridge Delivery',
+            'login' => 'Sign in | PeerBridge Delivery',
+            'register' => 'Create an account | PeerBridge Delivery',
+            'reset-password' => 'Reset password | PeerBridge Delivery',
+            'chat' => 'Messages | PeerBridge Delivery',
+        ];
+        abort_unless(isset($titles[$type]), 404);
+
+        return $this->render($type, $titles[$type], 'Private PeerBridge Delivery account page.', url("/{$type}"), [
+            'h1' => $titles[$type],
+            'summary' => 'This account page is not indexed.',
+        ], false);
     }
 
     private function render(string $type, string $title, string $description, ?string $canonical = null, array $content = [], bool $indexable = true, string $locale = 'en'): View
