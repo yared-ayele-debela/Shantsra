@@ -46,6 +46,6 @@ jobs:
             open -p ${{ secrets.SSH_PORT }} sftp://${{ secrets.SSH_USER }}:dummy@${{ secrets.SSH_HOST }};
             mirror -R --delete --only-newer --parallel=4 \
               --exclude-glob .well-known --exclude-glob cgi-bin \
-              frontend/dist /home/${{ secrets.SSH_USER }}/public_html;
+              backend/public/frontend-build /home/${{ secrets.SSH_USER }}/public_html;
             bye
           "
