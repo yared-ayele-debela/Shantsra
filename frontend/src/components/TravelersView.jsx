@@ -278,7 +278,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
           ) : filteredTravelers.length > 0 ? (
             /* 2 columns on mobile, 3 columns on desktop */
             <div className="overflow-x-auto pb-2">
-            <div className="grid grid-flow-col auto-cols-[minmax(520px,1fr)] lg:grid-flow-row lg:grid-cols-1 gap-3 sm:gap-4">
+            <div className="grid grid-flow-col auto-cols-[minmax(520px,1fr)] lg:grid-flow-row lg:grid-cols-2 gap-3 sm:gap-4">
               {filteredTravelers.map((traveler) => {
                 const whatsappMessage = encodeURIComponent(
                   `Hi ${traveler.name}, I found your verified trip (${traveler.flightDate}) on Souq & Sheba and would like to discuss sending a package.`
