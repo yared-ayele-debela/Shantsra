@@ -143,7 +143,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
         </p>
       </div>
 
-      <BannerStrip placement="travelers" single />
+      <BannerStrip placement="travelers" />
 
       <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
         {/* Mobile Filter Toggle Button */}

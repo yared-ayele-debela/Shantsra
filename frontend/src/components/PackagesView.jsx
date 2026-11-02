@@ -206,7 +206,7 @@ export default function PackagesView({
         </p>
       </div>
 
-      <BannerStrip placement="packages" single />
+      <BannerStrip placement="packages" />
 
       <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-start">
         {/* Mobile Filter Toggle Button */}
