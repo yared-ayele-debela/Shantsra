@@ -112,14 +112,14 @@
 <body>
     <div class="wrapper">
         <div class="header">
-            <div class="badge">PeerBridge Route Alert</div>
+            <div class="badge">Shantasra Route Alert</div>
             <h1>📦 New Package Posted!</h1>
         </div>
         <div class="content">
             <div class="greeting">Hello {{ $user->name }},</div>
             <p style="font-size: 14px; color: #475569; line-height: 1.5;">
                 A new package matching your saved route notification alert for 
-                <strong>{{ $alert->from_city }} ➔ {{ $alert->to_city }}</strong> has just been created on PeerBridge Delivery!
+                <strong>{{ $alert->from_city }} ➔ {{ $alert->to_city }}</strong> has just been created on Shantasra!
             </p>
 
             <div class="alert-box">
@@ -161,8 +161,8 @@
             </div>
         </div>
         <div class="footer">
-            You received this email because you created a package route notification on PeerBridge Delivery.<br>
-            © {{ date('Y') }} PeerBridge Delivery. All rights reserved.
+            You received this email because you created a package route notification on Shantasra.<br>
+            © {{ date('Y') }} Shantasra. All rights reserved.
         </div>
     </div>
 </body>

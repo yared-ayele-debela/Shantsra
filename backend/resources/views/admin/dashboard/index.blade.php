@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <h4 class="mb-0 fw-bold text-dark">{{ $siteSettings->site_name ?? 'PeerBridge' }}</h4>
+                        <h4 class="mb-0 fw-bold text-dark">{{ $siteSettings->site_name ?? 'Shantasra' }}</h4>
                         <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2.5 py-1 small fw-semibold">
                             <i class="bi bi-patch-check-fill me-1"></i> Live Settings Info
                         </span>

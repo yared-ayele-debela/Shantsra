@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | PeerBridge</title>
+    <title>Admin Login | Shantasra</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abyssinica+SIL&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -74,7 +74,7 @@
             <div class="text-center mb-4">
                 <div class="login-logo mx-auto mb-3">PB</div>
                 <h1 class="mb-1">Admin sign in</h1>
-                <p class="text-muted small mb-0">PeerBridge operations console</p>
+                <p class="text-muted small mb-0">Shantasra operations console</p>
             </div>
             <div class="card login-card border-0 bg-white">
                 <div class="card-body p-4 p-md-5">

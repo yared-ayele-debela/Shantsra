@@ -13,7 +13,7 @@ class BannerSeeder extends Seeder
         $banners = [
             [
                 'title' => 'Send with confidence between Ethiopia and the UAE',
-                'badge' => 'Welcome to PeerBridge',
+                'badge' => 'Welcome to Shantasra',
                 'description' => 'Connect with verified travelers carrying approved packages on their planned trips.',
                 'bg_gradient' => 'linear-gradient(135deg, #14532D, #0F3F22)',
                 'cta_text' => 'Send a package',
@@ -73,10 +73,10 @@ class BannerSeeder extends Seeder
             ],
             [
                 'title' => 'New routes, trusted connections',
-                'badge' => 'PeerBridge',
+                'badge' => 'Shantasra',
                 'description' => 'Discover a simpler way to send packages with people already traveling your route.',
                 'bg_gradient' => 'linear-gradient(135deg, #0F3F22, #14532D)',
-                'cta_text' => 'Explore PeerBridge',
+                'cta_text' => 'Explore Shantasra',
                 'cta_link' => '/',
                 'placement' => 'all',
                 'sort_order' => 10,

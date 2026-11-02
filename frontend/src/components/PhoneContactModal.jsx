@@ -17,8 +17,8 @@ export default function PhoneContactModal({ contact, onClose }) {
 
   const whatsappMessage = encodeURIComponent(
     itemTitle 
-      ? `Hi ${name}, I am contacting you regarding your request "${itemTitle}" on PeerBridge.`
-      : `Hi ${name}, I am reaching out to you via PeerBridge.`
+      ? `Hi ${name}, I am contacting you regarding your request "${itemTitle}" on Shantasra.`
+      : `Hi ${name}, I am reaching out to you via Shantasra.`
   );
 
   const logInquiry = async (type = 'whatsapp') => {

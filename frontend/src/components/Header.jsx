@@ -14,7 +14,7 @@ export default function Header({
 }) {
   const { settings } = useSiteSettings();
   const logoUrl = settings?.logo_url || sessionStorage.getItem(SITE_LOGO_STORAGE_KEY);
-  const siteName = settings?.site_name || 'Souq & Sheba';
+  const siteName = settings?.site_name || 'Shantasra';
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-[#D2DDD8]">

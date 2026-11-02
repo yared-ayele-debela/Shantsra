@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Admin Dashboard' }} | {{ $siteSettings->site_name ?? 'PeerBridge' }} Admin</title>
+    <title>{{ $title ?? 'Admin Dashboard' }} | {{ $siteSettings->site_name ?? 'Shantasra' }} Admin</title>
     @if ($siteSettings?->faviconPublicUrl())
         <link rel="icon" href="{{ $siteSettings->faviconPublicUrl() }}">
     @endif
@@ -711,7 +711,7 @@
                     <div class="admin-logo-mark flex-shrink-0">{{ strtoupper(substr($siteSettings->site_name ?? 'PB', 0, 2)) }}</div>
                 @endif
                 <div class="min-w-0">
-                    <div class="admin-logo-title text-truncate">{{ $siteSettings->site_name ?? 'PeerBridge' }}</div>
+                    <div class="admin-logo-title text-truncate">{{ $siteSettings->site_name ?? 'Shantasra' }}</div>
                     <div class="admin-logo-tagline text-truncate">Admin · {{ $siteSettings->site_tagline ?? 'UAE to Ethiopia' }}</div>
                 </div>
             </div>
@@ -730,7 +730,7 @@
                     <div class="admin-logo-mark">{{ strtoupper(substr($siteSettings->site_name ?? 'PB', 0, 2)) }}</div>
                 @endif
                 <div>
-                    <h2 class="h5 mb-0" id="adminSidebarLabel">{{ $siteSettings->site_name ?? 'PeerBridge' }}</h2>
+                    <h2 class="h5 mb-0" id="adminSidebarLabel">{{ $siteSettings->site_name ?? 'Shantasra' }}</h2>
                     <p class="small text-muted mb-0">Admin console</p>
                 </div>
             </div>
@@ -753,7 +753,7 @@
                                 <div class="admin-logo-mark">{{ strtoupper(substr($siteSettings->site_name ?? 'PB', 0, 2)) }}</div>
                             @endif
                             <div class="min-w-0">
-                                <div class="admin-logo-title text-truncate">{{ $siteSettings->site_name ?? 'PeerBridge' }}</div>
+                                <div class="admin-logo-title text-truncate">{{ $siteSettings->site_name ?? 'Shantasra' }}</div>
                                 <div class="admin-logo-tagline text-truncate">Admin · {{ $siteSettings->site_tagline ?? 'UAE to Ethiopia' }}</div>
                             </div>
                         </div>

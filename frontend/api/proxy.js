@@ -226,7 +226,7 @@ export default async function handler(req, res) {
 
   if (!targetPath || targetPath === '/' || targetPath === '/api/proxy') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify({ status: 'ok', message: 'PeerBridge Vercel API Proxy is operational' }));
+    return res.end(JSON.stringify({ status: 'ok', message: 'Shantasra Vercel API Proxy is operational' }));
   }
 
   try {

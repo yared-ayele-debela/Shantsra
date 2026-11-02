@@ -1,4 +1,4 @@
-# PeerBridge: Simple Deal Confirmation Guide
+# Shantasra: Simple Deal Confirmation Guide
 
 This simplified guide focuses exclusively on **verifying if a sender and traveler made a deal** after communicating. Delivery verification is handled by the customers themselves—the platform only tracks whether a deal was confirmed.
 

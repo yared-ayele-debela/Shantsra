@@ -171,7 +171,7 @@ export default function App() {
         photo_url: photoSrc,
         rating: '5.0',
         deliveriesCount: 3,
-        bio: 'Verified member of the Souq & Sheba delivery network.',
+        bio: 'Verified member of the Shantasra delivery network.',
         verifications: { id: Boolean(currentUser.id_document_status === 'approved'), flight: true, phone: Boolean(currentUser.phone) },
         reviews: []
       });
@@ -197,7 +197,7 @@ export default function App() {
       photo_url: null,
       rating: '4.8',
       deliveriesCount: 5,
-      bio: 'Member of the Souq & Sheba delivery network.',
+      bio: 'Member of the Shantasra delivery network.',
       verifications: { id: true, flight: true, phone: true },
       reviews: []
     });
@@ -375,7 +375,7 @@ export default function App() {
       />
 
       {/* Main Views */}
-      <Suspense fallback={<main className="flex-1 min-h-[50vh] flex items-center justify-center text-sm text-slate-500">Loading PeerBridge Delivery...</main>}>
+      <Suspense fallback={<main className="flex-1 min-h-[50vh] flex items-center justify-center text-sm text-slate-500">Loading Shantasra...</main>}>
       <div className="flex-1">
         {currentView === 'home' && (
           <HomeView 

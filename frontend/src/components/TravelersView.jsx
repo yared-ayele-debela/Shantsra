@@ -122,7 +122,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
     avatar: modalTraveler.avatar,
     rating: String(modalTraveler.rating),
     deliveriesCount: modalTraveler.reviews || 10,
-    bio: 'Verified traveler registered with the Souq & Sheba delivery network.',
+    bio: 'Verified traveler registered with the Shantasra delivery network.',
     verifications: { id: true, flight: true, phone: true },
     reviews: [
       { id: 1, author: 'Kaleb T.', date: '2 weeks ago', rating: 5, text: 'Super reliable! Carried my package safely.' }
@@ -292,7 +292,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
             <div className="grid grid-flow-col auto-cols-[minmax(360px,1fr)] lg:grid-flow-row lg:grid-cols-3 gap-3 sm:gap-4">
               {filteredTravelers.map((traveler) => {
                 const whatsappMessage = encodeURIComponent(
-                  `Hi ${traveler.name}, I found your verified trip (${traveler.flightDate}) on Souq & Sheba and would like to discuss sending a package.`
+                  `Hi ${traveler.name}, I found your verified trip (${traveler.flightDate}) on Shantasra and would like to discuss sending a package.`
                 );
 
                 return (

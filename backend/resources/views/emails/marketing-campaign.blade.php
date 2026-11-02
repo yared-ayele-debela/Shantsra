@@ -34,7 +34,7 @@
                                                 <div style="width:44px; height:44px; border-radius:14px; background:#ffffff; color:#3a5826; font-weight:700; font-size:15px; line-height:44px; text-align:center; font-family:'Noto Sans', Arial, sans-serif;">PB</div>
                                             </td>
                                             <td style="vertical-align:middle;">
-                                                <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.88; font-weight:700;">PeerBridge</div>
+                                                <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.88; font-weight:700;">Shantasra</div>
                                                 <div style="font-size:12px; opacity:0.78; margin-top:2px;">UAE to Ethiopia</div>
                                             </td>
                                         </tr>
@@ -72,7 +72,7 @@
                 <tr>
                     <td style="padding:22px 28px; border-top:1px solid rgba(98,143,63,0.14); background:#f5fbf1;">
                         <p style="margin:0 0 10px; color:#647056; font-size:13px; line-height:1.55;">
-                            You are receiving this email because you opted in to product updates from {{ config('app.name', 'PeerBridge') }}.
+                            You are receiving this email because you opted in to product updates from {{ config('app.name', 'Shantasra') }}.
                         </p>
                         <p style="margin:0; font-size:13px;">
                             <a href="{{ route('marketing.unsubscribe', $user->unsubscribe_token) }}" style="color:#4c7330; font-weight:600; text-decoration:underline;">Unsubscribe from marketing emails</a>
@@ -81,7 +81,7 @@
                 </tr>
             </table>
             <p style="margin:16px 0 0; font-size:12px; color:#8a8275; text-align:center;">
-                © {{ date('Y') }} {{ config('app.name', 'PeerBridge') }}
+                © {{ date('Y') }} {{ config('app.name', 'Shantasra') }}
             </p>
         </td>
     </tr>

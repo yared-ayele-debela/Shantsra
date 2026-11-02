@@ -22,7 +22,7 @@ class PublicSeoController extends Controller
             }
         }
 
-        return $this->render('home', 'PeerBridge Delivery | Cross-border delivery between UAE and Ethiopia', 'Send packages between the UAE and Ethiopia with trusted travelers on PeerBridge Delivery.');
+        return $this->render('home', 'Shantasra | Cross-border delivery between UAE and Ethiopia', 'Send packages between the UAE and Ethiopia with trusted travelers on Shantasra.');
     }
 
     public function package(int $shipmentId, ?string $slug = null): View|RedirectResponse
@@ -41,7 +41,7 @@ class PublicSeoController extends Controller
             return redirect()->to($canonical, 301);
         }
 
-        $description = Str::limit($this->safeText("Send {$shipment->description} from {$shipment->from_city} to {$shipment->to_city} with PeerBridge Delivery."), 155, '');
+        $description = Str::limit($this->safeText("Send {$shipment->description} from {$shipment->from_city} to {$shipment->to_city} with Shantasra."), 155, '');
 
         return $this->render('package', $title, $description, $canonical, [
             'h1' => $title,
@@ -69,13 +69,13 @@ class PublicSeoController extends Controller
             abort(404);
         }
 
-        $title = "Traveler from {$travel->from_city} to {$travel->to_city} | PeerBridge";
+        $title = "Traveler from {$travel->from_city} to {$travel->to_city} | Shantasra";
         $canonical = url("/travelers/{$travel->id}-".Str::slug($travel->traveler->name ?: 'traveler'));
         if ($slug !== Str::slug($travel->traveler->name ?: 'traveler')) {
             return redirect()->to($canonical, 301);
         }
 
-        return $this->render('traveler', $title, "View an upcoming PeerBridge traveler trip from {$travel->from_city} to {$travel->to_city}.", $canonical, [
+        return $this->render('traveler', $title, "View an upcoming Shantasra traveler trip from {$travel->from_city} to {$travel->to_city}.", $canonical, [
             'h1' => $title,
             'summary' => "Upcoming trip from {$travel->from_city} to {$travel->to_city}.",
             'jsonLd' => [
@@ -120,7 +120,7 @@ class PublicSeoController extends Controller
         $priceRange = $prices->isNotEmpty()
             ? 'Typical traveler pricing is '.number_format($prices->min(), 2).' to '.number_format($prices->max(), 2).' per kg.'
             : 'Pricing varies by traveler, package weight, and timing.';
-        $title = Str::limit("Send packages from {$originName} to {$destinationName} | PeerBridge", 58, '');
+        $title = Str::limit("Send packages from {$originName} to {$destinationName} | Shantasra", 58, '');
         $description = Str::limit("Find active package requests and trusted travelers from {$originName} to {$destinationName}.", 155, '');
         $canonical = url("/routes/{$origin}-to-{$destination}");
 
@@ -139,11 +139,11 @@ class PublicSeoController extends Controller
     public function staticPage(string $type): View
     {
         $pages = [
-            'how-it-works' => ['How PeerBridge Delivery works', 'Learn how PeerBridge connects senders with trusted travelers for cross-border delivery.'],
-            'faq' => ['Frequently asked questions | PeerBridge Delivery', 'Answers about sending packages and traveling with PeerBridge Delivery.'],
-            'about' => ['About PeerBridge Delivery', 'PeerBridge Delivery helps people move packages across borders through trusted travelers.'],
-            'contact' => ['Contact PeerBridge Delivery', 'Contact PeerBridge Delivery for help with a package or traveler listing.'],
-            'safety' => ['Safety at PeerBridge Delivery', 'Learn how PeerBridge supports safer package handovers and verified travel listings.'],
+            'how-it-works' => ['How Shantasra works', 'Learn how Shantasra connects senders with trusted travelers for cross-border delivery.'],
+            'faq' => ['Frequently asked questions | Shantasra', 'Answers about sending packages and traveling with Shantasra.'],
+            'about' => ['About Shantasra', 'Shantasra helps people move packages across borders through trusted travelers.'],
+            'contact' => ['Contact Shantasra', 'Contact Shantasra for help with a package or traveler listing.'],
+            'safety' => ['Safety at Shantasra', 'Learn how Shantasra supports safer package handovers and verified travel listings.'],
         ];
         abort_unless(isset($pages[$type]), 404);
         [$title, $description] = $pages[$type];
@@ -158,9 +158,9 @@ class PublicSeoController extends Controller
     {
         abort_unless(in_array($locale, ['en', 'am', 'ar'], true), 404);
         $pages = [
-            'en' => ['PeerBridge Delivery', 'Cross-border package delivery between the UAE and Ethiopia.'],
-            'am' => ['PeerBridge Delivery | የድንበር ተሻጋሪ መላኪያ', 'በታመኑ ተጓዦች መካከል በኢሜሬትስ እና በኢትዮጵያ ጥቅሎችን ይላኩ።'],
-            'ar' => ['PeerBridge Delivery | توصيل بين الإمارات وإثيوبيا', 'أرسل الطرود بين الإمارات وإثيوبيا مع مسافرين موثوقين.'],
+            'en' => ['Shantasra', 'Cross-border package delivery between the UAE and Ethiopia.'],
+            'am' => ['Shantasra | የድንበር ተሻጋሪ መላኪያ', 'በታመኑ ተጓዦች መካከል በኢሜሬትስ እና በኢትዮጵያ ጥቅሎችን ይላኩ።'],
+            'ar' => ['Shantasra | توصيل بين الإمارات وإثيوبيا', 'أرسل الطرود بين الإمارات وإثيوبيا مع مسافرين موثوقين.'],
         ];
         [$title, $description] = $pages[$locale];
         $path = trim((string) $path, '/');
@@ -184,15 +184,15 @@ class PublicSeoController extends Controller
     public function privatePage(string $type): View
     {
         $titles = [
-            'dashboard' => 'Dashboard | PeerBridge Delivery',
-            'login' => 'Sign in | PeerBridge Delivery',
-            'register' => 'Create an account | PeerBridge Delivery',
-            'reset-password' => 'Reset password | PeerBridge Delivery',
-            'chat' => 'Messages | PeerBridge Delivery',
+            'dashboard' => 'Dashboard | Shantasra',
+            'login' => 'Sign in | Shantasra',
+            'register' => 'Create an account | Shantasra',
+            'reset-password' => 'Reset password | Shantasra',
+            'chat' => 'Messages | Shantasra',
         ];
         abort_unless(isset($titles[$type]), 404);
 
-        return $this->render($type, $titles[$type], 'Private PeerBridge Delivery account page.', url("/{$type}"), [
+        return $this->render($type, $titles[$type], 'Private Shantasra account page.', url("/{$type}"), [
             'h1' => $titles[$type],
             'summary' => 'This account page is not indexed.',
         ], false);
@@ -212,7 +212,10 @@ class PublicSeoController extends Controller
                 'social_youtube',
             ])
         );
-        $siteName = $settings['site_name'] ?? 'PeerBridge Delivery';
+        $siteName = $settings['site_name'] ?? 'Shantasra';
+        if (in_array(strtolower(trim($siteName)), ['peerbridge', 'peerbridge delivery', 'preebridge'], true)) {
+            $siteName = 'Shantasra';
+        }
         $canonical ??= url()->current();
         $content['jsonLd'] ??= [
             '@type' => 'WebPage',

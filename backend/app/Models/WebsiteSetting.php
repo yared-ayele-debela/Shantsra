@@ -32,7 +32,7 @@ class WebsiteSetting extends Model
         }
 
         return static::query()->create([
-            'site_name' => 'PeerBridge',
+            'site_name' => 'Shantasra',
             'site_tagline' => 'UAE to Ethiopia',
         ]);
     }

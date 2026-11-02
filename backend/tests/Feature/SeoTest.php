@@ -15,7 +15,7 @@ class SeoTest extends TestCase
     {
         $this->get('/faq')
             ->assertOk()
-            ->assertSee('<title>Frequently asked questions | PeerBridge Delivery</title>', false)
+            ->assertSee('<title>Frequently asked questions | Shantasra</title>', false)
             ->assertSee('name="description"', false)
             ->assertSee('rel="canonical"', false)
             ->assertSee('hreflang="am"', false)

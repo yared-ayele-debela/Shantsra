@@ -20,7 +20,7 @@ class OgImageController extends Controller
     public function route(string $origin, string $destination): Response
     {
         return $this->image(
-            'PeerBridge Delivery',
+            'Shantasra',
             Str::headline(str_replace('-', ' ', $origin)).' to '.Str::headline(str_replace('-', ' ', $destination))
         );
     }

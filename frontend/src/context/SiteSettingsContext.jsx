@@ -40,7 +40,11 @@ export function SiteSettingsProvider({ children }) {
           }
         }
         if (resolvedData.site_name) {
-          document.title = resolvedData.site_name
+          const siteName = ['peerbridge', 'peerbridge delivery', 'preebridge'].includes(resolvedData.site_name.trim().toLowerCase())
+            ? 'Shantasra'
+            : resolvedData.site_name;
+          resolvedData.site_name = siteName;
+          document.title = siteName
           try {
             sessionStorage.setItem(SITE_NAME_STORAGE_KEY, resolvedData.site_name)
           } catch {

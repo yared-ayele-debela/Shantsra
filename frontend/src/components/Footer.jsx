@@ -12,7 +12,7 @@ export default function Footer({
   const [subscribed, setSubscribed] = useState(false);
 
   const logoUrl = settings?.logo_url || sessionStorage.getItem(SITE_LOGO_STORAGE_KEY);
-  const siteName = settings?.site_name || sessionStorage.getItem(SITE_NAME_STORAGE_KEY) || 'Souq & Sheba';
+  const siteName = settings?.site_name || sessionStorage.getItem(SITE_NAME_STORAGE_KEY) || 'Shantasra';
   const siteDescription = settings?.site_description || 'A trusted delivery platform connecting package senders with verified travelers between Ethiopia and the UAE.';
   const contactEmail = settings?.contact_email || settings?.email || 'support@souqsheba.com';
   const contactPhone = settings?.contact_phone || settings?.phone || '+251 91 122 3344';

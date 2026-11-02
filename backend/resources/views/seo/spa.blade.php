@@ -17,7 +17,7 @@
     @endunless
     <link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ $settings['site_name'] ?? 'PeerBridge Delivery' }}">
+    <meta property="og:site_name" content="{{ $settings['site_name'] ?? 'Shantasra' }}">
     <meta property="og:title" content="{{ $title }}">
     <meta property="og:description" content="{{ $description }}">
     <meta property="og:url" content="{{ $canonical }}">

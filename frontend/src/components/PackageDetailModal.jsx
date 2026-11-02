@@ -54,7 +54,7 @@ export default function PackageDetailModal({
   const packageShareUrl = `${origin}${pathname}?package=${encodeURIComponent(item.id)}`;
 
   const shareTitle = `Delivery Request: ${item.title} (${routeText}, Reward: ${item.reward})`;
-  const shareText = `View this delivery request on Souq & Sheba: "${item.title}" (${routeText}). Delivery reward: ${item.reward}.`;
+  const shareText = `View this delivery request on Shantasra: "${item.title}" (${routeText}). Delivery reward: ${item.reward}.`;
   
   const encodedUrl = encodeURIComponent(packageShareUrl);
   const encodedShareText = encodeURIComponent(shareText);

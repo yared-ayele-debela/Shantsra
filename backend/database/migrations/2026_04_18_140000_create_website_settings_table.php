@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('website_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('site_name')->default('PeerBridge');
+            $table->string('site_name')->default('Shantasra');
             $table->string('site_tagline')->nullable();
             $table->text('site_description')->nullable();
             $table->string('meta_keywords')->nullable();

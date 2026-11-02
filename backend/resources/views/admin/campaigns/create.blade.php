@@ -31,7 +31,7 @@
 
                     <div class="col-12">
                         <label class="form-label">Email subject</label>
-                        <input type="text" name="subject" class="form-control" value="{{ old('subject') }}" placeholder="PeerBridge launch update for trusted delivery" required>
+                        <input type="text" name="subject" class="form-control" value="{{ old('subject') }}" placeholder="Shantasra launch update for trusted delivery" required>
                     </div>
 
                     <div class="col-12">
@@ -65,7 +65,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label">CTA button URL</label>
-                        <input type="url" name="cta_url" class="form-control" value="{{ old('cta_url') }}" placeholder="https://peerbridge.example.com/travelers">
+                        <input type="url" name="cta_url" class="form-control" value="{{ old('cta_url') }}" placeholder="https://shantasra.example.com/travelers">
                     </div>
 
                     <div class="col-md-6">

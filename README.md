@@ -1,4 +1,4 @@
-# ✈️ PeerBridge Delivery
+# ✈️ Shantasra
 
 > **Peer-to-Peer Cross-Border Luggage & Package Delivery Marketplace**  
 > Connecting package senders with trusted travelers flying on popular international routes to monetize luggage space and provide fast, secure, community-driven delivery.
@@ -31,7 +31,7 @@
 
 ## 🌟 Overview
 
-**PeerBridge Delivery** is a modern peer-to-peer delivery platform designed to solve the high cost, delay, and rigidity of traditional international shipping—specifically across high-traffic diaspora corridors such as the United Arab Emirates (Dubai, Abu Dhabi, Sharjah) and Ethiopia (Addis Ababa).
+**Shantasra** is a modern peer-to-peer delivery platform designed to solve the high cost, delay, and rigidity of traditional international shipping—specifically across high-traffic diaspora corridors such as the United Arab Emirates (Dubai, Abu Dhabi, Sharjah) and Ethiopia (Addis Ababa).
 
 Instead of waiting weeks for expensive cargo carriers, senders connect directly with verified flyers traveling along the same route. Travelers monetize excess luggage capacity, while senders receive rapid, hand-carried delivery for documents, electronics, gifts, and personal goods.
 
@@ -350,7 +350,7 @@ graph TD
 
 ## 🌍 Localization
 
-PeerBridge Delivery includes built-in multi-language support for:
+Shantasra includes built-in multi-language support for:
 - 🇺🇸 **English** (`en`)
 - 🇪🇹 **Amharic** (`am` - አማርኛ)
 - 🇦🇪 **Arabic** (`ar` - العربية)

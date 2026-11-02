@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketing Preferences | PeerBridge</title>
+    <title>Marketing Preferences | Shantasra</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -15,7 +15,7 @@
                     @if ($success)
                         <div class="display-6 mb-3">You are unsubscribed</div>
                         <p class="text-muted mb-0">
-                            {{ $user?->email ?? 'This email address' }} will no longer receive marketing announcements from PeerBridge.
+                            {{ $user?->email ?? 'This email address' }} will no longer receive marketing announcements from Shantasra.
                         </p>
                     @else
                         <div class="display-6 mb-3">Link not available</div>

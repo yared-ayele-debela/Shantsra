@@ -1,4 +1,4 @@
-# PeerBridge: Package Sender & Traveler Deal Workflow Guide
+# Shantasra: Package Sender & Traveler Deal Workflow Guide
 
 This document outlines the complete architectural design, database schemas, API endpoints, and step-by-step user interaction workflow for connecting **Package Senders** and **Travelers**, facilitating direct contact, and managing deal agreements after they communicate.
 
@@ -46,7 +46,7 @@ When a user views a listing detail card, the app presents options to connect imm
 * **Direct Phone Link**: Standard HTML5 `tel:` protocol allowing mobile browsers to launch dialers automatically.
 * **WhatsApp Deep Link**: Pre-filled contextual text passing package title, weight, and route:
   ```
-  https://wa.me/251911223344?text=Hi%20Alex%2C%20I%20am%20reaching%20out%20regarding%20your%20route%20from%20Dubai%20to%20Addis%20Ababa%20on%20PeerBridge.
+  https://wa.me/251911223344?text=Hi%20Alex%2C%20I%20am%20reaching%20out%20regarding%20your%20route%20from%20Dubai%20to%20Addis%20Ababa%20on%20Shantasra.
   ```
 
 ---
@@ -146,4 +146,4 @@ CREATE TABLE IF NOT EXISTS `bookings` (
 | **Final Delivery** | Traveler inputs `Delivery Code` | Status changes to **Completed** & opens Review Form |
 
 ---
-*Documented for PeerBridge Delivery Platform.*
+*Documented for Shantasra Platform.*

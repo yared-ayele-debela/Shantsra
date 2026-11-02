@@ -920,7 +920,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `phone`, `role`, `status`, `city`, `
 
 CREATE TABLE `website_settings` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `site_name` varchar(255) NOT NULL DEFAULT 'PeerBridge',
+  `site_name` varchar(255) NOT NULL DEFAULT 'Shantasra',
   `site_tagline` varchar(255) DEFAULT NULL,
   `site_description` text DEFAULT NULL,
   `meta_keywords` varchar(255) DEFAULT NULL,
@@ -940,7 +940,7 @@ CREATE TABLE `website_settings` (
 --
 
 INSERT INTO `website_settings` (`id`, `site_name`, `site_tagline`, `site_description`, `meta_keywords`, `logo_path`, `favicon_path`, `social_facebook`, `social_twitter`, `social_instagram`, `social_linkedin`, `social_youtube`, `created_at`, `updated_at`) VALUES
-(1, 'PeerBridge', 'UAE to Ethiopia', NULL, NULL, 'site/H8rUXuLI2CKAqPsHO0ZLGR7xhcfgcQJObZfcymrH.png', 'site/n11XGiXZUGQg8SztbtJkxBeoGfjj3N9FGhgGuRyy.png', NULL, NULL, NULL, NULL, NULL, '2026-04-18 10:35:43', '2026-04-18 11:02:59');
+(1, 'Shantasra', 'UAE to Ethiopia', NULL, NULL, 'site/H8rUXuLI2CKAqPsHO0ZLGR7xhcfgcQJObZfcymrH.png', 'site/n11XGiXZUGQg8SztbtJkxBeoGfjj3N9FGhgGuRyy.png', NULL, NULL, NULL, NULL, NULL, '2026-04-18 10:35:43', '2026-04-18 11:02:59');
 
 --
 -- Indexes for dumped tables

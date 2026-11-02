@@ -28,7 +28,7 @@ export default function PackageCard({
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hi ${item.sender}, I am interested in carrying your package request "${item.title}" on Souq & Sheba.`
+    `Hi ${item.sender}, I am interested in carrying your package request "${item.title}" on Shantasra.`
   );
 
   return (

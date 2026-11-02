@@ -13,7 +13,9 @@ class SiteSettingController extends Controller
         $s = WebsiteSetting::current();
 
         return response()->json([
-            'site_name' => $s->site_name,
+            'site_name' => in_array(strtolower(trim((string) $s->site_name)), ['peerbridge', 'peerbridge delivery', 'preebridge'], true)
+                ? 'Shantasra'
+                : $s->site_name,
             'site_tagline' => $s->site_tagline,
             'site_description' => $s->site_description,
             'meta_keywords' => $s->meta_keywords,

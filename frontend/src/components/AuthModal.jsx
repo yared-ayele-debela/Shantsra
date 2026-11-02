@@ -343,7 +343,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
 
               {/* Redirect to Register Link */}
               <div className="text-center pt-3 border-t border-amber-50 text-xs text-slate-500">
-                New to PeerBridge?{' '}
+                New to Shantasra?{' '}
                 <button 
                   type="button" 
                   onClick={() => switchMode('register')}
