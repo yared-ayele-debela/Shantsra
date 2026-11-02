@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowUpRight, X } from 'lucide-react';
 import { api, getStorageUrl } from '../lib/api.js';
 
-export default function BannerStrip({ placement, single = false, fullWidth = false }) {
+export default function BannerStrip({ placement, single = false }) {
   const [banners, setBanners] = useState([]);
   const [dismissed, setDismissed] = useState(() => new Set());
 
@@ -40,7 +40,7 @@ export default function BannerStrip({ placement, single = false, fullWidth = fal
   }
 
   return (
-    <aside aria-label="Offers and announcements" className={`w-full pb-5 ${fullWidth ? 'px-0' : 'mx-auto max-w-7xl px-0 sm:px-5 lg:px-0'}`}>
+    <aside aria-label="Offers and announcements" className="mx-auto w-full max-w-7xl px-0 pb-5 sm:px-5 lg:px-0">
       <div className={`grid grid-cols-1 gap-4 ${['home', 'travelers', 'packages'].includes(placement) ? 'sm:grid-cols-2' : ''}`}>
         {visibleBanners.map((banner) => (
           <article
