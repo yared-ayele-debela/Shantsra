@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowUpRight, X } from 'lucide-react';
 import { api, getStorageUrl } from '../lib/api.js';
 
-export default function BannerStrip({ placement, single = false }) {
+export default function BannerStrip({ placement, single = false, fullWidth = false }) {
   const [banners, setBanners] = useState([]);
   const [dismissed, setDismissed] = useState(() => new Set());
 
@@ -40,8 +40,11 @@ export default function BannerStrip({ placement, single = false }) {
   }
 
   return (
-    <aside aria-label="Offers and announcements" className="mx-auto w-full max-w-7xl px-0 pb-5 sm:px-5 lg:px-0">
-      <div className={`grid grid-cols-1 gap-4 ${['home', 'travelers', 'packages'].includes(placement) ? 'sm:grid-cols-2' : ''}`}>
+    <aside
+      aria-label="Offers and announcements"
+      className={`${fullWidth ? 'w-full' : 'mx-auto w-full max-w-7xl px-0 sm:px-5 lg:px-0'} pb-4 sm:pb-5`}
+    >
+      <div className={`grid grid-cols-1 gap-3 sm:gap-4 ${['home', 'travelers', 'packages'].includes(placement) ? 'sm:grid-cols-2' : ''}`}>
         {visibleBanners.map((banner) => (
           <article
             key={banner.id}
@@ -71,7 +74,7 @@ export default function BannerStrip({ placement, single = false }) {
             )}
             {!banner.image_url && (
               <div
-                className="flex min-h-[260px] flex-col justify-between p-5 sm:p-6"
+                className={`flex ${fullWidth ? 'min-h-[180px] p-4 sm:min-h-[210px] sm:p-5' : 'min-h-[260px] p-5 sm:p-6'} flex-col justify-between`}
                 style={{ background: banner.bg_gradient }}
               >
                 <div className="flex items-start justify-between gap-3">
