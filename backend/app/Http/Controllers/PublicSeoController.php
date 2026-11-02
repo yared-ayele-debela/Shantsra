@@ -93,13 +93,45 @@ class PublicSeoController extends Controller
     {
         $originName = Str::headline(str_replace('-', ' ', $origin));
         $destinationName = Str::headline(str_replace('-', ' ', $destination));
-        $title = "Send packages from {$originName} to {$destinationName} | PeerBridge";
-        $description = "Find trusted travelers and active package delivery requests from {$originName} to {$destinationName}.";
+        $shipments = Shipment::query()
+            ->where('approval_status', 'approved')
+            ->where('from_city', 'like', $originName)
+            ->where('to_city', 'like', $destinationName)
+            ->where('is_paused_by_inquiries', false)
+            ->where(function ($query) {
+                $query->where('deal_status', '!=', 'confirmed')->orWhereNull('deal_status');
+            })
+            ->where(function ($query) {
+                $query->whereNull('travel_date')->orWhereDate('travel_date', '>=', Carbon::today());
+            })
+            ->latest()
+            ->limit(12)
+            ->get(['id', 'description', 'from_city', 'to_city', 'updated_at']);
+        $travels = Travel::query()
+            ->where('from_city', 'like', $originName)
+            ->where('to_city', 'like', $destinationName)
+            ->whereHas('traveler', fn ($query) => $query->where('status', 'active'))
+            ->where(function ($query) {
+                $query->whereNull('departure_date')->orWhereDate('departure_date', '>=', Carbon::today());
+            })
+            ->get(['price_per_kg']);
+        $prices = $travels->pluck('price_per_kg')->filter()->map(fn ($price) => (float) $price);
+        $priceRange = $prices->isNotEmpty()
+            ? 'Typical traveler pricing is '.number_format($prices->min(), 2).' to '.number_format($prices->max(), 2).' per kg.'
+            : 'Pricing varies by traveler, package weight, and timing.';
+        $title = Str::limit("Send packages from {$originName} to {$destinationName} | PeerBridge", 58, '');
+        $description = Str::limit("Find active package requests and trusted travelers from {$originName} to {$destinationName}.", 155, '');
+        $canonical = url("/routes/{$origin}-to-{$destination}");
 
-        return $this->render('route', $title, $description, url("/routes/{$origin}-to-{$destination}"), [
+        return $this->render('route', $title, $description, $canonical, [
             'h1' => "Delivery from {$originName} to {$destinationName}",
-            'summary' => $description,
-        ]);
+            'summary' => "{$description} {$priceRange}",
+            'listings' => $shipments->map(fn (Shipment $shipment) => [
+                'url' => $this->packageUrl($shipment),
+                'title' => $this->packageTitle($shipment),
+            ])->all(),
+            'relatedRoutes' => $shipments->map(fn (Shipment $shipment) => route('/routes/'.Str::slug($shipment->to_city).'-to-'.Str::slug($shipment->from_city)))->unique()->values()->all(),
+        ], $shipments->isNotEmpty() || $prices->isNotEmpty());
     }
 
     public function staticPage(string $type): View
@@ -135,10 +167,10 @@ class PublicSeoController extends Controller
         return $this->render('localized', $title, $description, $canonical, [
             'h1' => $title,
             'summary' => $description,
-        ], $locale);
+        ], true, $locale);
     }
 
-    private function render(string $type, string $title, string $description, ?string $canonical = null, array $content = [], string $locale = 'en'): View
+    private function render(string $type, string $title, string $description, ?string $canonical = null, array $content = [], bool $indexable = true, string $locale = 'en'): View
     {
         $settings = Cache::remember(
             'seo:site-settings',
@@ -203,7 +235,7 @@ class PublicSeoController extends Controller
             ],
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        return view('seo.spa', compact('type', 'title', 'description', 'canonical', 'content', 'settings', 'structuredData', 'locale'));
+        return view('seo.spa', compact('type', 'title', 'description', 'canonical', 'content', 'settings', 'structuredData', 'locale', 'indexable'));
     }
 
     private function isIndexableShipment(Shipment $shipment): bool

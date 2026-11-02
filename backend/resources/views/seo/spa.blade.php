@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;700&family=Noto+Sans+Ethiopic:wght@400;500;700&display=swap" rel="stylesheet">
     <title>{{ $title }}</title>
     <meta name="description" content="{{ $description }}">
+    @unless ($indexable)
+        <meta name="robots" content="noindex,follow">
+    @endunless
     <link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ $settings['site_name'] ?? 'PeerBridge Delivery' }}">
@@ -42,6 +45,26 @@
         <main data-seo-content>
             <h1>{{ $content['h1'] ?? $title }}</h1>
             <p>{{ $content['summary'] ?? $description }}</p>
+            @if (!empty($content['listings']))
+                <section aria-labelledby="route-listings">
+                    <h2 id="route-listings">Active delivery requests</h2>
+                    <ul>
+                        @foreach ($content['listings'] as $listing)
+                            <li><a href="{{ $listing['url'] }}">{{ $listing['title'] }}</a></li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+            @if (!empty($content['relatedRoutes']))
+                <nav aria-label="Related routes">
+                    <h2>Related routes</h2>
+                    <ul>
+                        @foreach ($content['relatedRoutes'] as $relatedRoute)
+                            <li><a href="{{ $relatedRoute }}">{{ $relatedRoute }}</a></li>
+                        @endforeach
+                    </ul>
+                </nav>
+            @endif
         </main>
     </div>
 </body>
