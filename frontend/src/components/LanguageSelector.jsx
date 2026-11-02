@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 
 const LANGUAGES = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
   { code: 'am', name: 'Amharic', nativeName: 'አማርኛ', flag: '🇪🇹' },
-  { code: 'om', name: 'Afaan Oromoo', nativeName: 'Afaan Oromoo', flag: '🇪🇹' },
-  { code: 'ti', name: 'Tigrinya (Tigray)', nativeName: 'ትግርኛ', flag: '🇪🇹' }
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇦🇪' }
 ];
 
 export default function LanguageSelector() {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(() => {
     // Read saved language from cookie or localStorage
@@ -20,28 +21,6 @@ export default function LanguageSelector() {
   });
 
   const dropdownRef = useRef(null);
-
-  // Initialize Google Translate Script
-  useEffect(() => {
-    if (!document.getElementById('google-translate-script')) {
-      window.googleTranslateElementInit = () => {
-        if (window.google && window.google.translate) {
-          new window.google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,am,om,ti',
-            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-            autoDisplay: false
-          }, 'google_translate_element');
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = 'google-translate-script';
-      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -60,29 +39,14 @@ export default function LanguageSelector() {
     localStorage.setItem('ss_selected_language', langCode);
     setIsOpen(false);
 
-    // Set Google Translate cookie across all domain paths
-    const domain = window.location.hostname;
-    document.cookie = `googtrans=/en/${langCode}; path=/; domain=${domain}`;
-    document.cookie = `googtrans=/en/${langCode}; path=/;`;
-
-    // Try triggering select element in Google Translate widget if present
-    const combo = document.querySelector('.goog-te-combo');
-    if (combo) {
-      combo.value = langCode;
-      combo.dispatchEvent(new Event('change'));
-    }
-
-    // Reload page immediately so Google Translate parses and translates whole page
-    window.location.reload();
+    const path = location.pathname.replace(/^\/(?:en|am|ar)(?=\/|$)/, '') || '/';
+    window.location.assign(`/${langCode}${path}${location.search}`);
   };
 
   const activeLangObj = LANGUAGES.find(l => l.code === currentLang) || LANGUAGES[0];
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-      {/* Hidden Google Translate Mount Container */}
-      <div id="google_translate_element" style={{ position: 'absolute', top: -9999, left: -9999, opacity: 0, pointerEvents: 'none' }}></div>
-
       {/* Selector Button */}
       <button
         type="button"

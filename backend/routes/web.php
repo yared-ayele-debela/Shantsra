@@ -38,6 +38,9 @@ Route::get('/faq', [PublicSeoController::class, 'staticPage'])->defaults('type',
 Route::get('/about', [PublicSeoController::class, 'staticPage'])->defaults('type', 'about')->name('seo.about');
 Route::get('/contact', [PublicSeoController::class, 'staticPage'])->defaults('type', 'contact')->name('seo.contact');
 Route::get('/safety', [PublicSeoController::class, 'staticPage'])->defaults('type', 'safety')->name('seo.safety');
+Route::get('/{locale}/{path?}', [PublicSeoController::class, 'localized'])
+    ->whereIn('locale', ['en', 'am', 'ar'])
+    ->where('path', '.*')->name('seo.localized');
 Route::view('/{path}', 'welcome')
     ->where('path', '^(?!admin(?:/|$)|api(?:/|$)|unsubscribe(?:/|$)).+')
     ->name('spa');

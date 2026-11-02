@@ -120,7 +120,25 @@ class PublicSeoController extends Controller
         ]);
     }
 
-    private function render(string $type, string $title, string $description, ?string $canonical = null, array $content = []): View
+    public function localized(string $locale, ?string $path = null): View
+    {
+        abort_unless(in_array($locale, ['en', 'am', 'ar'], true), 404);
+        $pages = [
+            'en' => ['PeerBridge Delivery', 'Cross-border package delivery between the UAE and Ethiopia.'],
+            'am' => ['PeerBridge Delivery | የድንበር ተሻጋሪ መላኪያ', 'በታመኑ ተጓዦች መካከል በኢሜሬትስ እና በኢትዮጵያ ጥቅሎችን ይላኩ።'],
+            'ar' => ['PeerBridge Delivery | توصيل بين الإمارات وإثيوبيا', 'أرسل الطرود بين الإمارات وإثيوبيا مع مسافرين موثوقين.'],
+        ];
+        [$title, $description] = $pages[$locale];
+        $path = trim((string) $path, '/');
+        $canonical = url("/{$locale}".($path ? "/{$path}" : ''));
+
+        return $this->render('localized', $title, $description, $canonical, [
+            'h1' => $title,
+            'summary' => $description,
+        ], $locale);
+    }
+
+    private function render(string $type, string $title, string $description, ?string $canonical = null, array $content = [], string $locale = 'en'): View
     {
         $settings = Cache::remember(
             'seo:site-settings',
@@ -185,7 +203,7 @@ class PublicSeoController extends Controller
             ],
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        return view('seo.spa', compact('type', 'title', 'description', 'canonical', 'content', 'settings', 'structuredData'));
+        return view('seo.spa', compact('type', 'title', 'description', 'canonical', 'content', 'settings', 'structuredData', 'locale'));
     }
 
     private function isIndexableShipment(Shipment $shipment): bool
