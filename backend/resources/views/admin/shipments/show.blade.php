@@ -59,6 +59,12 @@
                                     </button>
                                 </form>
                             @endif
+                            <form method="POST" action="{{ route('admin.shipments.telegram', $shipment) }}" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-primary px-3">
+                                    <i class="bi bi-telegram me-1"></i> Post to Telegram
+                                </button>
+                            </form>
                             <a href="{{ route('admin.shipments.edit', $shipment) }}" class="btn btn-sm btn-dark px-3">
                                 <i class="bi bi-pencil-square me-1"></i> Edit Shipment
                             </a>

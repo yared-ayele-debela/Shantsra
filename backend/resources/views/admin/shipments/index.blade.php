@@ -280,6 +280,14 @@
                                             </button>
                                         </form>
                                     @endif
+                                    @if(($shipment->approval_status ?? 'pending') === 'approved')
+                                        <form method="POST" action="{{ route('admin.shipments.telegram', $shipment) }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-primary px-2.5" title="Post package to Telegram channel">
+                                                <i class="bi bi-telegram"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                     <a href="{{ route('admin.shipments.show', $shipment) }}" class="btn btn-sm btn-outline-secondary px-2.5" title="View details">
                                         <i class="bi bi-eye"></i> View
                                     </a>

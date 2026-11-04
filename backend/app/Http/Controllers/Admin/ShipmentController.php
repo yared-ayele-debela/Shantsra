@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PackageCategory;
 use App\Models\Shipment;
+use App\Services\TelegramService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -189,11 +190,35 @@ class ShipmentController extends Controller
         return back()->with('success', 'Shipment status updated successfully.');
     }
 
-    public function approve(Shipment $shipment): RedirectResponse
+    public function approve(Shipment $shipment, TelegramService $telegramService): RedirectResponse
     {
         $shipment->update(['approval_status' => 'approved']);
 
-        return back()->with('success', "Shipment #{$shipment->id} ({$shipment->from_city} ➔ {$shipment->to_city}) has been APPROVED!");
+        $telegramNote = '';
+        if (config('services.telegram.auto_post_on_approve', true) && $telegramService->isConfigured()) {
+            $result = $telegramService->postShipmentToChannel($shipment);
+            if (! empty($result['ok'])) {
+                $telegramNote = ' & posted to Telegram channel!';
+            }
+        }
+
+        return back()->with('success', "Shipment #{$shipment->id} ({$shipment->from_city} ➔ {$shipment->to_city}) has been APPROVED{$telegramNote}");
+    }
+
+    public function shareToTelegram(Shipment $shipment, TelegramService $telegramService): RedirectResponse
+    {
+        if (! $telegramService->isConfigured()) {
+            return back()->with('error', 'Telegram bot token is not configured in .env.');
+        }
+
+        $result = $telegramService->postShipmentToChannel($shipment);
+
+        if (! empty($result['ok'])) {
+            return back()->with('success', "Shipment #{$shipment->id} ({$shipment->from_city} ➔ {$shipment->to_city}) was posted to Telegram!");
+        }
+
+        $errorMsg = $result['description'] ?? $result['error'] ?? 'Unknown Telegram API error.';
+        return back()->with('error', "Failed to post to Telegram: {$errorMsg}");
     }
 
     public function reject(Shipment $shipment): RedirectResponse

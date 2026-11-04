@@ -95,6 +95,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
         Route::patch('/shipments/{shipment}/approve', [ShipmentController::class, 'approve'])->name('shipments.approve');
         Route::patch('/shipments/{shipment}/reject', [ShipmentController::class, 'reject'])->name('shipments.reject');
+        Route::post('/shipments/{shipment}/telegram', [ShipmentController::class, 'shareToTelegram'])->name('shipments.telegram');
         Route::patch('/shipments/{shipment}/status', [ShipmentController::class, 'updateStatus'])->name('shipments.update-status');
         Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])->name('shipments.destroy');
 

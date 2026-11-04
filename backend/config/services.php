@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'telegram' => [
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'bot_username' => env('TELEGRAM_BOT_USERNAME', 'Shantasra_bot'),
+        'channel_id' => env('TELEGRAM_CHANNEL_ID', '@shantasraa'),
+        'group_id' => env('TELEGRAM_GROUP_ID', '@shantasra_chat'),
+        'public_url' => env('TELEGRAM_PUBLIC_URL', env('FRONTEND_URL', 'https://shantasra.com')),
+        'webhook_url' => env('TELEGRAM_WEBHOOK_URL', 'https://api.shantasra.com/api/telegram/webhook'),
+        'auto_post_on_approve' => env('TELEGRAM_AUTO_POST_ON_APPROVE', true),
+    ],
+
 ];

@@ -13,7 +13,10 @@ use App\Http\Controllers\Api\PackageAlertController;
 use App\Http\Controllers\Api\DealConfirmationController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\TelegramWebhookController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/telegram/webhook', [TelegramWebhookController::class, 'handle']);
 
 Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
