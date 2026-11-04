@@ -2,6 +2,7 @@ import React from 'react';
 import { PlusCircle, User, LogOut } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import { useSiteSettings, SITE_LOGO_STORAGE_KEY } from '../context/SiteSettingsContext.jsx';
+import { getStorageUrl } from '../lib/api';
 
 export default function Header({ 
   currentView, 
@@ -101,17 +102,15 @@ export default function Header({
                   onClick={() => setCurrentView('dashboard')}
                   className="flex items-center gap-2 px-2.5 py-1.5 hover:bg-[#EEF3F0] rounded-[10px] transition-colors text-xs font-bold text-[#0D3326]"
                 >
-                  {currentUser.photo_url || currentUser.photo ? (
-                    <img 
-                      src={currentUser.photo_url || currentUser.photo} 
-                      alt={currentUser.name} 
-                      className="w-6 h-6 rounded-full object-cover border border-amber-300 shadow-2xs shrink-0" 
-                    />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-[#0D3326] text-white flex items-center justify-center font-extrabold text-[10px] shrink-0">
-                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                  )}
+                  <img 
+                    src={getStorageUrl(currentUser.photo_url || currentUser.photo) || '/assets/No-Image-Found-400x264.png'} 
+                    alt={currentUser.name} 
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                    }}
+                    className="w-6 h-6 rounded-full object-cover border border-amber-300 shadow-2xs shrink-0" 
+                  />
                   <span className="hidden md:inline">{currentUser.name ? currentUser.name.split(' ')[0] : 'User'}</span>
                 </button>
                 <div className="h-4 w-px bg-[#D2DDD8] mx-0.5"></div>

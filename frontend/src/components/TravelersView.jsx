@@ -46,9 +46,9 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                 rawPhoto.trim().length > 0 &&
                 !rawPhoto.toLowerCase().includes('unsplash.com')
               );
-              let photoSrc = '';
+              let photoSrc = '/assets/No-Image-Found-400x264.png';
               if (hasPhoto) {
-                photoSrc = getStorageUrl(rawPhoto);
+                photoSrc = getStorageUrl(rawPhoto) || '/assets/No-Image-Found-400x264.png';
               }
 
               uniqueMap.set(key, {
@@ -302,17 +302,15 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                     {/* Top User Header */}
                     <div className="flex min-w-0 items-center gap-3 sm:w-44 sm:shrink-0">
                       <div className="relative shrink-0">
-                        {traveler.isRealPhoto ? (
-                          <img
-                            src={traveler.photo}
-                            alt={traveler.name}
-                            className="h-14 w-14 rounded-full object-cover border border-slate-200 shadow-sm sm:h-16 sm:w-16"
-                          />
-                        ) : (
-                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0D3326] text-xl font-extrabold text-white border border-slate-200 shadow-sm sm:h-16 sm:w-16">
-                            {traveler.name ? traveler.name.trim().charAt(0).toUpperCase() : 'T'}
-                          </div>
-                        )}
+                        <img
+                          src={traveler.photo || '/assets/No-Image-Found-400x264.png'}
+                          alt={traveler.name}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                          }}
+                          className="h-14 w-14 rounded-full object-cover border border-slate-200 shadow-sm sm:h-16 sm:w-16"
+                        />
                         <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-[#0D3326] text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
                           <CheckCircle2 className="w-2.5 h-2.5" />
                         </span>

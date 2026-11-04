@@ -147,9 +147,9 @@ export default function App() {
     }
     if (typeof target === 'object') {
       const rawPhoto = target.photo || target.photo_url || target.avatar || null;
-      let photoSrc = '';
+      let photoSrc = '/assets/No-Image-Found-400x264.png';
       if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
-        photoSrc = getStorageUrl(rawPhoto);
+        photoSrc = getStorageUrl(rawPhoto) || '/assets/No-Image-Found-400x264.png';
       }
       setSelectedProfileModal({
         ...target,
@@ -160,9 +160,9 @@ export default function App() {
     }
     if (currentUser && (currentUser.name === target || currentUser.email === target)) {
       const rawPhoto = currentUser.photo_url || currentUser.photo || null;
-      let photoSrc = '';
+      let photoSrc = '/assets/No-Image-Found-400x264.png';
       if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
-        photoSrc = getStorageUrl(rawPhoto);
+        photoSrc = getStorageUrl(rawPhoto) || '/assets/No-Image-Found-400x264.png';
       }
       setSelectedProfileModal({
         ...currentUser,
@@ -180,9 +180,9 @@ export default function App() {
     const foundProf = profiles[target];
     if (foundProf) {
       const rawPhoto = foundProf.photo || foundProf.photo_url || foundProf.avatar || null;
-      let photoSrc = '';
+      let photoSrc = '/assets/No-Image-Found-400x264.png';
       if (rawPhoto && !rawPhoto.includes('unsplash.com')) {
-        photoSrc = getStorageUrl(rawPhoto);
+        photoSrc = getStorageUrl(rawPhoto) || '/assets/No-Image-Found-400x264.png';
       }
       setSelectedProfileModal({
         ...foundProf,
@@ -193,8 +193,8 @@ export default function App() {
     }
     setSelectedProfileModal({
       name: target,
-      photo: null,
-      photo_url: null,
+      photo: '/assets/No-Image-Found-400x264.png',
+      photo_url: '/assets/No-Image-Found-400x264.png',
       rating: '4.8',
       deliveriesCount: 5,
       bio: 'Member of the Shantasra delivery network.',

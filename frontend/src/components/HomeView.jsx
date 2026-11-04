@@ -132,9 +132,9 @@ export default function HomeView({
                   rawPhoto.trim().length > 0 && 
                   !rawPhoto.toLowerCase().includes('unsplash.com')
                 );
-                let photoSrc = '';
+                let photoSrc = '/assets/No-Image-Found-400x264.png';
                 if (hasPhoto) {
-                  photoSrc = getStorageUrl(rawPhoto);
+                  photoSrc = getStorageUrl(rawPhoto) || '/assets/No-Image-Found-400x264.png';
                 }
 
                 uniqueMap.set(key, {
@@ -212,7 +212,7 @@ export default function HomeView({
             is_urgent: Boolean(s.is_urgent),
             phone: s.receiver_phone || '',
             sender: s.sender_display || 'Member',
-            sender_avatar: s.sender_photo || null,
+            sender_avatar: s.sender_photo ? getStorageUrl(s.sender_photo) : '/assets/No-Image-Found-400x264.png',
             sender_rating: s.sender_rating ?? null,
             sender_review_count: s.sender_review_count ?? 0
       })) : [];
@@ -288,7 +288,7 @@ export default function HomeView({
               is_urgent: true,
               phone: s.receiver_phone || '251911223344',
               sender: s.sender_display || 'Member',
-              sender_avatar: s.sender_photo || null,
+              sender_avatar: s.sender_photo ? getStorageUrl(s.sender_photo) : '/assets/No-Image-Found-400x264.png',
               sender_rating: s.sender_rating ?? null,
               sender_review_count: s.sender_review_count ?? 0
             }));
@@ -315,9 +315,9 @@ export default function HomeView({
           rawPhoto.trim().length > 0 && 
           !rawPhoto.toLowerCase().includes('unsplash.com')
         );
-        let photoSrc = '';
+        let photoSrc = '/assets/No-Image-Found-400x264.png';
         if (hasPhoto) {
-          photoSrc = getStorageUrl(rawPhoto);
+          photoSrc = getStorageUrl(rawPhoto) || '/assets/No-Image-Found-400x264.png';
         }
 
         uniqueMap.set(key, {
@@ -657,17 +657,15 @@ export default function HomeView({
                   onClick={() => onSelectProfile(t)}
                   className="flex items-center gap-3 cursor-pointer group"
                 >
-                  {t.isRealPhoto ? (
-                    <img 
-                      src={t.photo} 
-                      alt={t.name} 
-                      className="w-12 h-12 rounded-full object-cover border border-[#E8DFD0] group-hover:border-[#14532D] transition-colors shrink-0"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-[#14532D] text-white font-extrabold text-base flex items-center justify-center border border-[#E8DFD0] group-hover:border-[#14532D] transition-colors shrink-0">
-                      {t.name ? t.name.trim().charAt(0).toUpperCase() : 'T'}
-                    </div>
-                  )}
+                  <img 
+                    src={t.photo || '/assets/No-Image-Found-400x264.png'} 
+                    alt={t.name} 
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                    }}
+                    className="w-12 h-12 rounded-full object-cover border border-[#E8DFD0] group-hover:border-[#14532D] transition-colors shrink-0"
+                  />
                   <div>
                     <h4 className="font-bold text-sm text-[#1C2B22] group-hover:text-[#14532D] transition-colors">{t.name}</h4>
                     <p className="text-[10px] text-slate-400">{t.airline} • {t.flightDate}</p>

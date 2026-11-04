@@ -43,7 +43,7 @@ export default function PackageDetailModal({
   if (!item) return null;
 
   const senderName = item.sender || 'Sender details unavailable';
-  const senderAvatar = item.sender_avatar || null;
+  const senderAvatar = item.sender_avatar || '/assets/No-Image-Found-400x264.png';
   const senderRating = Number(item.sender_rating);
   const hasSenderRating = Number.isFinite(senderRating) && Number(item.sender_review_count) > 0;
   const hasPhone = Boolean(item.phone && String(item.phone).trim());
@@ -137,18 +137,15 @@ export default function PackageDetailModal({
           {/* Sender Profile */}
           <div className="border-t border-amber-50 pt-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {senderAvatar ? (
-                <img 
-                  src={getStorageUrl(senderAvatar)} 
-                  alt={senderName}
-                  onError={(event) => { event.currentTarget.style.display = 'none'; }}
-                  className="w-10 h-10 rounded-full object-cover border border-amber-100" 
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 font-extrabold text-sm flex items-center justify-center border border-amber-200">
-                  {senderName.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <img 
+                src={getStorageUrl(senderAvatar) || '/assets/No-Image-Found-400x264.png'} 
+                alt={senderName}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                }}
+                className="w-10 h-10 rounded-full object-cover border border-amber-100" 
+              />
               <div>
                 <p className="font-bold text-xs text-[#1C160F]">{senderName}</p>
                 <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Request Sender</p>

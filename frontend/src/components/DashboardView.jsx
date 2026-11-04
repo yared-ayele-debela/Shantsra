@@ -313,7 +313,15 @@ export default function DashboardView({
         <aside className="space-y-4">
           <section className="rounded-2xl border border-[#D2DDD8] bg-white p-4 text-center shadow-sm sm:p-5" aria-labelledby="profile-title">
             <div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-[#E5F0EB] text-xl font-extrabold text-[#0D3326]">
-              {activeUser.photo_url || activeUser.photo ? <img src={getStorageUrl(activeUser.photo_url || activeUser.photo)} alt="" className="h-full w-full object-cover" /> : activeUser.name?.charAt(0).toUpperCase()}
+              <img
+                src={getStorageUrl(activeUser.photo_url || activeUser.photo) || '/assets/No-Image-Found-400x264.png'}
+                alt={activeUser.name || 'User'}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                }}
+                className="h-full w-full object-cover"
+              />
             </div>
             <h2 id="profile-title" className="mt-3 truncate font-display text-base font-extrabold text-[#0D3326]">{activeUser.name}</h2>
             <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#8F6C3D]">{activeUser.role || 'Sender'}</p>

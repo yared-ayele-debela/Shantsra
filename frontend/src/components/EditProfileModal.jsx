@@ -187,17 +187,15 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
           {/* Profile Photo Upload */}
           <div className="flex items-center gap-4 bg-amber-50/50 border border-amber-100 p-3.5 rounded-2xl">
             <div className="relative shrink-0">
-              {photoPreview ? (
-                <img 
-                  src={getStorageUrl(photoPreview)} 
-                  alt="Profile" 
-                  className="w-16 h-16 rounded-full object-cover border-2 border-amber-300 shadow-sm"
-                />
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-xl flex items-center justify-center border-2 border-amber-300 shadow-sm">
-                  {name ? name.charAt(0).toUpperCase() : 'U'}
-                </div>
-              )}
+              <img 
+                src={(photoPreview ? getStorageUrl(photoPreview) : '') || '/assets/No-Image-Found-400x264.png'} 
+                alt="Profile" 
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                }}
+                className="w-16 h-16 rounded-full object-cover border-2 border-amber-300 shadow-sm"
+              />
             </div>
             <div className="flex-1 space-y-1.5 min-w-0">
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">

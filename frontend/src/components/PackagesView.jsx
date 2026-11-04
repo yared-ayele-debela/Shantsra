@@ -74,7 +74,7 @@ export default function PackagesView({
           deal_status: shipment.deal_status || 'pending',
           is_urgent: Boolean(shipment.is_urgent),
           phone: shipment.receiver_phone || '',
-          sender_avatar: shipment.sender_photo || null,
+          sender_avatar: shipment.sender_photo ? getStorageUrl(shipment.sender_photo) : '/assets/No-Image-Found-400x264.png',
           sender_rating: shipment.sender_rating ?? null,
           sender_review_count: shipment.sender_review_count ?? 0,
           createdAt: shipment.posted_at ? Date.parse(shipment.posted_at) : 0

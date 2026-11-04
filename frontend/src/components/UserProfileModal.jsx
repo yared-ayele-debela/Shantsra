@@ -13,9 +13,9 @@ export default function UserProfileModal({ profile, onClose }) {
     !rawPhoto.toLowerCase().includes('unsplash.com')
   );
 
-  let photoSrc = '';
+  let photoSrc = '/assets/No-Image-Found-400x264.png';
   if (hasPhoto) {
-    photoSrc = getStorageUrl(rawPhoto);
+    photoSrc = getStorageUrl(rawPhoto) || '/assets/No-Image-Found-400x264.png';
   }
 
   const verifications = [
@@ -42,17 +42,15 @@ export default function UserProfileModal({ profile, onClose }) {
         <div className="p-6 space-y-6">
           {/* Profile Header */}
           <div className="flex items-center gap-4">
-            {hasPhoto ? (
-              <img 
-                src={photoSrc} 
-                alt={profile.name}
-                className="w-14 h-14 rounded-full object-cover border-2 border-amber-200 shadow-sm shrink-0" 
-              />
-            ) : (
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-emerald-800 text-white font-extrabold text-xl flex items-center justify-center border-2 border-amber-200 shadow-sm shrink-0">
-                {profile.name ? profile.name.trim().charAt(0).toUpperCase() : 'U'}
-              </div>
-            )}
+            <img 
+              src={photoSrc} 
+              alt={profile.name}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+              }}
+              className="w-14 h-14 rounded-full object-cover border-2 border-amber-200 shadow-sm shrink-0" 
+            />
             <div>
               <h4 className="font-display text-base font-bold text-[#1C160F]">{profile.name}</h4>
               <div className="flex items-center gap-1.5 text-xs font-semibold mt-1">

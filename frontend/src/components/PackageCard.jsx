@@ -23,8 +23,8 @@ export default function PackageCard({
 
   const senderProfile = profile || {
     name: item.sender,
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
-    rating: '4.8'
+    avatar: item.sender_avatar || '/assets/No-Image-Found-400x264.png',
+    rating: item.sender_rating || '4.8'
   };
 
   const whatsappMessage = encodeURIComponent(
@@ -105,17 +105,15 @@ export default function PackageCard({
             onClick={() => onSelectProfile(senderProfile.name)}
             className="flex min-w-0 items-center gap-1.5 sm:gap-2 cursor-pointer group/prof"
           >
-            {senderProfile.photo || senderProfile.photo_url || (senderProfile.avatar && !senderProfile.avatar.includes('unsplash.com') && (senderProfile.avatar.startsWith('http') || senderProfile.avatar.startsWith('/storage') || senderProfile.avatar.startsWith('storage/'))) ? (
-              <img
-                src={getStorageUrl(senderProfile.photo || senderProfile.photo_url || senderProfile.avatar)}
-                alt={senderProfile.name}
-                className="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover shrink-0"
-              />
-            ) : (
-              <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-amber-500 text-white font-extrabold text-[8px] sm:text-[9px] flex items-center justify-center shrink-0">
-                {senderProfile.name ? senderProfile.name.trim().charAt(0).toUpperCase() : 'U'}
-              </div>
-            )}
+            <img
+              src={getStorageUrl(senderProfile.photo || senderProfile.photo_url || item.sender_avatar || senderProfile.avatar) || '/assets/No-Image-Found-400x264.png'}
+              alt={senderProfile.name}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+              }}
+              className="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover shrink-0"
+            />
             <div className="min-w-0 text-[9px] sm:text-[11px] font-semibold text-slate-600 flex items-center gap-1 group-hover/prof:text-amber-600 transition-colors">
               <span className="truncate">Posted by {senderProfile.name}</span>
               <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
