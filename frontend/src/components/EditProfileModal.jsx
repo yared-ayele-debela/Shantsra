@@ -360,6 +360,40 @@ export default function EditProfileModal({ isOpen, onClose, user, onProfileUpdat
               </div>
             </div>
 
+            {(user?.id_document_url || user?.id_document_path) && (
+              <div className="rounded-xl border border-amber-200/80 bg-amber-50/40 p-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {!/\.pdf($|\?)/i.test(user.id_document_url || user.id_document_path) ? (
+                    <img
+                      src={getStorageUrl(user.id_document_url || user.id_document_path)}
+                      alt="Current ID document"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                      }}
+                      className="w-12 h-12 rounded-lg object-cover border border-amber-200 shrink-0"
+                    />
+                  ) : (
+                    <FileCheck2 className="w-8 h-8 text-amber-600 shrink-0" />
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-[#1C160F] truncate">Current Uploaded ID Document</p>
+                    <p className="text-[10px] text-slate-500 capitalize">
+                      Status: {user.id_document_status || 'pending'}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={getStorageUrl(user.id_document_url || user.id_document_path)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="shrink-0 rounded-lg bg-[#0D3326] px-3 py-1.5 text-[11px] font-bold text-white hover:bg-[#144937] transition-colors"
+                >
+                  View ID
+                </a>
+              </div>
+            )}
+
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Upload ID Photo/PDF

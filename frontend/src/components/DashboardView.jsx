@@ -2,10 +2,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Bell,
   Calendar,
+  ExternalLink,
+  FileCheck2,
+  FileText,
   LayoutDashboard,
   Mail,
   Plus,
   Star,
+  Upload,
 } from 'lucide-react';
 import EditProfileModal from './EditProfileModal';
 import RequestDeliveryModal from './RequestDeliveryModal';
@@ -290,6 +294,14 @@ export default function DashboardView({
 
   const isTraveler = ['traveler', 'traveller'].includes(String(activeUser.role || '').toLowerCase());
   const identityDocumentUrl = activeUser.id_document_url || activeUser.id_document_path || '';
+  const resolvedIdentityDocUrl = identityDocumentUrl ? getStorageUrl(identityDocumentUrl) : '';
+  const isPdfIdentityDoc = Boolean(resolvedIdentityDocUrl && /\.pdf($|\?)/i.test(resolvedIdentityDocUrl));
+  const idDocTypeLabel = {
+    passport: 'Passport',
+    national_id: 'National ID',
+    residence_permit: 'Residence Permit',
+  }[activeUser.id_document_type] || activeUser.id_document_type || '';
+  const idDocStatus = activeUser.id_document_status || (resolvedIdentityDocUrl ? 'pending' : '');
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-5 px-3.5 py-5 sm:space-y-7 sm:px-5 sm:py-8 lg:px-8">
@@ -334,7 +346,126 @@ export default function DashboardView({
           <div id="dashboard-verification">
             <VerificationChecklist user={activeUser} copy={copy} onContinue={() => setIsEditProfileOpen(true)} onEdit={() => setIsEditProfileOpen(true)} />
           </div>
-          {identityDocumentUrl ? <a href={getStorageUrl(identityDocumentUrl)} target="_blank" rel="noreferrer" className="sr-only">View identity document</a> : null}
+
+          <section className="rounded-2xl border border-[#D2DDD8] bg-white p-4 shadow-sm sm:p-5" aria-labelledby="identity-doc-title">
+            <div className="flex items-center justify-between gap-2">
+              <h2 id="identity-doc-title" className="flex items-center gap-1.5 font-display text-sm font-bold text-[#0D3326]">
+                <FileCheck2 className="h-4 w-4 text-amber-600 shrink-0" aria-hidden="true" />
+                <span>Identity Document</span>
+              </h2>
+              <span
+                className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                  idDocStatus === 'approved'
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : idDocStatus === 'rejected'
+                      ? 'bg-red-100 text-red-700'
+                      : idDocStatus === 'pending'
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                {idDocStatus === 'approved'
+                  ? 'Verified'
+                  : idDocStatus === 'rejected'
+                    ? 'Rejected'
+                    : idDocStatus === 'pending'
+                      ? 'Pending'
+                      : 'Not Uploaded'}
+              </span>
+            </div>
+
+            {(idDocTypeLabel || activeUser.id_document_number) && (
+              <div className="mt-3 rounded-xl border border-[#E8DFD0] bg-[#FAF8F5] p-2.5 text-xs space-y-1">
+                {idDocTypeLabel && (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-semibold uppercase text-[#647B72]">Type</span>
+                    <span className="font-bold text-[#1C160F]">{idDocTypeLabel}</span>
+                  </div>
+                )}
+                {activeUser.id_document_number && (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-semibold uppercase text-[#647B72]">Number</span>
+                    <span className="font-mono font-bold text-[#0D3326] truncate">{activeUser.id_document_number}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeUser.id_document_comment && (
+              <p className="mt-2.5 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-[11px] text-amber-900">
+                {activeUser.id_document_comment}
+              </p>
+            )}
+
+            {resolvedIdentityDocUrl ? (
+              <div className="mt-3 space-y-2.5">
+                {!isPdfIdentityDoc ? (
+                  <a
+                    href={resolvedIdentityDocUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group relative block overflow-hidden rounded-xl border border-[#D2DDD8] bg-slate-50"
+                    title="Click to open full identity document"
+                  >
+                    <img
+                      src={resolvedIdentityDocUrl}
+                      alt="Uploaded identity document"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
+                      }}
+                      className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-lg bg-[#0D3326]/90 px-2 py-1 text-[10px] font-semibold text-white shadow-xs">
+                      <ExternalLink className="h-3 w-3" /> Open Full Size
+                    </span>
+                  </a>
+                ) : (
+                  <a
+                    href={resolvedIdentityDocUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2.5 rounded-xl border border-[#D2DDD8] bg-[#FAF8F5] p-3 text-xs font-bold text-[#0D3326] hover:border-[#0D3326] transition-colors"
+                  >
+                    <FileText className="h-5 w-5 text-amber-600 shrink-0" />
+                    <span className="truncate flex-1">PDF Identity Document</span>
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  </a>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={resolvedIdentityDocUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-[#D2DDD8] px-3 py-2 text-xs font-bold text-[#0D3326] hover:bg-slate-50 transition-colors"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" /> View Document
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditProfileOpen(true)}
+                    className="inline-flex items-center justify-center gap-1 rounded-xl bg-[#E6EFE9] px-3 py-2 text-xs font-bold text-[#0D3326] hover:bg-[#D5E6DA] transition-colors cursor-pointer"
+                  >
+                    <Upload className="h-3.5 w-3.5" /> Update
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 rounded-xl border border-dashed border-[#B8D5C7] bg-[#F7FBF9] p-3.5 text-center space-y-2">
+                <p className="text-[11px] text-[#647B72]">
+                  No identity document uploaded yet. Upload your Passport or National ID to get verified.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsEditProfileOpen(true)}
+                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#0D3326] px-3 py-2 text-xs font-bold text-white hover:bg-[#144937] transition-colors cursor-pointer"
+                >
+                  <Upload className="h-3.5 w-3.5" /> Upload ID Document
+                </button>
+              </div>
+            )}
+          </section>
         </aside>
 
         <section id="dashboard-content" className="min-w-0 rounded-2xl border border-[#D2DDD8] bg-white p-4 shadow-sm sm:p-6">
