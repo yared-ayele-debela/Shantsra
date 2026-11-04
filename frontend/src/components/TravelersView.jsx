@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Users, SlidersHorizontal, RotateCcw, Search, Plane, Star, Phone, CheckCircle2, User, Loader2 } from 'lucide-react';
 import UserProfileModal from './UserProfileModal';
 import BannerStrip from './BannerStrip';
+import TravelerCard from './TravelerCard';
 import { getApiUrl, getStorageUrl } from '../lib/api';
 
 export default function TravelersView({ profiles, onSelectProfile, onContactPhone }) {
@@ -65,6 +66,7 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
                 airline: 'Verified Flight',
                 available_weight: (float => isNaN(float) ? 10 : float)(parseFloat(t.available_weight || 10)),
                 price: t.price || '$15 / kg',
+                price_per_kg: t.price_per_kg ?? 15,
                 phone: t.phone || '251911223344',
                 city: t.city || 'Addis Ababa',
                 country: t.country || 'Ethiopia',
@@ -287,95 +289,15 @@ export default function TravelersView({ profiles, onSelectProfile, onContactPhon
               <p className="text-xs font-bold text-[#1C160F]">Loading verified travelers...</p>
             </div>
           ) : filteredTravelers.length > 0 ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-              {filteredTravelers.map((traveler) => {
-                const whatsappMessage = encodeURIComponent(
-                  `Hi ${traveler.name}, I found your verified trip (${traveler.flightDate}) on Shantasra and would like to discuss sending a package.`
-                );
-
-                return (
-                  <div
-                    key={traveler.id || traveler.name}
-                    onClick={() => handleOpenUserDetail(traveler)}
-                    className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-[0_4px_18px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(15,23,42,0.1)] hover:border-[#0D3326] transition-all cursor-pointer flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4 group"
-                  >
-                    {/* Top User Header */}
-                    <div className="flex min-w-0 items-center gap-3 sm:w-44 sm:shrink-0">
-                      <div className="relative shrink-0">
-                        <img
-                          src={traveler.photo || '/assets/No-Image-Found-400x264.png'}
-                          alt={traveler.name}
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
-                          }}
-                          className="h-14 w-14 rounded-full object-cover border border-slate-200 shadow-sm sm:h-16 sm:w-16"
-                        />
-                        <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-[#0D3326] text-white flex items-center justify-center ring-2 ring-white" title="Verified Active Traveler">
-                          <CheckCircle2 className="w-2.5 h-2.5" />
-                        </span>
-                      </div>
-
-                      <div className="min-w-0">
-                        <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 group-hover:text-[#0D3326] transition-colors truncate">
-                          {traveler.name}
-                        </h3>
-                        <p className="text-[10px] sm:text-xs text-slate-500 truncate">
-                          {traveler.city || 'Addis Ababa'}
-                        </p>
-                        <span className="mt-1 inline-flex items-center gap-1 text-slate-700 font-bold text-[10px] sm:text-xs">
-                          <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                          {traveler.rating}
-                        </span>
-                        <div className="mt-2 flex items-center gap-1.5">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenUserDetail(traveler);
-                            }}
-                            aria-label="View traveler profile"
-                            title="View traveler profile"
-                            className="inline-flex items-center justify-center text-slate-600 hover:text-[#0D3326] transition-colors"
-                          >
-                            <User className="w-3 h-3 text-[#0D3326]" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (onContactPhone) onContactPhone(traveler);
-                            }}
-                            aria-label="Show traveler phone"
-                            title="Show traveler phone"
-                            className="inline-flex items-center gap-1 bg-[#0D3326] hover:bg-[#144937] text-white text-[9px] sm:text-[10px] font-semibold px-2 py-1 rounded-lg transition-all cursor-pointer"
-                          >
-                            <Phone className="w-3 h-3" aria-hidden="true" />
-                            <span>Contact</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="min-w-0 flex-1 space-y-2 border-t border-slate-100 pt-3 sm:border-t-0 sm:border-l sm:pl-4 sm:pt-0">
-                      <div className="flex min-w-0 items-start gap-2 text-xs sm:text-sm font-bold text-slate-800">
-                        <Plane className="w-4 h-4 text-[#0D3326] shrink-0" />
-                        <span className="min-w-0 break-words">{traveler.from_city || 'Addis Ababa'} <span className="text-slate-400 px-1">to</span> {traveler.to_city || 'Dubai'}</span>
-                      </div>
-                      <p className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">
-                        Departure: <span className="text-slate-700">{traveler.flightDate}</span>
-                      </p>
-                      <div className="space-y-1 text-[10px] sm:text-xs text-slate-600">
-                        <p>
-                          Capacity: <strong className="text-slate-800">{traveler.available_weight}kg</strong>
-                        </p>
-                        <p>
-                          Rate: <strong className="text-slate-800">{traveler.price}</strong>
-                        </p>
-                      </div>
-                    </div>
-
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+              {filteredTravelers.map((traveler) => (
+                <TravelerCard
+                  key={traveler.id || traveler.name}
+                  traveler={traveler}
+                  onSelectProfile={handleOpenUserDetail}
+                  onContact={onContactPhone}
+                />
+              ))}
             </div>
           ) : (
             <div className="text-center py-16 bg-white rounded-2xl border border-amber-100/60 p-8 shadow-sm">

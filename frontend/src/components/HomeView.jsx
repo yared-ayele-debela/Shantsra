@@ -5,6 +5,7 @@ import {
   ShieldAlert, CheckCircle2, ArrowRight, Weight, Zap 
 } from 'lucide-react';
 import PackageCard from './PackageCard';
+import TravelerCard from './TravelerCard';
 import BannerStrip from './BannerStrip';
 import { CATEGORIES } from '../data/initialData';
 import { getApiUrl, getStorageUrl } from '../lib/api';
@@ -144,10 +145,16 @@ export default function HomeView({
                   photo_url: photoSrc,
                   isRealPhoto: hasPhoto,
                   rating: String(t.rating || '5.0'),
+                  city: t.city || 'Addis Ababa',
+                  from_city: t.from_city || 'Addis Ababa',
+                  to_city: t.to_city || 'Dubai',
                   route: (t.from_city || '').toLowerCase().includes('dubai') ? 'DXB_TO_ADD' : 'ADD_TO_DXB',
                   flightDate: t.date || 'Upcoming trip',
                   airline: 'Verified flight',
+                  available_weight: t.available_weight || t.maxWeight || 10,
                   maxWeight: String(t.available_weight || '10.0'),
+                  price: t.price || '$15 / kg',
+                  price_per_kg: t.price_per_kg ?? 15,
                   allowedCategories: ['Other', 'Documents', 'Coffee & Gifts'],
                   phone: t.phone || '251911223344'
                 });
@@ -642,53 +649,14 @@ export default function HomeView({
           </span>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto scrollbar-none pb-4 -mx-5 px-5 lg:mx-0 lg:px-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {travelersList.map((t) => (
-            <div key={t.id || t.name} className="min-w-[270px] sm:min-w-[300px] max-w-[300px] shrink-0 bg-white rounded-[14px] border border-[#E8DFD0] p-5 shadow-[0_4px_18px_rgba(28,43,34,0.06)] space-y-3 flex flex-col justify-between hover:-translate-y-0.5 hover:border-[#14532D] hover:shadow-[0_8px_24px_rgba(28,43,34,0.12)] transition-all">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase text-[#14532D] bg-[#E6EFE9] px-2 py-0.5 rounded border border-[#E8DFD0]">
-                    {t.route === 'ADD_TO_DXB' ? 'ADD ➔ DXB' : 'DXB ➔ ADD'}
-                  </span>
-                  <span className="text-xs font-bold text-amber-600">★ {t.rating}</span>
-                </div>
-
-                <div 
-                  onClick={() => onSelectProfile(t)}
-                  className="flex items-center gap-3 cursor-pointer group"
-                >
-                  <img 
-                    src={t.photo || '/assets/No-Image-Found-400x264.png'} 
-                    alt={t.name} 
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = '/assets/No-Image-Found-400x264.png';
-                    }}
-                    className="w-12 h-12 rounded-full object-cover border border-[#E8DFD0] group-hover:border-[#14532D] transition-colors shrink-0"
-                  />
-                  <div>
-                    <h4 className="font-bold text-sm text-[#1C2B22] group-hover:text-[#14532D] transition-colors">{t.name}</h4>
-                    <p className="text-[10px] text-slate-400">{t.airline} • {t.flightDate}</p>
-                  </div>
-                </div>
-
-                <div className="text-xs text-slate-600 space-y-1 bg-[#E6EFE9] border border-[#E8DFD0] p-3 rounded-[10px]">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase">Luggage Capacity</p>
-                  <p className="font-bold text-[#1C2B22] flex items-center gap-1">
-                    <Weight className="w-3.5 h-3.5 text-[#14532D]" /> Up to {t.maxWeight} kg
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <button 
-                  onClick={() => onContactPhone && onContactPhone(t)}
-                  className="bg-[#14532D] hover:bg-[#0F3F22] text-white text-xs font-semibold px-3 py-2 rounded-[10px] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Phone className="w-3.5 h-3.5 text-white" /> Contact
-                </button>
-              </div>
-            </div>
+            <TravelerCard
+              key={t.id || t.name}
+              traveler={t}
+              onSelectProfile={onSelectProfile}
+              onContact={onContactPhone}
+            />
           ))}
         </div>
       </section>
