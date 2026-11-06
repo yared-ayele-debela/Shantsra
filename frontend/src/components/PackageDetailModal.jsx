@@ -49,7 +49,7 @@ export default function PackageDetailModal({
   const hasPhone = Boolean(item.phone && String(item.phone).trim());
   const routeText = item.route === 'ADD_TO_DXB' ? 'Addis Ababa to Dubai' : 'Dubai to Addis Ababa';
   
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://souqsheba.com';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shantasra.com';
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
   const packageShareUrl = `${origin}${pathname}?package=${encodeURIComponent(item.id)}`;
 
