@@ -2,14 +2,14 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 
 const pageMeta = {
-  '/': ['Shantasra | Cross-border delivery between UAE and Ethiopia', 'Send packages between the UAE and Ethiopia with trusted travelers on Shantasra.'],
-  '/packages': ['Packages for delivery | Shantasra', 'Browse active package delivery requests between the UAE and Ethiopia.'],
-  '/travelers': ['Find travelers | Shantasra', 'Find trusted travelers carrying packages between the UAE and Ethiopia.'],
-  '/how-it-works': ['How Shantasra works', 'Learn how Shantasra connects senders with trusted travelers for cross-border delivery.'],
-  '/faq': ['Frequently asked questions | Shantasra', 'Answers about sending packages and traveling with Shantasra.'],
-  '/about': ['About Shantasra', 'Shantasra helps people move packages across borders through trusted travelers.'],
-  '/contact': ['Contact Shantasra', 'Contact Shantasra for help with a package or traveler listing.'],
-  '/safety': ['Safety at Shantasra', 'Learn how Shantasra supports safer package handovers and verified travel listings.'],
+  '/': ['Shantasra | Peer-to-Peer (P2P) Cross-Border Delivery Agency', 'Shantasra is a trusted peer-to-peer (P2P) delivery agency connecting package senders with verified travelers between the UAE and Ethiopia.'],
+  '/packages': ['Packages for Delivery | Shantasra P2P Delivery Agency', 'Browse active peer-to-peer package delivery requests between the UAE and Ethiopia on Shantasra.'],
+  '/travelers': ['Find Verified Travelers | Shantasra P2P Delivery Agency', 'Connect with verified travelers carrying packages between the UAE and Ethiopia through Shantasra.'],
+  '/how-it-works': ['How Shantasra Works | P2P Delivery Agency', 'Learn how Shantasra connects senders with verified travelers for peer-to-peer cross-border delivery.'],
+  '/faq': ['Frequently Asked Questions | Shantasra', 'Answers about sending packages and traveling with the Shantasra P2P delivery agency.'],
+  '/about': ['About Shantasra | Peer-to-Peer Delivery Agency', 'Shantasra is a peer-to-peer delivery agency helping people move packages across borders through verified travelers.'],
+  '/contact': ['Contact Shantasra | P2P Delivery Agency', 'Contact Shantasra for assistance with your peer-to-peer package or traveler listing.'],
+  '/safety': ['Safety & Trust at Shantasra | P2P Delivery Agency', 'Learn how Shantasra ensures safe peer-to-peer package handovers and verified travel listings.'],
 };
 
 export default function SeoHead() {
